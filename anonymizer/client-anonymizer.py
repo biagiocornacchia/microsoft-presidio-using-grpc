@@ -112,7 +112,7 @@ def sendRequestForItems(stub, filename, uuidClient, requestType):
                 AnonymizerItemsResults.write('{' + f' "operator": "{response.operator}", "entity_type": "{response.entity_type}", "start": {response.start}, "end": {response.end}, "text": "{response.text}" ' + '}\n')
 
         print("{}-anonymize-items.txt created".format(filename))
-        #time.sleep(1)
+        time.sleep(1)
 
     else:
         #print("IMPLEMENT!! SIA CLIENT CHE SERVER")
@@ -266,8 +266,8 @@ def sendRequestAnonymize(stub, filename, config):
         # sending analyzer results
         chunk_iterator = generate_chunks(PATH_ANALYZER_RESULTS + filename + "-results", uuidClient, "anonymize")
         print("FROM CLIENT: sending analyzer results...")
-        response = stub.SendRecognizerResult(chunk_iterator)
-
+        response = stub.SendRecognizerResults(chunk_iterator)
+        
         if response.chunks == TOTAL_CHUNKS:
             print("FROM SERVER: analyzer results received correctly. UUID: {}".format(uuidClient))
 
@@ -380,7 +380,7 @@ def sendRequestDeanonymize(stub, filename):
         # sending items results
         chunk_iterator = generate_chunks(PATH_ANONYMIZER_RESULTS + filename + "-anonymize-items", uuidClient, "deanonymize")
         print("FROM CLIENT: sending items...")
-        response = stub.SendRecognizerResult(chunk_iterator)
+        response = stub.SendRecognizerResults(chunk_iterator)
 
         if response.chunks == TOTAL_CHUNKS:
             print("FROM SERVER: analyzer results received correctly. UUID: {}".format(uuidClient))

@@ -15,68 +15,58 @@ import os
 
 PATH_TEMP = "anonymizer-temp/"
 
-TOTAL_CHUNKS = 0
 CHUNK_SIZE = 1024*1024 # 1MB
+TOTAL_CHUNKS = 0
 
-def test_deanonymizer(uuidClient):
-
-    # CONFIG FILE DEVE ESSERE OBBLIGATORIO
+def startDeanonymization(uuidClient):
 
     try:
         textToDeanonymize = open(PATH_TEMP + uuidClient + ".txt", "r")
     except IOError:
-        print("[+] File text not exits")
+        print("[+] Anonymized file text not exits")
         return -1
 
     try: 
-        AnonymizerResults = open(PATH_TEMP + uuidClient + "-results.txt", "r") # items
+        with open(PATH_TEMP + uuidClient + "-results.txt", "r") as AnonymizerResults: # items
+            anonymizerResultsList = []
+
+            for line in AnonymizerResults:
+                data = json.loads(line)
+                
+                if data["operator"] == "encrypt":
+                    anonymizerResultsList.append(AnonymizerResult.from_json(json.loads('{' + f' "start":{data["start"]}, "end":{data["end"]}, "entity_type": "{data["entity_type"]}" ' + '}')))
+
     except IOError:
         print("[+] File recognizer results not exits")
         return -1
 
-    res = []
-    for line in AnonymizerResults:
-        data = json.loads(line)
-        
-        if data["operator"] == "encrypt":
-            res.append(AnonymizerResult.from_json(json.loads('{' + f' "start":{data["start"]}, "end":{data["end"]}, "entity_type": "{data["entity_type"]}" ' + '}')))
-
-
-    AnonymizerResults.close()
-
-    #################################################################
-    # COSTRUISCO LISTA OPERATORS CONFIG (SE IMPOSTATA)
-
-    config_file = 0
+    # Building operators list to perform a particular deanonymization (config file is required!)
+    configFile = 0
 
     try:
-        config_file = open(PATH_TEMP + uuidClient + "-config.txt", "r")
+        configFile = open(PATH_TEMP + uuidClient + "-config.txt", "r")
     except IOError:
-        print("[+] No config file found (using default config)")
+        print("[+] No config file found - Cannot complete deanonymization!")
+        return -1
 
-
-    # controlla se è vuoto (strip rimuove gli spazi all'unizio e alla fine)
-    if config_file:
-        cstring = config_file.readline().strip()
+    if configFile:
+        cstring = configFile.readline().strip()
 
         if cstring:
-            for line in config_file:    
+            for line in configFile:    
                 cstring += " , " + line.strip()
 
-        #print(cstring)
-        result = json.loads('{' + cstring + ' }')
-        #print(result)
+        configResult = json.loads('{' + cstring + ' }')
+        #print(configResult)
 
-        for elem in result:
-            #print(elem)
-            str_conf = result.get(elem)
-            #print(str_conf)
+        for elem in configResult:
+            str_conf = configResult.get(elem)
             str_conf = str_conf.replace("'", "\"")
             #print(OperatorConfig.from_json(json.loads(str_conf)))
-            result.update({elem : OperatorConfig.from_json(json.loads(str_conf))})
+            configResult.update({elem : OperatorConfig.from_json(json.loads(str_conf))})
 
-        #print(result)
-        config_file.close()
+        #print(configResult)
+        configFile.close()
 
     #############################################################
 
@@ -84,8 +74,8 @@ def test_deanonymizer(uuidClient):
 
     result = engine.deanonymize(
         text=textToDeanonymize.read(),
-        entities=res,
-        operators=result
+        entities=anonymizerResultsList,
+        operators=configResult
     )
 
     with open(PATH_TEMP + uuidClient + "-deanonymized.txt", "w") as fileDeanonymized:
@@ -98,82 +88,71 @@ def test_deanonymizer(uuidClient):
     textToDeanonymize.close()
     return result
 
-
-def make_message(msg):
-    return pb2.DataFile(chunk = msg)
-
-def test_anonymizer(uuidClient):
-    
-    # COSTRUISCO LA LISTA DEI RECOGNIZERS
-    # SISTEMARE QUANDO IL FILE NON ESISTE!!!!
+def startAnonymization(uuidClient):
+    # Building recognizers list made by analyzer engine
+    # checking the necessary files
 
     try:
         textToAnonymize = open(PATH_TEMP + uuidClient + ".txt", "r")
+
     except IOError:
-        print("[+] File text not exits")
+        print("[+] Original file text not exits")
         return -1
 
+    recognizerResultsList = []
+
     try: 
-        recognizerResults = open(PATH_TEMP + uuidClient + "-results.txt", "r")
+        with open(PATH_TEMP + uuidClient + "-results.txt", "r") as recognizerResults:     
+            for line in recognizerResults:
+                recognizerResultsList.append(RecognizerResult.from_json(json.loads(line)))
+
     except IOError:
         print("[+] File recognizer results not exits")
         return -1
 
-    res = []
-    for line in recognizerResults:
-        #print(RecognizerResult.from_json(json.loads(line)))
-        res.append(RecognizerResult.from_json(json.loads(line)))
-
-    recognizerResults.close()
-
-    #################################################################
-    # COSTRUISCO LISTA OPERATORS CONFIG (SE IMPOSTATA)
-    config_file = 0
+    # Building operators list to perform a particular anonymization (if exists a config file otherwise use a default configuration)
+    configFile = 0
 
     try:
-        config_file = open(PATH_TEMP + uuidClient + "-config.txt", "r")
+        configFile = open(PATH_TEMP + uuidClient + "-config.txt", "r")
+
     except IOError:
         print("[+] No config file found (using default config)")
 
-
-    # controlla se è vuoto (strip rimuove gli spazi all'unizio e alla fine)
-    if config_file:
-        cstring = config_file.readline().strip()
+    if configFile:
+        cstring = configFile.readline().strip()
 
         if cstring:
-            for line in config_file:    
+            for line in configFile:    
                 cstring += " , " + line.strip()
 
-        #print(cstring)
-        result = json.loads('{' + cstring + ' }')
-        #print(result)
+        configResult = json.loads('{' + cstring + ' }')
+        #print(configResult)
 
-        for elem in result:
-            #print(elem)
-            str_conf = result.get(elem)
-            #print(str_conf)
+        for elem in configResult:
+            str_conf = configResult.get(elem)
             str_conf = str_conf.replace("'", "\"")
             #print(OperatorConfig.from_json(json.loads(str_conf)))
-            result.update({elem : OperatorConfig.from_json(json.loads(str_conf))})
+            configResult.update({elem : OperatorConfig.from_json(json.loads(str_conf))})
 
-        #print(result)
-        config_file.close()
+        #print(configResult)
+        configFile.close()
 
     #############################################################
 
     engine = AnonymizerEngine()
 
-    if config_file:
+    if configFile:
         result = engine.anonymize(
             text=textToAnonymize.read(),
-            analyzer_results= res,
-            operators=result
+            analyzer_results= recognizerResultsList,
+            operators=configResult
         )
     
     else:
         result = engine.anonymize(
             text=textToAnonymize.read(),
-            analyzer_results= res
+            analyzer_results= recognizerResultsList
         )
 
     with open(PATH_TEMP + uuidClient + "-anonymized.txt", "w") as fileAnonymized:
@@ -184,8 +163,10 @@ def test_anonymizer(uuidClient):
                 fileItemsAnonymized.write('{' + f' "operator": "{obj.operator}", "entity_type": "{obj.entity_type}", "start": {obj.start}, "end": {obj.end}, "text": "{obj.text}" ' + '}\n')
 
     textToAnonymize.close()
-
     return result
+
+def make_message(msg):
+    return pb2.DataFile(chunk = msg)
 
 class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
 
@@ -202,28 +183,25 @@ class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
                 TOTAL_CHUNKS = TOTAL_CHUNKS + CHUNK_SIZE
                 f.write(request.chunk)
 
-        print("[+] File received")
+        print("[+] File text received")
             
         return pb2.FileAck(chunks = TOTAL_CHUNKS, uuidClient = uuidClient)
 
-    def SendRecognizerResult(self, request_iterator, context):
+    def SendRecognizerResults(self, request_iterator, context):
 
         TOTAL_CHUNKS = 0
 
         for request in request_iterator:
-
             if TOTAL_CHUNKS == 0:
                 uuidClient = request.uuidClient
                 print ("[+] UUID client: {}".format(uuidClient))
                 print("[+] Receiving a recognizer results file...")
-
-                f = open(PATH_TEMP + uuidClient + "-results.txt", "a")
+                fileText = open(PATH_TEMP + uuidClient + "-results.txt", "a")
             
-            #print(request)
             TOTAL_CHUNKS = TOTAL_CHUNKS + CHUNK_SIZE
-            f.write(request.chunk)
+            fileText.write(request.chunk)
 
-        f.close()
+        fileText.close()
         print("[+] File received")
             
         return pb2.FileAck(chunks = TOTAL_CHUNKS, uuidClient = uuidClient)
@@ -234,10 +212,10 @@ class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
         print ("[+] UUID client: {}".format(uuidClient))
         print("[+] Receiving a config file...")
 
-        with open(PATH_TEMP + uuidClient + "-config.txt", "w") as config_file:
-            config_file.write(request.operators)
+        with open(PATH_TEMP + uuidClient + "-config.txt", "w") as configFile:
+            configFile.write(request.operators)
 
-        print("[+] File received")
+        print("[+] Config file received")
 
         return pb2.FileAck(chunks = -1, uuidClient = uuidClient)
     
@@ -248,61 +226,29 @@ class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
         
         if request.type == "anonymize":
             print("[+] Receiving a request for anonymization...")        
-            
-            ################################################
-            results = test_anonymizer(uuidClient)
+            results = startAnonymization(uuidClient)
+            filename = PATH_TEMP + uuidClient + "-anonymized.txt"
 
-            #print(results)
-
-            if results:
-                print("[+] Anonymized!\n")
-                print(results.text)
-
-                global TOTAL_CHUNKS
-                cont = 0
-
-                text = open(PATH_TEMP + uuidClient + "-anonymized.txt", "r")
-
-                while True:
-                    data = text.read(CHUNK_SIZE)
-
-                    if not data:
-                        text.close()
-                        break
-                    
-                    cont += CHUNK_SIZE
-                    TOTAL_CHUNKS = cont
-
-                    yield make_message(data)
-
-                text.close()
-
-            else:
-                print("[+] Error anonymization")
-                yield pb2.DataFile(chunk = "-1")
-
-            #####################################################
-        else:
+        elif request.type == "deanonymize":
             print("[+] Receiving a request for deanonymization...")
+            results = startDeanonymization(uuidClient)
+            filename = PATH_TEMP + uuidClient + "-deanonymized.txt"
 
-            results = test_deanonymizer(uuidClient)
+        else:
+            print("[+] Request type error")
+        
+        if results:
+            print("[+] Done successfully!\n")
+            print(results.text)
 
-            #print(results)
+            global TOTAL_CHUNKS
+            cont = 0
 
-            if results:
-                print("[+] Deanonymized!\n")
-                print(results.text)
-
-                #global TOTAL_CHUNKS
-                cont = 0
-
-                text = open(PATH_TEMP + uuidClient + "-deanonymized.txt", "r")
-
+            with open(filename, "r") as textFile:
                 while True:
-                    data = text.read(CHUNK_SIZE)
+                    data = textFile.read(CHUNK_SIZE)
 
                     if not data:
-                        text.close()
                         break
                     
                     cont += CHUNK_SIZE
@@ -310,11 +256,10 @@ class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
 
                     yield make_message(data)
 
-                text.close()
-
-            else:
-                print("[+] Error deanonymization")
-                yield pb2.DataFile(chunk = "-1")
+        else:
+            # sends a NAK
+            print("[+] Error during operation")
+            yield pb2.DataFile(chunk = "-1")
 
     def GetItems(self, request, context):
         
@@ -330,7 +275,7 @@ class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
         for item in itemsList:
             yield pb2.Item(operator = item["operator"], entity_type = item["entity_type"], start = item["start"], end = item["end"], text = item["text"])
         
-        print("[+] DONE!\n")
+        print("[+] Operation completed!\n")
         
         # cleaning temp files
         if os.path.exists(PATH_TEMP + uuidClient + "-config.txt"):

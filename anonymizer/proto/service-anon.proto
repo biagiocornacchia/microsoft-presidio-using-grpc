@@ -1,7 +1,7 @@
 syntax="proto3";
 
 service AnonymizerEntity {
-    rpc SendRecognizerResult(stream DataFile) returns (FileAck) {} // sends analyzer or anonymizer results
+    rpc SendRecognizerResults(stream DataFile) returns (FileAck) {} // sends analyzer or anonymizer results
     rpc sendConfig(Config) returns (FileAck) {} // sends anonymizers or deanonymizers 
     rpc sendFile(stream DataFile) returns (FileAck) {}
     rpc GetText(Request) returns (stream DataFile) {}

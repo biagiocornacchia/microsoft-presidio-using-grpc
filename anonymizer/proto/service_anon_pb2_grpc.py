@@ -14,8 +14,8 @@ class AnonymizerEntityStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SendRecognizerResult = channel.stream_unary(
-                '/AnonymizerEntity/SendRecognizerResult',
+        self.SendRecognizerResults = channel.stream_unary(
+                '/AnonymizerEntity/SendRecognizerResults',
                 request_serializer=proto_dot_service__anon__pb2.DataFile.SerializeToString,
                 response_deserializer=proto_dot_service__anon__pb2.FileAck.FromString,
                 )
@@ -44,7 +44,7 @@ class AnonymizerEntityStub(object):
 class AnonymizerEntityServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def SendRecognizerResult(self, request_iterator, context):
+    def SendRecognizerResults(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -77,8 +77,8 @@ class AnonymizerEntityServicer(object):
 
 def add_AnonymizerEntityServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SendRecognizerResult': grpc.stream_unary_rpc_method_handler(
-                    servicer.SendRecognizerResult,
+            'SendRecognizerResults': grpc.stream_unary_rpc_method_handler(
+                    servicer.SendRecognizerResults,
                     request_deserializer=proto_dot_service__anon__pb2.DataFile.FromString,
                     response_serializer=proto_dot_service__anon__pb2.FileAck.SerializeToString,
             ),
@@ -113,7 +113,7 @@ class AnonymizerEntity(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def SendRecognizerResult(request_iterator,
+    def SendRecognizerResults(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -123,7 +123,7 @@ class AnonymizerEntity(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/AnonymizerEntity/SendRecognizerResult',
+        return grpc.experimental.stream_unary(request_iterator, target, '/AnonymizerEntity/SendRecognizerResults',
             proto_dot_service__anon__pb2.DataFile.SerializeToString,
             proto_dot_service__anon__pb2.FileAck.FromString,
             options, channel_credentials,
