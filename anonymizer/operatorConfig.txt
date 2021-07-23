@@ -1,0 +1,3 @@
+"PERSON" : "{'type': 'encrypt', 'key': '1111111111111112'}"
+"IP_ADDRESS" : "{'type': 'encrypt', 'key': '1111111111111222'}"
+"LOCATION" : "{'type': 'replace', 'new_value': 'ALTOPALO'}"

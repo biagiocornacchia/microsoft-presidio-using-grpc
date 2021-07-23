@@ -1,0 +1,79 @@
+import grpc 
+from proto import service_pb2_grpc as pb2_grpc
+from proto import service_pb2 as pb2
+
+import json
+import os
+
+PATH_RESULTS = "../analyzer-results/"
+PATH_FILES = "../files/"
+
+CHUNK_SIZE = 1024*1024 # 1MB
+TOTAL_CHUNKS = 0
+
+def make_message(msg):
+    return pb2.DataFile(chunk = msg)
+
+def generate_chunks(filename):
+    
+    global TOTAL_CHUNKS
+    cont = 0
+
+    textToAnalyze = open(PATH_FILES + filename + ".txt", "r")
+
+    while True:
+        data = textToAnalyze.read(CHUNK_SIZE)
+
+        if not data:
+            textToAnalyze.close()
+            break
+        
+        cont += CHUNK_SIZE
+        TOTAL_CHUNKS = cont
+
+        yield make_message(data)
+
+def send(stub, filename):
+
+    chunk_iterator = generate_chunks(filename)
+    response = stub.sendFileToAnalyze(chunk_iterator)
+
+    if response.chunks == TOTAL_CHUNKS:
+        print("File received correctly. UUID assigned: {}".format(response.uuidClient))
+        responses = stub.GetAnalyzerResults(pb2.Request(uuidClient = response.uuidClient))
+        print("Waiting for analyzer results...")
+        
+    RecognizerResults = open(PATH_RESULTS + filename + "-results.txt", "w")
+    for response in responses:
+        string = "{ " + f'"start": {response.start}, "end": {response.end}, "score": {response.score:.2f}, "entity_type": "{response.entity_type}"' + " }\n"
+        RecognizerResults.write(string)
+    RecognizerResults.close()
+
+    print("{}-results.txt created\n".format(filename))
+
+
+def run(filename, ip_address, port):
+    
+    with grpc.insecure_channel(ip_address + ':' + port) as channel:
+        stub = pb2_grpc.AnalyzerEntityStub(channel)
+        print("Connected to {}:{}".format(ip_address, port))
+        send(stub, filename)
+
+if __name__ == '__main__':
+
+    try:
+        print("\n:::::::::::::::::: PRESIDIO ANALYZER (Client) ::::::::::::::::::\n")
+        ip_address = input("IP: ")
+        port = input("PORT: ")
+
+        while True:
+            filename = input("filename: ")
+            print("\nSearching for {}".format(filename))
+            
+            if os.path.exists(PATH_FILES + filename + ".txt"):
+                run(filename, ip_address, port)
+            else:
+                print("The file '{}.txt' does not exist".format(filename))
+
+    except KeyboardInterrupt:
+        print("Exiting...")

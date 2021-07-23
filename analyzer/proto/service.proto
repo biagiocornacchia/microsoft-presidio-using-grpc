@@ -1,0 +1,26 @@
+syntax="proto3";
+
+service AnalyzerEntity {
+    rpc sendFileToAnalyze(stream DataFile) returns (FileAck) {} 
+    rpc GetAnalyzerResults(Request) returns (stream AnalyzerResults) {}
+}
+
+message Request {
+    string uuidClient = 1;
+}
+
+message FileAck {
+    string uuidClient = 1;
+    int32 chunks = 2;
+}
+
+message DataFile {
+    string chunk = 1;
+}
+
+message AnalyzerResults {
+    string entity_type = 1;
+    int32 start = 2;
+    int32 end = 3;
+    float score = 4;
+}
