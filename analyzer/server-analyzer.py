@@ -27,11 +27,10 @@ class AnalyzerEntity(pb2_grpc.AnalyzerEntityServicer):
     
         TOTAL_CHUNKS = 0
 
-        f = open(PATH_TEMP + uuidClient + ".txt", "a")
-        for request in request_iterator:
-            TOTAL_CHUNKS = TOTAL_CHUNKS + CHUNK_SIZE
-            f.write(request.chunk)
-        f.close()
+        with open(PATH_TEMP + uuidClient + ".txt", "a") as f:
+            for request in request_iterator:
+                TOTAL_CHUNKS = TOTAL_CHUNKS + CHUNK_SIZE
+                f.write(request.chunk)
 
         print("[+] File received")
             
@@ -43,10 +42,11 @@ class AnalyzerEntity(pb2_grpc.AnalyzerEntityServicer):
         print("[+] Searching for {}".format(request.uuidClient))
 
         try:
-            f = open(PATH_TEMP + request.uuidClient + ".txt", "r")
-            results = getResult(f.read())
-            f.close()
+            with open(PATH_TEMP + request.uuidClient + ".txt", "r") as fileText:
+                results = getResult(fileText.read())
+            
             os.remove(PATH_TEMP + request.uuidClient + ".txt")
+
         except:
             print("[+] File not exists!")
 

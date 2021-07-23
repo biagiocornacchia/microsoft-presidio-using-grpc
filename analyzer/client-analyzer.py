@@ -19,19 +19,17 @@ def generate_chunks(filename):
     global TOTAL_CHUNKS
     cont = 0
 
-    textToAnalyze = open(PATH_FILES + filename + ".txt", "r")
+    with open(PATH_FILES + filename + ".txt", "r") as textToAnalyze:
+        while True:
+            data = textToAnalyze.read(CHUNK_SIZE)
 
-    while True:
-        data = textToAnalyze.read(CHUNK_SIZE)
+            if not data:
+                break
+            
+            cont += CHUNK_SIZE
+            TOTAL_CHUNKS = cont
 
-        if not data:
-            textToAnalyze.close()
-            break
-        
-        cont += CHUNK_SIZE
-        TOTAL_CHUNKS = cont
-
-        yield make_message(data)
+            yield make_message(data)
 
 def send(stub, filename):
 
