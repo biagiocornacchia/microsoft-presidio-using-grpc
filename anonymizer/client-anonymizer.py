@@ -63,19 +63,24 @@ def generate_chunks(filename, uuid, requestType):
     global TOTAL_CHUNKS
     cont = 0
 
-    textToAnonymize = open(filename + ".txt", "r")
+    try:
+        textFile = open(filename + ".txt", "r")
 
-    while True:
-        data = textToAnonymize.read(CHUNK_SIZE)
+        while True:
+            data = textFile.read(CHUNK_SIZE)
 
-        if not data:
-            textToAnonymize.close()
-            break
-        
-        cont += CHUNK_SIZE
-        TOTAL_CHUNKS = cont
+            if not data:
+                textFile.close()
+                break
+            
+            cont += CHUNK_SIZE
+            TOTAL_CHUNKS = cont
 
-        yield make_message(data, uuid, requestType)
+            yield make_message(data, uuid, requestType)
+
+    except IOError:
+        print("{} not exists!".format(filename))
+        yield -1
 
 def sendRequestForText(stub, filename, uuidClient, requestType):
     
