@@ -43,21 +43,27 @@ def send(stub, filename):
         responses = stub.GetAnalyzerResults(pb2.Request(uuidClient = response.uuidClient))
         print("Waiting for analyzer results...")
         
-    RecognizerResults = open(PATH_RESULTS + filename + "-results.txt", "w")
-    for response in responses:
-        string = "{ " + f'"start": {response.start}, "end": {response.end}, "score": {response.score:.2f}, "entity_type": "{response.entity_type}"' + " }\n"
-        RecognizerResults.write(string)
-    RecognizerResults.close()
+    with open(PATH_RESULTS + filename + "-results.txt", "w") as RecognizerResults:
+        for response in responses:
+            string = "{ " + f'"start": {response.start}, "end": {response.end}, "score": {response.score:.2f}, "entity_type": "{response.entity_type}"' + " }\n"
+            RecognizerResults.write(string)
 
     print("{}-results.txt created\n".format(filename))
 
 
 def run(filename, ip_address, port):
     
-    with grpc.insecure_channel(ip_address + ':' + port) as channel:
-        stub = pb2_grpc.AnalyzerEntityStub(channel)
-        print("Connected to {}:{}".format(ip_address, port))
-        send(stub, filename)
+    try: 
+        with grpc.insecure_channel(ip_address + ':' + port) as channel:
+            stub = pb2_grpc.AnalyzerEntityStub(channel)
+            print("\nCONNECTED TO {}:{}".format(ip_address, port))
+            send(stub, filename)
+
+    except grpc.RpcError as rpc_error:
+        if rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
+            print("CANNOT CONNECT TO {}:{}\n".format(ip_address, port))
+        else:
+            print("Received unknown RPC error: code={} message={}\n".format(rpc_error.code(), rpc_error.details()))
 
 if __name__ == '__main__':
 

@@ -120,7 +120,6 @@ def sendRequestForItems(stub, filename, uuidClient, requestType):
         time.sleep(1)
 
     else:
-        #print("IMPLEMENT!! SIA CLIENT CHE SERVER")
         with open(PATH_ANONYMIZER_RESULTS + filename + "-deanonymize-items.txt", "w") as DeanonymizerItemsResults:
             for response in responses:
                 DeanonymizerItemsResults.write('{' + f' "start": {response.start}, "end": {response.end}, "operator": "{response.operator}", "text": "{response.text}", "entity_type": "NUMBER" ' + '}\n')
@@ -366,8 +365,13 @@ def presidio_anonymizer_start(ip_address, port):
                     break
                 else:
                     print("\nCommand not valid!")
-    except:
-        print("GENERIC EXCEPTION! (FIX THIS ERROR)")   
+                    
+    except grpc.RpcError as rpc_error:
+        if rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
+            print("Cannot connect to the server\n")
+        else:
+            print(f"Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n")
+    
 
 ### STOP ANONYMIZER SECTION
 
@@ -466,8 +470,12 @@ def presidio_deanonymizer_start(ip_address, port):
                     break
                 else:
                     print("\nCommand not valid!")
-    except:
-        print("GENERIC EXCEPTION! (FIX THIS ERROR, DEANONYMIZATION)")
+                    
+    except grpc.RpcError as rpc_error:
+        if rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
+            print("Cannot connect to the server\n")
+        else:
+            print(f"Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n")
 
 
 if __name__ == "__main__":
