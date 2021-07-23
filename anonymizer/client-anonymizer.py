@@ -450,8 +450,8 @@ def presidio_deanonymizer_start(ip_address, port):
 
                     # check configuration file (FOR DEANONYMIZATION IS REQUIRED!)
                     if os.path.exists(CONFIG_FILE_DE) == 0:
-                        print("Config file not found! (Using a default conf)")
-                        print("You have to setup a config file")
+                        print("Config file not found!")
+                        print("You have to setup a config file before deanonymize")
                         continue
                     else:
                         print("Config file found!")
