@@ -62,7 +62,7 @@ def run(filename, ip_address, port):
 if __name__ == '__main__':
 
     try:
-        print("\n:::::::::::::::::: PRESIDIO ANALYZER (Client) ::::::::::::::::::\n")
+        print("\n:::::::::::::::::: PRESIDIO ANALYZER (data loader) ::::::::::::::::::\n")
         ip_address = input("IP: ")
         port = input("PORT: ")
 

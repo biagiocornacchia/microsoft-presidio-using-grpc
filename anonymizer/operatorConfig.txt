@@ -1,3 +1,5 @@
 "PERSON" : "{'type': 'encrypt', 'key': '1111111111111112'}"
 "IP_ADDRESS" : "{'type': 'encrypt', 'key': '1111111111111222'}"
 "LOCATION" : "{'type': 'replace', 'new_value': 'ALTOPALO'}"
+"CREDIT_CARD" : "{'type': 'hash', 'hash_type': 'sha256'}"
+"IBAN_CODE" : "{'type': 'hash', 'hash_type': 'sha512'}"

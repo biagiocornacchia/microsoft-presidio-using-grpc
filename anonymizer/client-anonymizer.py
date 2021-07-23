@@ -125,7 +125,7 @@ def sendRequestForItems(stub, filename, uuidClient, requestType):
 
 ### START ANONYMIZER SECTION
 
-def operator_(entity_type, params, configFile):
+def addOperator(entity_type, params, configFile):
 
     with open(configFile, 'a') as f:
         f.write(f'"{entity_type}" : "{params}"\n')
@@ -158,8 +158,13 @@ def anonymizer_options(anonymizer, configType):
         elif anonymizer == "hash":
             
             print("** hash **")
-            hash_type = input("Hash type: ")
-            options = '{' + f"\'type\': \'{anonymizer}\', \'hash_type\': \'{hash_type}\'" + '}'
+            hash_type = input("Hash type (md5, sha256, sha512): ").lower()
+
+            if hash_type == "md5" or hash_type == "sha256" or hash_type == "sha512":
+                options = '{' + f"\'type\': \'{anonymizer}\', \'hash_type\': \'{hash_type}\'" + '}'
+            else:
+                print("Hash type error\n")
+                return -1
 
         elif anonymizer == "encrypt":
             
@@ -187,7 +192,7 @@ def anonymizer_options(anonymizer, configType):
         print("ConfigType error")
         return -1
 
-    print("\nAdded ({}): {}\n".format(anonymizer, options))
+    #print("\nAdded ({}): {}\n".format(anonymizer, options))
     return options
 
 def setupConfig(configFile):
@@ -243,8 +248,9 @@ def setupConfig(configFile):
         params = anonymizer_options(anonymizer, configType)
         
         # save config
-        if operator_(entity_type, params, configFile):
-            print("{} -> {} - Config successfully updated.\n".format(entity_type, params))
+        if params != -1:
+            addOperator(entity_type, params, configFile)
+            print("\n{} -> {} - Config successfully updated.\n".format(entity_type, params))
 
 def sendRequestAnonymize(stub, filename, config):
 

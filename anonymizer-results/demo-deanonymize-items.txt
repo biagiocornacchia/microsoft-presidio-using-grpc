@@ -1,3 +1,0 @@
-{ "start": 462, "end": 466, "operator": "decrypt", "text": "Kate", "entity_type": "NUMBER" }
-{ "start": 280, "end": 291, "operator": "decrypt", "text": "192.168.0.1", "entity_type": "NUMBER" }
-{ "start": 75, "end": 88, "operator": "decrypt", "text": "David Johnson", "entity_type": "NUMBER" }
