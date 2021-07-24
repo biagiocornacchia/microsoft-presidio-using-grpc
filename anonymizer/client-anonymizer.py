@@ -7,6 +7,7 @@ from presidio_anonymizer.entities.engine import RecognizerResult, OperatorConfig
 
 import json
 import os
+from os import system, name
 import time
 
 SUPPORTED_ENTITIES = ['IBAN_CODE', 'US_PASSPORT', 'DATE_TIME', 'MEDICAL_LICENSE', 'CRYPTO', 'LOCATION', 'UK_NHS', 'US_SSN', 'CREDIT_CARD', 'US_BANK_NUMBER', 'US_ITIN', 'EMAIL_ADDRESS', 'PERSON', 'IP_ADDRESS', 'DOMAIN_NAME', 'PHONE_NUMBER', 'SG_NRIC_FIN', 'NRP', 'US_DRIVER_LICENSE']
@@ -23,6 +24,13 @@ CHUNK_SIZE = 1024*1024 # 1MB
 TOTAL_CHUNKS = 0
 
 ### UTILITY FUNCTIONS
+
+def clear():
+
+    if name == "nt":
+        _ = system("cls")
+    else:
+        _ = system("clear")
 
 def check_duplicate(entity_type, configFile):
     
@@ -45,11 +53,23 @@ def check_duplicate(entity_type, configFile):
 
     return -1
 
+def exitM():
+
+    while True:
+        if input("\nPress q key to exit: ").lower() == "q":
+            clear()
+            break
+
 def read_configuration(configFile):
 
     with open(configFile, "r") as ConfigFile:
+        print("\n")
         for line in ConfigFile:
             print(line.strip().replace("\"", ""))
+        print("\n")
+        
+    exitM()
+
 
 def make_message(msg, uuid, requestType):
     
@@ -117,15 +137,17 @@ def sendRequestForItems(stub, filename, uuidClient, requestType):
                 AnonymizerItemsResults.write('{' + f' "operator": "{response.operator}", "entity_type": "{response.entity_type}", "start": {response.start}, "end": {response.end}, "text": "{response.text}" ' + '}\n')
 
         print("{}-anonymize-items.txt created".format(filename))
-        time.sleep(1)
+        exitM()
+        clear()
 
     else:
         with open(PATH_ANONYMIZER_RESULTS + filename + "-deanonymize-items.txt", "w") as DeanonymizerItemsResults:
             for response in responses:
                 DeanonymizerItemsResults.write('{' + f' "start": {response.start}, "end": {response.end}, "operator": "{response.operator}", "text": "{response.text}", "entity_type": "NUMBER" ' + '}\n')
 
-        print("{}-deanonymize-items.txt created\n".format(filename))
-        time.sleep(1)
+        print("{}-deanonymize-items.txt created".format(filename))
+        exitM()
+        clear()
 
 ### START ANONYMIZER SECTION
 
@@ -225,6 +247,7 @@ def setupConfig(configFile):
         # QUITTING
         if entity_type == "Q" or entity_type == "QUIT":
             print("Quitting config..")
+            clear()
             break
 
         # NOT EXISTS
@@ -422,7 +445,7 @@ def presidio_deanonymizer_start(ip_address, port):
     try:
         with grpc.insecure_channel(ip_address + ':' + port) as channel:
             
-            print("Connecting to {}:{}".format(ip_address, port))
+            print("CONNECTING TO {}:{}".format(ip_address, port))
             stub = pb2_grpc.AnonymizerEntityStub(channel)
 
             while True:
@@ -470,7 +493,7 @@ def presidio_deanonymizer_start(ip_address, port):
                     break
                 else:
                     print("\nCommand not valid!")
-                    
+
     except grpc.RpcError as rpc_error:
         if rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
             print("Cannot connect to the server\n")
@@ -481,6 +504,7 @@ def presidio_deanonymizer_start(ip_address, port):
 if __name__ == "__main__":
 
     while True:
+        clear()
         print(":::::::::::::::::: PRESIDIO ANONYMIZER (data loader) ::::::::::::::::::\n")
         print("1) Anonymize")
         print("2) Deanonymize")
@@ -492,12 +516,14 @@ if __name__ == "__main__":
 
             ip_address = input("\nIP ADDRESS: ")
             port = input("SERVER PORT: ")
+            clear()
             presidio_anonymizer_start(ip_address, port)
 
         elif command == 2:
 
             ip_address = input("\nIP ADDRESS: ")
             port = input("SERVER PORT: ")
+            clear()
             presidio_deanonymizer_start(ip_address, port)
 
         elif command == 3:
@@ -506,4 +532,5 @@ if __name__ == "__main__":
             break
         else:
             print("\nCommand not valid!\n") 
-            time.sleep(1)   
+            clear()
+            #time.sleep(1)   
