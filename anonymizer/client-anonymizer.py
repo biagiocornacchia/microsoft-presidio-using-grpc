@@ -10,6 +10,9 @@ import os
 from os import system, name
 import time
 
+IP_ADDRESS = "NULL"
+PORT = "-1"
+
 SUPPORTED_ENTITIES = ['IBAN_CODE', 'US_PASSPORT', 'DATE_TIME', 'MEDICAL_LICENSE', 'CRYPTO', 'LOCATION', 'UK_NHS', 'US_SSN', 'CREDIT_CARD', 'US_BANK_NUMBER', 'US_ITIN', 'EMAIL_ADDRESS', 'PERSON', 'IP_ADDRESS', 'DOMAIN_NAME', 'PHONE_NUMBER', 'SG_NRIC_FIN', 'NRP', 'US_DRIVER_LICENSE']
 ANONYMIZERS = ['hash', 'mask', 'redact', 'replace', 'custom', 'encrypt', 'decrypt']
 
@@ -32,6 +35,13 @@ def clear():
     else:
         _ = system("clear")
 
+def exit():
+
+    while True:
+        if input("\nPress q to exit: ").lower() == "q":
+            clear()
+            break
+
 def check_duplicate(entity_type, configFile):
     
     try:
@@ -53,13 +63,6 @@ def check_duplicate(entity_type, configFile):
 
     return -1
 
-def exitM():
-
-    while True:
-        if input("\nPress q key to exit: ").lower() == "q":
-            clear()
-            break
-
 def read_configuration(configFile):
 
     with open(configFile, "r") as ConfigFile:
@@ -67,8 +70,8 @@ def read_configuration(configFile):
         for line in ConfigFile:
             print(line.strip().replace("\"", ""))
         print("\n")
-        
-    exitM()
+
+    exit()
 
 
 def make_message(msg, uuid, requestType):
@@ -137,7 +140,7 @@ def sendRequestForItems(stub, filename, uuidClient, requestType):
                 AnonymizerItemsResults.write('{' + f' "operator": "{response.operator}", "entity_type": "{response.entity_type}", "start": {response.start}, "end": {response.end}, "text": "{response.text}" ' + '}\n')
 
         print("{}-anonymize-items.txt created".format(filename))
-        exitM()
+        exit()
         clear()
 
     else:
@@ -146,7 +149,7 @@ def sendRequestForItems(stub, filename, uuidClient, requestType):
                 DeanonymizerItemsResults.write('{' + f' "start": {response.start}, "end": {response.end}, "operator": "{response.operator}", "text": "{response.text}", "entity_type": "NUMBER" ' + '}\n')
 
         print("{}-deanonymize-items.txt created".format(filename))
-        exitM()
+        exit()
         clear()
 
 ### START ANONYMIZER SECTION
@@ -324,12 +327,12 @@ def sendRequestAnonymize(stub, filename, config):
         print("FROM SERVER: original text file not received correctly")
 
 
-def presidio_anonymizer_start(ip_address, port):
+def presidio_anonymizer_start():
 
     try:
-        with grpc.insecure_channel(ip_address + ':' + port) as channel:
+        with grpc.insecure_channel(IP_ADDRESS + ':' + PORT) as channel:
             
-            print("CONNECTING TO {}:{}".format(ip_address, port))
+            print("SERVER INFO: {}:{}".format(IP_ADDRESS, PORT))
             stub = pb2_grpc.AnonymizerEntityStub(channel)
 
             while True:
@@ -440,12 +443,12 @@ def sendRequestDeanonymize(stub, filename):
         print("FROM SERVER: anonymized text file not received correctly")
 
 
-def presidio_deanonymizer_start(ip_address, port):
+def presidio_deanonymizer_start():
     
     try:
-        with grpc.insecure_channel(ip_address + ':' + port) as channel:
+        with grpc.insecure_channel(IP_ADDRESS + ':' + PORT) as channel:
             
-            print("CONNECTING TO {}:{}".format(ip_address, port))
+            print("SERVER INFO:  {}:{}".format(IP_ADDRESS, PORT))
             stub = pb2_grpc.AnonymizerEntityStub(channel)
 
             while True:
@@ -508,25 +511,36 @@ if __name__ == "__main__":
         print(":::::::::::::::::: PRESIDIO ANONYMIZER (data loader) ::::::::::::::::::\n")
         print("1) Anonymize")
         print("2) Deanonymize")
-        print("3) Quit")
+        print("3) Server configuration")
+        print("4) Quit")
 
         command = int(input("\nCommand: "))
 
         if command == 1:
-
-            ip_address = input("\nIP ADDRESS: ")
-            port = input("SERVER PORT: ")
             clear()
-            presidio_anonymizer_start(ip_address, port)
+            
+            if IP_ADDRESS == "NULL" or PORT == "-1":
+                print("No server info found!")
+                exit()
+            else:
+                presidio_anonymizer_start()
 
         elif command == 2:
-
-            ip_address = input("\nIP ADDRESS: ")
-            port = input("SERVER PORT: ")
             clear()
-            presidio_deanonymizer_start(ip_address, port)
-
+            
+            if IP_ADDRESS == "NULL" or PORT == "-1":
+                print("No server info found!")
+                exit()
+            else:
+                presidio_deanonymizer_start()     
+            
         elif command == 3:
+
+            IP_ADDRESS = input("\nIP ADDRESS: ")
+            PORT = input("SERVER PORT: ")
+            exit()
+
+        elif command == 4:
             print("\nQuitting..")
             time.sleep(1)
             break

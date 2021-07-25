@@ -2,7 +2,13 @@ syntax="proto3";
 
 service AnalyzerEntity {
     rpc sendFileToAnalyze(stream DataFile) returns (FileAck) {} 
+    rpc sendEngineOptions(AnalyzerEngineOptions) returns (Ack) {}
+    rpc sendOptions(AnalyzeOptions) returns (Ack) {}
     rpc GetAnalyzerResults(Request) returns (stream AnalyzerResults) {}
+}
+
+message DataFile {
+    string chunk = 1;
 }
 
 message Request {
@@ -14,8 +20,28 @@ message FileAck {
     int32 chunks = 2;
 }
 
-message DataFile {
-    string chunk = 1;
+message AnalyzerEngineOptions {
+    string uuidClient = 1;
+    optional string registry = 2;
+	optional string nlp_engine = 3;
+	optional string app_tracer = 4;
+	optional string log_decision_process = 5;
+	optional string default_score_threshold = 6;
+	optional string supported_languages = 7;
+}
+
+message AnalyzeOptions {
+    string uuidClient = 1;
+    optional string language = 2;
+    optional string correlation_id = 3;
+    optional string score_threshold = 4;
+    optional string entities = 5; // ex. PERSON, LOCATION, NRP etcc
+    optional string return_decision_process = 6;
+    optional string ad_hoc_recognizers = 7;
+}
+
+message Ack {
+    string uuidClient = 1;
 }
 
 message AnalyzerResults {
@@ -23,4 +49,5 @@ message AnalyzerResults {
     int32 start = 2;
     int32 end = 3;
     float score = 4;
+    optional string analysis_explanation = 5;
 }

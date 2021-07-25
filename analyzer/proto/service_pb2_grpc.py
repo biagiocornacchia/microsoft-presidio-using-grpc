@@ -19,6 +19,16 @@ class AnalyzerEntityStub(object):
                 request_serializer=proto_dot_service__pb2.DataFile.SerializeToString,
                 response_deserializer=proto_dot_service__pb2.FileAck.FromString,
                 )
+        self.sendEngineOptions = channel.unary_unary(
+                '/AnalyzerEntity/sendEngineOptions',
+                request_serializer=proto_dot_service__pb2.AnalyzerEngineOptions.SerializeToString,
+                response_deserializer=proto_dot_service__pb2.Ack.FromString,
+                )
+        self.sendOptions = channel.unary_unary(
+                '/AnalyzerEntity/sendOptions',
+                request_serializer=proto_dot_service__pb2.AnalyzeOptions.SerializeToString,
+                response_deserializer=proto_dot_service__pb2.Ack.FromString,
+                )
         self.GetAnalyzerResults = channel.unary_stream(
                 '/AnalyzerEntity/GetAnalyzerResults',
                 request_serializer=proto_dot_service__pb2.Request.SerializeToString,
@@ -30,6 +40,18 @@ class AnalyzerEntityServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def sendFileToAnalyze(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def sendEngineOptions(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def sendOptions(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -48,6 +70,16 @@ def add_AnalyzerEntityServicer_to_server(servicer, server):
                     servicer.sendFileToAnalyze,
                     request_deserializer=proto_dot_service__pb2.DataFile.FromString,
                     response_serializer=proto_dot_service__pb2.FileAck.SerializeToString,
+            ),
+            'sendEngineOptions': grpc.unary_unary_rpc_method_handler(
+                    servicer.sendEngineOptions,
+                    request_deserializer=proto_dot_service__pb2.AnalyzerEngineOptions.FromString,
+                    response_serializer=proto_dot_service__pb2.Ack.SerializeToString,
+            ),
+            'sendOptions': grpc.unary_unary_rpc_method_handler(
+                    servicer.sendOptions,
+                    request_deserializer=proto_dot_service__pb2.AnalyzeOptions.FromString,
+                    response_serializer=proto_dot_service__pb2.Ack.SerializeToString,
             ),
             'GetAnalyzerResults': grpc.unary_stream_rpc_method_handler(
                     servicer.GetAnalyzerResults,
@@ -78,6 +110,40 @@ class AnalyzerEntity(object):
         return grpc.experimental.stream_unary(request_iterator, target, '/AnalyzerEntity/sendFileToAnalyze',
             proto_dot_service__pb2.DataFile.SerializeToString,
             proto_dot_service__pb2.FileAck.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def sendEngineOptions(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/AnalyzerEntity/sendEngineOptions',
+            proto_dot_service__pb2.AnalyzerEngineOptions.SerializeToString,
+            proto_dot_service__pb2.Ack.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def sendOptions(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/AnalyzerEntity/sendOptions',
+            proto_dot_service__pb2.AnalyzeOptions.SerializeToString,
+            proto_dot_service__pb2.Ack.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

@@ -19,10 +19,42 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x13proto/service.proto\"\x1d\n\x07Request\x12\x12\n\nuuidClient\x18\x01 \x01(\t\"-\n\x07\x46ileAck\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x0e\n\x06\x63hunks\x18\x02 \x01(\x05\"\x19\n\x08\x44\x61taFile\x12\r\n\x05\x63hunk\x18\x01 \x01(\t\"Q\n\x0f\x41nalyzerResults\x12\x13\n\x0b\x65ntity_type\x18\x01 \x01(\t\x12\r\n\x05start\x18\x02 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x05\x12\r\n\x05score\x18\x04 \x01(\x02\x32t\n\x0e\x41nalyzerEntity\x12,\n\x11sendFileToAnalyze\x12\t.DataFile\x1a\x08.FileAck\"\x00(\x01\x12\x34\n\x12GetAnalyzerResults\x12\x08.Request\x1a\x10.AnalyzerResults\"\x00\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\x13proto/service.proto\"\x19\n\x08\x44\x61taFile\x12\r\n\x05\x63hunk\x18\x01 \x01(\t\"\x1d\n\x07Request\x12\x12\n\nuuidClient\x18\x01 \x01(\t\"-\n\x07\x46ileAck\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x0e\n\x06\x63hunks\x18\x02 \x01(\x05\"\xd7\x02\n\x15\x41nalyzerEngineOptions\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x15\n\x08registry\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x17\n\nnlp_engine\x18\x03 \x01(\tH\x01\x88\x01\x01\x12\x17\n\napp_tracer\x18\x04 \x01(\tH\x02\x88\x01\x01\x12!\n\x14log_decision_process\x18\x05 \x01(\tH\x03\x88\x01\x01\x12$\n\x17\x64\x65\x66\x61ult_score_threshold\x18\x06 \x01(\tH\x04\x88\x01\x01\x12 \n\x13supported_languages\x18\x07 \x01(\tH\x05\x88\x01\x01\x42\x0b\n\t_registryB\r\n\x0b_nlp_engineB\r\n\x0b_app_tracerB\x17\n\x15_log_decision_processB\x1a\n\x18_default_score_thresholdB\x16\n\x14_supported_languages\"\xc8\x02\n\x0e\x41nalyzeOptions\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x15\n\x08language\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x1b\n\x0e\x63orrelation_id\x18\x03 \x01(\tH\x01\x88\x01\x01\x12\x1c\n\x0fscore_threshold\x18\x04 \x01(\tH\x02\x88\x01\x01\x12\x15\n\x08\x65ntities\x18\x05 \x01(\tH\x03\x88\x01\x01\x12$\n\x17return_decision_process\x18\x06 \x01(\tH\x04\x88\x01\x01\x12\x1f\n\x12\x61\x64_hoc_recognizers\x18\x07 \x01(\tH\x05\x88\x01\x01\x42\x0b\n\t_languageB\x11\n\x0f_correlation_idB\x12\n\x10_score_thresholdB\x0b\n\t_entitiesB\x1a\n\x18_return_decision_processB\x15\n\x13_ad_hoc_recognizers\"\x19\n\x03\x41\x63k\x12\x12\n\nuuidClient\x18\x01 \x01(\t\"\x8d\x01\n\x0f\x41nalyzerResults\x12\x13\n\x0b\x65ntity_type\x18\x01 \x01(\t\x12\r\n\x05start\x18\x02 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x05\x12\r\n\x05score\x18\x04 \x01(\x02\x12!\n\x14\x61nalysis_explanation\x18\x05 \x01(\tH\x00\x88\x01\x01\x42\x17\n\x15_analysis_explanation2\xd1\x01\n\x0e\x41nalyzerEntity\x12,\n\x11sendFileToAnalyze\x12\t.DataFile\x1a\x08.FileAck\"\x00(\x01\x12\x33\n\x11sendEngineOptions\x12\x16.AnalyzerEngineOptions\x1a\x04.Ack\"\x00\x12&\n\x0bsendOptions\x12\x0f.AnalyzeOptions\x1a\x04.Ack\"\x00\x12\x34\n\x12GetAnalyzerResults\x12\x08.Request\x1a\x10.AnalyzerResults\"\x00\x30\x01\x62\x06proto3'
 )
 
 
+
+
+_DATAFILE = _descriptor.Descriptor(
+  name='DataFile',
+  full_name='DataFile',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chunk', full_name='DataFile.chunk', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=23,
+  serialized_end=48,
+)
 
 
 _REQUEST = _descriptor.Descriptor(
@@ -52,8 +84,8 @@ _REQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=23,
-  serialized_end=52,
+  serialized_start=50,
+  serialized_end=79,
 )
 
 
@@ -91,21 +123,229 @@ _FILEACK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=54,
-  serialized_end=99,
+  serialized_start=81,
+  serialized_end=126,
 )
 
 
-_DATAFILE = _descriptor.Descriptor(
-  name='DataFile',
-  full_name='DataFile',
+_ANALYZERENGINEOPTIONS = _descriptor.Descriptor(
+  name='AnalyzerEngineOptions',
+  full_name='AnalyzerEngineOptions',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='chunk', full_name='DataFile.chunk', index=0,
+      name='uuidClient', full_name='AnalyzerEngineOptions.uuidClient', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='registry', full_name='AnalyzerEngineOptions.registry', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='nlp_engine', full_name='AnalyzerEngineOptions.nlp_engine', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='app_tracer', full_name='AnalyzerEngineOptions.app_tracer', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='log_decision_process', full_name='AnalyzerEngineOptions.log_decision_process', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='default_score_threshold', full_name='AnalyzerEngineOptions.default_score_threshold', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='supported_languages', full_name='AnalyzerEngineOptions.supported_languages', index=6,
+      number=7, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='_registry', full_name='AnalyzerEngineOptions._registry',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_nlp_engine', full_name='AnalyzerEngineOptions._nlp_engine',
+      index=1, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_app_tracer', full_name='AnalyzerEngineOptions._app_tracer',
+      index=2, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_log_decision_process', full_name='AnalyzerEngineOptions._log_decision_process',
+      index=3, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_default_score_threshold', full_name='AnalyzerEngineOptions._default_score_threshold',
+      index=4, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_supported_languages', full_name='AnalyzerEngineOptions._supported_languages',
+      index=5, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=129,
+  serialized_end=472,
+)
+
+
+_ANALYZEOPTIONS = _descriptor.Descriptor(
+  name='AnalyzeOptions',
+  full_name='AnalyzeOptions',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='uuidClient', full_name='AnalyzeOptions.uuidClient', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='language', full_name='AnalyzeOptions.language', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='correlation_id', full_name='AnalyzeOptions.correlation_id', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='score_threshold', full_name='AnalyzeOptions.score_threshold', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='entities', full_name='AnalyzeOptions.entities', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='return_decision_process', full_name='AnalyzeOptions.return_decision_process', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='ad_hoc_recognizers', full_name='AnalyzeOptions.ad_hoc_recognizers', index=6,
+      number=7, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='_language', full_name='AnalyzeOptions._language',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_correlation_id', full_name='AnalyzeOptions._correlation_id',
+      index=1, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_score_threshold', full_name='AnalyzeOptions._score_threshold',
+      index=2, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_entities', full_name='AnalyzeOptions._entities',
+      index=3, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_return_decision_process', full_name='AnalyzeOptions._return_decision_process',
+      index=4, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_ad_hoc_recognizers', full_name='AnalyzeOptions._ad_hoc_recognizers',
+      index=5, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=475,
+  serialized_end=803,
+)
+
+
+_ACK = _descriptor.Descriptor(
+  name='Ack',
+  full_name='Ack',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='uuidClient', full_name='Ack.uuidClient', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -123,8 +363,8 @@ _DATAFILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=101,
-  serialized_end=126,
+  serialized_start=805,
+  serialized_end=830,
 )
 
 
@@ -164,6 +404,13 @@ _ANALYZERRESULTS = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='analysis_explanation', full_name='AnalyzerResults.analysis_explanation', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -175,16 +422,70 @@ _ANALYZERRESULTS = _descriptor.Descriptor(
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
+    _descriptor.OneofDescriptor(
+      name='_analysis_explanation', full_name='AnalyzerResults._analysis_explanation',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
   ],
-  serialized_start=128,
-  serialized_end=209,
+  serialized_start=833,
+  serialized_end=974,
 )
 
+_ANALYZERENGINEOPTIONS.oneofs_by_name['_registry'].fields.append(
+  _ANALYZERENGINEOPTIONS.fields_by_name['registry'])
+_ANALYZERENGINEOPTIONS.fields_by_name['registry'].containing_oneof = _ANALYZERENGINEOPTIONS.oneofs_by_name['_registry']
+_ANALYZERENGINEOPTIONS.oneofs_by_name['_nlp_engine'].fields.append(
+  _ANALYZERENGINEOPTIONS.fields_by_name['nlp_engine'])
+_ANALYZERENGINEOPTIONS.fields_by_name['nlp_engine'].containing_oneof = _ANALYZERENGINEOPTIONS.oneofs_by_name['_nlp_engine']
+_ANALYZERENGINEOPTIONS.oneofs_by_name['_app_tracer'].fields.append(
+  _ANALYZERENGINEOPTIONS.fields_by_name['app_tracer'])
+_ANALYZERENGINEOPTIONS.fields_by_name['app_tracer'].containing_oneof = _ANALYZERENGINEOPTIONS.oneofs_by_name['_app_tracer']
+_ANALYZERENGINEOPTIONS.oneofs_by_name['_log_decision_process'].fields.append(
+  _ANALYZERENGINEOPTIONS.fields_by_name['log_decision_process'])
+_ANALYZERENGINEOPTIONS.fields_by_name['log_decision_process'].containing_oneof = _ANALYZERENGINEOPTIONS.oneofs_by_name['_log_decision_process']
+_ANALYZERENGINEOPTIONS.oneofs_by_name['_default_score_threshold'].fields.append(
+  _ANALYZERENGINEOPTIONS.fields_by_name['default_score_threshold'])
+_ANALYZERENGINEOPTIONS.fields_by_name['default_score_threshold'].containing_oneof = _ANALYZERENGINEOPTIONS.oneofs_by_name['_default_score_threshold']
+_ANALYZERENGINEOPTIONS.oneofs_by_name['_supported_languages'].fields.append(
+  _ANALYZERENGINEOPTIONS.fields_by_name['supported_languages'])
+_ANALYZERENGINEOPTIONS.fields_by_name['supported_languages'].containing_oneof = _ANALYZERENGINEOPTIONS.oneofs_by_name['_supported_languages']
+_ANALYZEOPTIONS.oneofs_by_name['_language'].fields.append(
+  _ANALYZEOPTIONS.fields_by_name['language'])
+_ANALYZEOPTIONS.fields_by_name['language'].containing_oneof = _ANALYZEOPTIONS.oneofs_by_name['_language']
+_ANALYZEOPTIONS.oneofs_by_name['_correlation_id'].fields.append(
+  _ANALYZEOPTIONS.fields_by_name['correlation_id'])
+_ANALYZEOPTIONS.fields_by_name['correlation_id'].containing_oneof = _ANALYZEOPTIONS.oneofs_by_name['_correlation_id']
+_ANALYZEOPTIONS.oneofs_by_name['_score_threshold'].fields.append(
+  _ANALYZEOPTIONS.fields_by_name['score_threshold'])
+_ANALYZEOPTIONS.fields_by_name['score_threshold'].containing_oneof = _ANALYZEOPTIONS.oneofs_by_name['_score_threshold']
+_ANALYZEOPTIONS.oneofs_by_name['_entities'].fields.append(
+  _ANALYZEOPTIONS.fields_by_name['entities'])
+_ANALYZEOPTIONS.fields_by_name['entities'].containing_oneof = _ANALYZEOPTIONS.oneofs_by_name['_entities']
+_ANALYZEOPTIONS.oneofs_by_name['_return_decision_process'].fields.append(
+  _ANALYZEOPTIONS.fields_by_name['return_decision_process'])
+_ANALYZEOPTIONS.fields_by_name['return_decision_process'].containing_oneof = _ANALYZEOPTIONS.oneofs_by_name['_return_decision_process']
+_ANALYZEOPTIONS.oneofs_by_name['_ad_hoc_recognizers'].fields.append(
+  _ANALYZEOPTIONS.fields_by_name['ad_hoc_recognizers'])
+_ANALYZEOPTIONS.fields_by_name['ad_hoc_recognizers'].containing_oneof = _ANALYZEOPTIONS.oneofs_by_name['_ad_hoc_recognizers']
+_ANALYZERRESULTS.oneofs_by_name['_analysis_explanation'].fields.append(
+  _ANALYZERRESULTS.fields_by_name['analysis_explanation'])
+_ANALYZERRESULTS.fields_by_name['analysis_explanation'].containing_oneof = _ANALYZERRESULTS.oneofs_by_name['_analysis_explanation']
+DESCRIPTOR.message_types_by_name['DataFile'] = _DATAFILE
 DESCRIPTOR.message_types_by_name['Request'] = _REQUEST
 DESCRIPTOR.message_types_by_name['FileAck'] = _FILEACK
-DESCRIPTOR.message_types_by_name['DataFile'] = _DATAFILE
+DESCRIPTOR.message_types_by_name['AnalyzerEngineOptions'] = _ANALYZERENGINEOPTIONS
+DESCRIPTOR.message_types_by_name['AnalyzeOptions'] = _ANALYZEOPTIONS
+DESCRIPTOR.message_types_by_name['Ack'] = _ACK
 DESCRIPTOR.message_types_by_name['AnalyzerResults'] = _ANALYZERRESULTS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+DataFile = _reflection.GeneratedProtocolMessageType('DataFile', (_message.Message,), {
+  'DESCRIPTOR' : _DATAFILE,
+  '__module__' : 'proto.service_pb2'
+  # @@protoc_insertion_point(class_scope:DataFile)
+  })
+_sym_db.RegisterMessage(DataFile)
 
 Request = _reflection.GeneratedProtocolMessageType('Request', (_message.Message,), {
   'DESCRIPTOR' : _REQUEST,
@@ -200,12 +501,26 @@ FileAck = _reflection.GeneratedProtocolMessageType('FileAck', (_message.Message,
   })
 _sym_db.RegisterMessage(FileAck)
 
-DataFile = _reflection.GeneratedProtocolMessageType('DataFile', (_message.Message,), {
-  'DESCRIPTOR' : _DATAFILE,
+AnalyzerEngineOptions = _reflection.GeneratedProtocolMessageType('AnalyzerEngineOptions', (_message.Message,), {
+  'DESCRIPTOR' : _ANALYZERENGINEOPTIONS,
   '__module__' : 'proto.service_pb2'
-  # @@protoc_insertion_point(class_scope:DataFile)
+  # @@protoc_insertion_point(class_scope:AnalyzerEngineOptions)
   })
-_sym_db.RegisterMessage(DataFile)
+_sym_db.RegisterMessage(AnalyzerEngineOptions)
+
+AnalyzeOptions = _reflection.GeneratedProtocolMessageType('AnalyzeOptions', (_message.Message,), {
+  'DESCRIPTOR' : _ANALYZEOPTIONS,
+  '__module__' : 'proto.service_pb2'
+  # @@protoc_insertion_point(class_scope:AnalyzeOptions)
+  })
+_sym_db.RegisterMessage(AnalyzeOptions)
+
+Ack = _reflection.GeneratedProtocolMessageType('Ack', (_message.Message,), {
+  'DESCRIPTOR' : _ACK,
+  '__module__' : 'proto.service_pb2'
+  # @@protoc_insertion_point(class_scope:Ack)
+  })
+_sym_db.RegisterMessage(Ack)
 
 AnalyzerResults = _reflection.GeneratedProtocolMessageType('AnalyzerResults', (_message.Message,), {
   'DESCRIPTOR' : _ANALYZERRESULTS,
@@ -223,8 +538,8 @@ _ANALYZERENTITY = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=211,
-  serialized_end=327,
+  serialized_start=977,
+  serialized_end=1186,
   methods=[
   _descriptor.MethodDescriptor(
     name='sendFileToAnalyze',
@@ -237,9 +552,29 @@ _ANALYZERENTITY = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
+    name='sendEngineOptions',
+    full_name='AnalyzerEntity.sendEngineOptions',
+    index=1,
+    containing_service=None,
+    input_type=_ANALYZERENGINEOPTIONS,
+    output_type=_ACK,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='sendOptions',
+    full_name='AnalyzerEntity.sendOptions',
+    index=2,
+    containing_service=None,
+    input_type=_ANALYZEOPTIONS,
+    output_type=_ACK,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
     name='GetAnalyzerResults',
     full_name='AnalyzerEntity.GetAnalyzerResults',
-    index=1,
+    index=3,
     containing_service=None,
     input_type=_REQUEST,
     output_type=_ANALYZERRESULTS,
