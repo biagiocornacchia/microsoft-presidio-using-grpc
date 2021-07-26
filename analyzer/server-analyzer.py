@@ -116,9 +116,9 @@ def getEngineOptions(uuid, ENGINE_OPTIONS):
                     if json_options['context'] == "":
                         json_options['context'] = None
                     else:
-                        json_options['context'].split(",")
+                        context_list = json_options['context'].split(",")
 
-                    custom_recognizer = PatternRecognizer(supported_entity = json_options['supported_entity'], patterns = patterns, context = json_options['context'])
+                    custom_recognizer = PatternRecognizer(supported_entity = json_options['supported_entity'], patterns = patterns, context = context_list)
                     
                     print("[+] Regex recognizer found")
                     registry = RecognizerRegistry()
