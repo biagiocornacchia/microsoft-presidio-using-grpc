@@ -3,8 +3,9 @@ from proto import service_pb2_grpc as pb2_grpc
 from proto import service_pb2 as pb2
 from google.protobuf.json_format import MessageToJson, Parse
 
-from presidio_analyzer import AnalyzerEngine
+from presidio_analyzer import AnalyzerEngine, Pattern, PatternRecognizer, RecognizerRegistry
 
+import pprint
 import json
 import os
 import uuid
@@ -45,7 +46,7 @@ class AnalyzerEntity(pb2_grpc.AnalyzerEntityServicer):
 
         with open(PATH_TEMP + request.uuidClient + "-engineConfig.txt", "w") as engineConfig:
             # create json file
-            engineConfig.write(MessageToJson(request))
+            engineConfig.write(MessageToJson(request, preserving_proto_field_name=True))
 
         print("[+] File received")        
 
@@ -58,7 +59,7 @@ class AnalyzerEntity(pb2_grpc.AnalyzerEntityServicer):
 
         with open(PATH_TEMP + request.uuidClient + "-analyzeConfig.txt", "w") as analyzeConfig:
             # create json file
-            analyzeConfig.write(MessageToJson(request))
+            analyzeConfig.write(MessageToJson(request, preserving_proto_field_name=True))
 
         print("[+] File received") 
 
@@ -66,7 +67,7 @@ class AnalyzerEntity(pb2_grpc.AnalyzerEntityServicer):
 
     def GetAnalyzerResults(self, request, context):
         
-        print("[+] Preparing for Presidio Analyzer")
+        print("\n[+] Preparing for Presidio Analyzer")
         print("[+] Searching for {}".format(request.uuidClient))
 
         try:
@@ -79,7 +80,7 @@ class AnalyzerEntity(pb2_grpc.AnalyzerEntityServicer):
             print("[+] File not exists!")
 
         for res in results:
-            yield pb2.AnalyzerResults(entity_type = res.entity_type, start = res.start, end = res.end, score = res.score, analysis_explanation = "TEST")
+            yield pb2.AnalyzerResults(entity_type = res.entity_type, start = res.start, end = res.end, score = res.score, analysis_explanation = str(res.analysis_explanation))
 
 def getEngineOptions(uuid, ENGINE_OPTIONS):
     
@@ -88,10 +89,64 @@ def getEngineOptions(uuid, ENGINE_OPTIONS):
             options = json.loads(engineConfig.read())
             #print(options)
 
+            # -----------------------------------------------------------------------------------------------------------------------------------
+
             for elem in options:
                 if elem == "supported_languages":
-                    opt = options[elem].upper()
+
+                    opt = options[elem].lower()
                     ENGINE_OPTIONS.update({ elem : opt.split(",") })
+
+                elif elem == "regex":
+
+                    # Define the regex pattern in a Presidio `Pattern` object:
+                    # numbers_pattern = Pattern(name="numbers_pattern",regex="\d+", score = 0.5)
+                    # Define the recognizer with one or more patterns
+                    # number_recognizer = PatternRecognizer(supported_entity="NUMBER", patterns = [numbers_pattern]. context = [list words])
+
+                    json_options = json.loads(options[elem])
+
+                    patterns = []
+                    for patternElem in json_options['pattern']:
+                        Elem = patternElem.replace("'", "\"")
+                        Elem = Elem.replace("\\", "\\\\")
+                        Elem = json.loads(Elem)
+                        patterns.append(Pattern(name = Elem['name_pattern'], regex = Elem['regex'], score = Elem['score']))
+
+                    if json_options['context'] == "":
+                        json_options['context'] = None
+                    else:
+                        json_options['context'].strip(",")
+
+                    custom_recognizer = PatternRecognizer(supported_entity = json_options['supported_entity'], patterns = patterns, context = json_options['context'])
+                    
+                    print("[+] Regex recognizer found")
+                    registry = RecognizerRegistry()
+                    registry.load_predefined_recognizers()
+                    registry.add_recognizer(custom_recognizer)
+
+                    ENGINE_OPTIONS.update({ 'registry' : registry })
+
+                elif elem == "denyList":
+                    
+                    # DENY LIST
+                    # titles_recognizer = PatternRecognizer(supported_entity="TITLE", deny_list=["Mr.","Mrs.","Miss"])
+                    
+                    json_options = json.loads(options[elem])
+                    deny_list = json_options['deny_list'].strip(",")
+
+                    #print(json_options)
+                    #print(deny_list)
+
+                    custom_recognizer = PatternRecognizer(supported_entity = json_options['supported_entity'], deny_list = deny_list)                    
+                    
+                    print("[+] Deny List recognizer found")
+                    registry = RecognizerRegistry()
+                    registry.load_predefined_recognizers()
+                    registry.add_recognizer(custom_recognizer)
+
+                    ENGINE_OPTIONS.update({ 'registry' : registry })
+
                 else:
                     ENGINE_OPTIONS.update({ elem : options[elem] })
         
@@ -121,40 +176,24 @@ def getAnalyzeOptions(uuid, ANALYZE_OPTIONS):
 
 def getResult(uuid, data):
     
-    ENGINE_OPTIONS = { "registry": None, "nlp_engine": None, "app_tracer": None, "log_decision_process": 0, "default_score_threshold": 0, "supported_languages": None }
-    ANALYZE_OPTIONS = { "language":  "en", "entities": None, "correlation_id": None, "scoreThreshold": 0, "return_decision_process": 0, "ad_hoc_recognizers": None}
+    ENGINE_OPTIONS = { "registry": None, "regex": None, "deny_list": None, "nlp_engine": None, "app_tracer": None, "log_decision_process": 0, "default_score_threshold": 0, "supported_languages": None }
+    ANALYZE_OPTIONS = { "language":  "en", "entities": None, "correlation_id": None, "score_threshold": 0, "return_decision_process": 0, "ad_hoc_recognizers": None}
 
     # check if engineConfig or analyzeConfig exist
     getEngineOptions(uuid, ENGINE_OPTIONS)
     getAnalyzeOptions(uuid, ANALYZE_OPTIONS)
 
+    #print("\n")
+    #print(ENGINE_OPTIONS)
+    #print(ANALYZE_OPTIONS)
+    #print("\n")
+
     # PERFORM
-
-    # DENY LIST
-    # titles_recognizer = PatternRecognizer(supported_entity="TITLE", deny_list=["Mr.","Mrs.","Miss"])
-
-    # REGEXXX
-    # Define the regex pattern in a Presidio `Pattern` object:
-    # numbers_pattern = Pattern(name="numbers_pattern",regex="\d+", score = 0.5)
-    # Define the recognizer with one or more patterns
-    # number_recognizer = PatternRecognizer(supported_entity="NUMBER", patterns = [numbers_pattern])
-
-    # -----------------------------------------------------------------------------------------------------------------------------------
-
-    # registry = RecognizerRegistry()
-    # registry.load_predefined_recognizers()
-
-    # Add the recognizer to the existing list of recognizers
-    # registry.add_recognizer(titles_recognizer)
-
-    # Set up analyzer with our updated recognizer registry
-    # analyzer = AnalyzerEngine(registry=registry)
-
     analyzer = AnalyzerEngine(
                                 registry = ENGINE_OPTIONS['registry'],
                                 nlp_engine = ENGINE_OPTIONS['nlp_engine'], # !fix
                                 app_tracer = ENGINE_OPTIONS['app_tracer'], # !fix
-                                log_decision_process = bool(ENGINE_OPTIONS['log_decision_process']), 
+                                log_decision_process = int(ENGINE_OPTIONS['log_decision_process']), 
                                 default_score_threshold = float(ENGINE_OPTIONS['default_score_threshold']),
                                 supported_languages = ENGINE_OPTIONS['supported_languages'] # list of languages
     )
@@ -163,10 +202,17 @@ def getResult(uuid, data):
                                 language= ANALYZE_OPTIONS['language'], 
                                 entities = ANALYZE_OPTIONS['entities'],
                                 correlation_id = ANALYZE_OPTIONS['correlation_id'], 
-                                score_threshold = float(ANALYZE_OPTIONS['scoreThreshold']), 
-                                return_decision_process = bool(ANALYZE_OPTIONS['return_decision_process']),
+                                score_threshold = float(ANALYZE_OPTIONS['score_threshold']), 
+                                return_decision_process = int(ANALYZE_OPTIONS['return_decision_process']),
                                 ad_hoc_recognizers = ANALYZE_OPTIONS['ad_hoc_recognizers'] # Array of objects (PatternRecognizer)
     )
+
+    if int(ANALYZE_OPTIONS['return_decision_process']):
+        for result in results:
+            decision_process = result.analysis_explanation
+            pp = pprint.PrettyPrinter()
+            print("\nDecision process output:\n")
+            pp.pprint(decision_process.__dict__)
 
     print("[+] Presidio Analyzer: DONE!\n")
     return results

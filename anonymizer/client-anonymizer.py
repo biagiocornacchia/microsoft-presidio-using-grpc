@@ -16,6 +16,8 @@ PORT = "-1"
 SUPPORTED_ENTITIES = ['IBAN_CODE', 'US_PASSPORT', 'DATE_TIME', 'MEDICAL_LICENSE', 'CRYPTO', 'LOCATION', 'UK_NHS', 'US_SSN', 'CREDIT_CARD', 'US_BANK_NUMBER', 'US_ITIN', 'EMAIL_ADDRESS', 'PERSON', 'IP_ADDRESS', 'DOMAIN_NAME', 'PHONE_NUMBER', 'SG_NRIC_FIN', 'NRP', 'US_DRIVER_LICENSE']
 ANONYMIZERS = ['hash', 'mask', 'redact', 'replace', 'custom', 'encrypt', 'decrypt']
 
+# registry = RecognizerRegistry()
+
 CONFIG_FILE = 'operatorConfig.txt'
 CONFIG_FILE_DE = 'operatorDeConfig.txt'
 
@@ -237,7 +239,7 @@ def setupConfig(configFile):
 
     if os.path.exists(configFile):
         print("\nCONFIG: {} found".format(configFile))
-        res = input("Do you want reset the configuration? [Y/N] ").upper()
+        res = input("Do you want to reset the configuration? [Y/N] ").upper()
 
         if res == "Y":
             os.remove(configFile)

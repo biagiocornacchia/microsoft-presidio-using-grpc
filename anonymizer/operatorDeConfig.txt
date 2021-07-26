@@ -1,2 +1,1 @@
 "PERSON" : "{'type': 'decrypt', 'key': '1111111111111112'}"
-"IP_ADDRESS" : "{'type': 'decrypt', 'key': '1111111111111222'}"

@@ -22,12 +22,13 @@ message FileAck {
 
 message AnalyzerEngineOptions {
     string uuidClient = 1;
-    optional string registry = 2;
-	optional string nlp_engine = 3;
-	optional string app_tracer = 4;
-	optional string log_decision_process = 5;
-	optional string default_score_threshold = 6;
-	optional string supported_languages = 7;
+    optional string regex = 2;
+    optional string deny_list = 3;
+	optional string nlp_engine = 4;
+	optional string app_tracer = 5;
+	optional string log_decision_process = 6;
+	optional string default_score_threshold = 7;
+	optional string supported_languages = 8;
 }
 
 message AnalyzeOptions {

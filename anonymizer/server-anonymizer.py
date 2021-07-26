@@ -102,7 +102,7 @@ def startAnonymization(uuidClient):
     recognizerResultsList = []
 
     try: 
-        with open(PATH_TEMP + uuidClient + "-results.txt", "r") as recognizerResults:     
+        with open(PATH_TEMP + uuidClient + "-results.txt", "r") as recognizerResults:   
             for line in recognizerResults:
                 recognizerResultsList.append(RecognizerResult.from_json(json.loads(line)))
 
