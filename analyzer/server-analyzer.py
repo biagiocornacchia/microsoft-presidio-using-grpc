@@ -116,7 +116,7 @@ def getEngineOptions(uuid, ENGINE_OPTIONS):
                     if json_options['context'] == "":
                         json_options['context'] = None
                     else:
-                        json_options['context'].strip(",")
+                        json_options['context'].split(",")
 
                     custom_recognizer = PatternRecognizer(supported_entity = json_options['supported_entity'], patterns = patterns, context = json_options['context'])
                     
@@ -127,16 +127,15 @@ def getEngineOptions(uuid, ENGINE_OPTIONS):
 
                     ENGINE_OPTIONS.update({ 'registry' : registry })
 
-                elif elem == "denyList":
+                elif elem == "deny_list":
                     
                     # DENY LIST
                     # titles_recognizer = PatternRecognizer(supported_entity="TITLE", deny_list=["Mr.","Mrs.","Miss"])
                     
                     json_options = json.loads(options[elem])
-                    deny_list = json_options['deny_list'].strip(",")
+                    deny_list = json_options['deny_list'].split(",")
 
                     #print(json_options)
-                    #print(deny_list)
 
                     custom_recognizer = PatternRecognizer(supported_entity = json_options['supported_entity'], deny_list = deny_list)                    
                     
@@ -226,7 +225,6 @@ def run_server(port):
     server.wait_for_termination()
 
 if __name__ == '__main__':
-    
-    print("\n:::::::::::::::::: PRESIDIO ANALYZER (Server) ::::::::::::::::::\n")
+    print(":::::::::::::::::: PRESIDIO ANALYZER (Server) ::::::::::::::::::\n")
     port = input("PORT: ")
     run_server(port)
