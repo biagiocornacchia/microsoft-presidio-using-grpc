@@ -1,11 +1,11 @@
-syntax="proto3";
+syntax = "proto3";
 
 service AnonymizerEntity {
-    rpc SendRecognizerResults(stream DataFile) returns (FileAck) {} // sends analyzer or anonymizer results
-    rpc sendConfig(Config) returns (FileAck) {} // sends anonymizers or deanonymizers 
-    rpc sendFile(stream DataFile) returns (FileAck) {}
-    rpc GetText(Request) returns (stream DataFile) {}
-    rpc GetItems(Request) returns (stream Item) {}
+    rpc SendRecognizerResults(stream DataFile) returns (FileAck); // sends analyzer or anonymizer results
+    rpc sendConfig(Config) returns (FileAck); // sends anonymizers or deanonymizers 
+    rpc sendFile(stream DataFile) returns (FileAck);
+    rpc GetText(Request) returns (stream DataFile);
+    rpc GetItems(Request) returns (stream Item);
 }
 
 message Request {
@@ -13,11 +13,6 @@ message Request {
     oneof optional {
         string type = 2; // anonymize or deanonymize
     }
-}
-
-message FileAck {
-    string uuidClient = 1;
-    int32 chunks = 2;
 }
 
 message DataFile {
@@ -33,6 +28,11 @@ message Config {
     oneof optional {
         string type = 3; // anonymize or deanonymize
     }
+}
+
+message FileAck {
+    string uuidClient = 1;
+    int32 chunks = 2;
 }
 
 message Item {

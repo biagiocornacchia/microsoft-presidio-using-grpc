@@ -1,0 +1,2 @@
+{ "start": 10, "end": 13, "score": 1.00, "entity_type": "TITLES", "analysis_explanation": "None" }
+{ "start": 14, "end": 18, "score": 0.85, "entity_type": "PERSON", "analysis_explanation": "None" }

@@ -1,6 +1,6 @@
 import grpc 
-from proto import service_pb2_grpc as pb2_grpc
-from proto import service_pb2 as pb2
+from proto import model_pb2_grpc as pb2_grpc
+from proto import model_pb2 as pb2
 from google.protobuf.json_format import MessageToJson, Parse
 
 import json
@@ -12,7 +12,7 @@ IP_ADDRESS = "NULL"
 PORT = "-1"
 
 ENGINE_OPTIONS = [ "deny_list", "regex", "nlp_engine", "app_tracer", "log_decision_process", "default_score_threshold", "supported_languages" ]
-ANALYZE_OPTIONS = ["language", "entities", "correlation_id", "score_threshold", "return_decision_process", "ad_hoc_recognizers" ]
+ANALYZE_OPTIONS = ["language", "entities", "correlation_id", "score_threshold", "return_decision_process"]
 
 ENGINE_CURR_CONFIG = {}
 ANALYZE_CURR_CONFIG = {}
@@ -39,10 +39,10 @@ def exit():
             clear()
             break
 
-def make_message(msg):
+def makeMessage(msg):
     return pb2.DataFile(chunk = msg)
 
-def generate_chunks(filename):
+def generateChunks(filename):
     
     global TOTAL_CHUNKS
     cont = 0
@@ -57,27 +57,25 @@ def generate_chunks(filename):
             cont += CHUNK_SIZE
             TOTAL_CHUNKS = cont
 
-            yield make_message(data)
+            yield makeMessage(data)
 
-#########
-
-def others():
+def options():
     clear()
 
-    print("Available options: ")
+    print("Available options: \n")
     optionAvailable = ""
+    
     for option in ENGINE_OPTIONS:
-        if option != 'deny_list' and option != "regex" and option != "nlp_engine" and option != "app_tracer":
-            optionAvailable += option.upper() + "  "
+        if option != "deny_list" and option != "regex" and option != "nlp_engine" and option != "app_tracer":
+            optionAvailable += option + "\n"
 
-    print(optionAvailable + "\n")
+    print(optionAvailable)
 
     while True:
 
         option = input("Name: ").lower()
 
         if option == "q":
-            print("Exting...")
             break
 
         if option in ENGINE_OPTIONS:
@@ -108,7 +106,7 @@ def others():
                 print("Option {} -> {}\n".format(option, value))
 
         else:
-            print("Name option not valid!")
+            print("Name option not valid!\n")
             continue
 
 def PIIRecognition():
@@ -117,14 +115,17 @@ def PIIRecognition():
     while True:
         print("1) Deny-list based PII recognition")
         print("2) Regex based PII recognition")
-        print("3) Ad-hoc recognition")
-        print("4) Back")
+        print("3) Back")
 
-        command = int(input("\nCommand: "))
+        try:
+            command = int(input("\nCommand: "))
+        except ValueError:
+            print('\nYou did not enter a valid command\n')
+            continue
 
         if command == 1:
             
-            if 'deny_list' not in ENGINE_CURR_CONFIG:
+            if "deny_list" not in ENGINE_CURR_CONFIG:
                 supported_entity = input("\nEntity: ").upper()
                 
                 if supported_entity == "Q":
@@ -132,9 +133,9 @@ def PIIRecognition():
                     break
                 
                 print("\nNOTE: separate values with commas.\n")
-                values = input("Values List: ")
+                values = input("Values list: ")
 
-                ENGINE_CURR_CONFIG['deny_list'] = "{ " + f'"supported_entity": "{supported_entity}", "deny_list": "{values}"' + " }"
+                ENGINE_CURR_CONFIG["deny_list"] = "{ " + f'"supported_entity": "{supported_entity}", "deny_list": "{values}"' + " }"
 
             else:
                 print("\nDeny-list configuration found: {}".format(ENGINE_CURR_CONFIG['deny_list']))
@@ -148,7 +149,7 @@ def PIIRecognition():
 
         elif command == 2:
             
-            if 'regex' not in ENGINE_CURR_CONFIG:
+            if "regex" not in ENGINE_CURR_CONFIG:
                 supported_entity = input("\nEntity: ").upper()
                 
                 if supported_entity == "Q":
@@ -156,20 +157,13 @@ def PIIRecognition():
                     break
 
                 patterns = []
-                while True:
-                    
-                    name_pattern = input("\nName Pattern: ")
+                name_pattern = input("Name Pattern: ")
+                regex = input("Regex: ")
+                score = float(input("Score: "))
+                print("\nNOTE: separate context words with commas.\n")
+                context = input("Context words: ")
 
-                    if name_pattern == "q" or name_pattern == "Q":
-                        print("Exiting...")
-                        break
-
-                    regex = input("Regex: ")
-                    score = input("Score: ")
-                    context = input("Contex words: ")
-
-                    patterns.append("{ " + f"\'name_pattern\' : \'{name_pattern}\', \'regex\' : \'{regex}\', \'score\' : {score}" + " }")
-
+                patterns.append("{ " + f"\'name_pattern\' : \'{name_pattern}\', \'regex\' : \'{regex}\', \'score\' : {score}" + " }")
                 ENGINE_CURR_CONFIG['regex'] = "{ " + f'"supported_entity": "{supported_entity}", "pattern": {patterns}, "context": "{context}" ' + " }"
 
             else:
@@ -183,28 +177,6 @@ def PIIRecognition():
             exit()
 
         elif command == 3:
-
-            # ANALYZE_OPTIONS["ad_hoc_recognizers"]
-
-            #"ad_hoc_recognizers":[
-            #    {
-            #    "name": "Zip code Recognizer",
-            #    "supported_language": "en",
-            #    "patterns": [
-            #        {
-            #        "name": "zip code (weak)", 
-            #        "regex": "(\\b\\d{5}(?:\\-\\d{4})?\\b)", 
-            #        "score": 0.01
-            #        }
-            #    ],
-            #    "context": ["zip", "code"],
-            #    "supported_entity":"ZIP"
-            #    }
-            #]
-
-            pass
-
-        elif command == 4:
             clear()
             break
         else:
@@ -235,7 +207,7 @@ def setupEngine():
             clear()
 
         elif command == 2:
-            others()
+            options()
             clear()
 
         elif command == 3:
@@ -254,16 +226,14 @@ def setupAnalyze():
             if elem != 'uuidClient':
                 print(elem + " : " +  ANALYZE_CURR_CONFIG[elem])
 
-    print("\nAvailable options: ")
-    optionAvailable = ""
-    for option in ANALYZE_OPTIONS:
-        optionAvailable += option.upper() + "  "
+    print("\nAvailable options: \n")
 
-    print(optionAvailable + "\n")
+    for option in ANALYZE_OPTIONS:
+        print(option)
 
     while True:
 
-        option = input("Name: ").lower()
+        option = input("\nOption name: ").lower()
 
         if option == "q":
             print("Exting...")
@@ -286,7 +256,7 @@ def setupAnalyze():
                     
                     print("Updating...")
                     ANALYZE_CURR_CONFIG.update({ option : value })
-                    print("Option {} -> {}\n".format(option, value))
+                    print("Option: {} -> {}".format(option, value))
 
                 elif response == "N":
                     print("Ignoring...")
@@ -297,7 +267,7 @@ def setupAnalyze():
             else:
                 # adding a new option
                 ANALYZE_CURR_CONFIG[option] = value
-                print("Option {} -> {}\n".format(option, value))
+                print("Option: {} -> {}".format(option, value))
 
         else:
             print("Name option not valid!")
@@ -306,7 +276,7 @@ def setupAnalyze():
 def sendRequestAnalyze(stub, filename, EngineConfig, AnalyzeConfig):
 
     # sending original text to analyze
-    chunk_iterator = generate_chunks(filename)
+    chunk_iterator = generateChunks(filename)
     print("\nFROM CLIENT: sending original text...")
     response = stub.sendFileToAnalyze(chunk_iterator)
 
@@ -335,7 +305,6 @@ def sendRequestAnalyze(stub, filename, EngineConfig, AnalyzeConfig):
         
         with open(PATH_RESULTS + filename + "-results.txt", "w") as RecognizerResults:
             for response in responses:
-                # print(response)
                 string = "{ " + f'"start": {response.start}, "end": {response.end}, "score": {response.score:.2f}, "entity_type": "{response.entity_type}", "analysis_explanation": "{response.analysis_explanation}"' + " }\n"
                 RecognizerResults.write(string)
 
@@ -355,7 +324,7 @@ def presidio_analyzer_start():
 
             while True:
                 print("1) Setup AnalyzerEngine")
-                print("2) Setup analyze params")
+                print("2) Setup Analyze params")
                 print("3) Analyze")
                 print("4) Back")
 
@@ -414,6 +383,7 @@ def presidio_analyzer_start():
             print(f"Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n")   
 
 if __name__ == "__main__":
+
     clear()
 
     while True:
@@ -422,13 +392,17 @@ if __name__ == "__main__":
         print("2) Server configuration")
         print("3) Quit")
 
-        command = int(input("\nCommand: "))
+        try:
+            command = int(input("\nCommand: "))
+        except ValueError:
+            print('\nYou did not enter a valid command\n')
+            continue
 
         if command == 1:
             clear()
             
             if IP_ADDRESS == "NULL" or PORT == "-1":
-                print("No server info found!")
+                print("No server info found! You must set a server configuration.")
                 exit()
             else:
                 presidio_analyzer_start()  
@@ -446,4 +420,4 @@ if __name__ == "__main__":
 
         else:
             print("\nCommand not valid!\n") 
-            clear()
+            continue

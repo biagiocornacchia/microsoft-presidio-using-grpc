@@ -1,6 +1,6 @@
 import grpc 
-from proto import service_anon_pb2_grpc as pb2_grpc
-from proto import service_anon_pb2 as pb2
+from proto import model_pb2_grpc as pb2_grpc
+from proto import model_pb2 as pb2
 
 from presidio_anonymizer import AnonymizerEngine
 from presidio_anonymizer.entities.engine import RecognizerResult, OperatorConfig
@@ -18,8 +18,8 @@ ANONYMIZERS = ['hash', 'mask', 'redact', 'replace', 'custom', 'encrypt', 'decryp
 
 # registry = RecognizerRegistry()
 
-CONFIG_FILE = 'operatorConfig.txt'
-CONFIG_FILE_DE = 'operatorDeConfig.txt'
+CONFIG_FILE = 'config/operatorConfigAnonymizer.txt'
+CONFIG_FILE_DE = 'config/operatorConfigDeanonymizer.txt'
 
 PATH_ANONYMIZER_RESULTS = "../anonymizer-results/"
 PATH_ANALYZER_RESULTS = "../analyzer-results/"

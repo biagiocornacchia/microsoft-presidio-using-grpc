@@ -2,11 +2,12 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from proto import service_pb2 as proto_dot_service__pb2
+from proto import model_pb2 as proto_dot_model__pb2
 
 
 class AnalyzerEntityStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """define the analyze rservice
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -16,28 +17,29 @@ class AnalyzerEntityStub(object):
         """
         self.sendFileToAnalyze = channel.stream_unary(
                 '/AnalyzerEntity/sendFileToAnalyze',
-                request_serializer=proto_dot_service__pb2.DataFile.SerializeToString,
-                response_deserializer=proto_dot_service__pb2.FileAck.FromString,
+                request_serializer=proto_dot_model__pb2.DataFile.SerializeToString,
+                response_deserializer=proto_dot_model__pb2.Ack.FromString,
                 )
         self.sendEngineOptions = channel.unary_unary(
                 '/AnalyzerEntity/sendEngineOptions',
-                request_serializer=proto_dot_service__pb2.AnalyzerEngineOptions.SerializeToString,
-                response_deserializer=proto_dot_service__pb2.Ack.FromString,
+                request_serializer=proto_dot_model__pb2.AnalyzerEngineOptions.SerializeToString,
+                response_deserializer=proto_dot_model__pb2.Ack.FromString,
                 )
         self.sendOptions = channel.unary_unary(
                 '/AnalyzerEntity/sendOptions',
-                request_serializer=proto_dot_service__pb2.AnalyzeOptions.SerializeToString,
-                response_deserializer=proto_dot_service__pb2.Ack.FromString,
+                request_serializer=proto_dot_model__pb2.AnalyzeOptions.SerializeToString,
+                response_deserializer=proto_dot_model__pb2.Ack.FromString,
                 )
         self.GetAnalyzerResults = channel.unary_stream(
                 '/AnalyzerEntity/GetAnalyzerResults',
-                request_serializer=proto_dot_service__pb2.Request.SerializeToString,
-                response_deserializer=proto_dot_service__pb2.AnalyzerResults.FromString,
+                request_serializer=proto_dot_model__pb2.Request.SerializeToString,
+                response_deserializer=proto_dot_model__pb2.AnalyzerResults.FromString,
                 )
 
 
 class AnalyzerEntityServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """define the analyze rservice
+    """
 
     def sendFileToAnalyze(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
@@ -68,23 +70,23 @@ def add_AnalyzerEntityServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'sendFileToAnalyze': grpc.stream_unary_rpc_method_handler(
                     servicer.sendFileToAnalyze,
-                    request_deserializer=proto_dot_service__pb2.DataFile.FromString,
-                    response_serializer=proto_dot_service__pb2.FileAck.SerializeToString,
+                    request_deserializer=proto_dot_model__pb2.DataFile.FromString,
+                    response_serializer=proto_dot_model__pb2.Ack.SerializeToString,
             ),
             'sendEngineOptions': grpc.unary_unary_rpc_method_handler(
                     servicer.sendEngineOptions,
-                    request_deserializer=proto_dot_service__pb2.AnalyzerEngineOptions.FromString,
-                    response_serializer=proto_dot_service__pb2.Ack.SerializeToString,
+                    request_deserializer=proto_dot_model__pb2.AnalyzerEngineOptions.FromString,
+                    response_serializer=proto_dot_model__pb2.Ack.SerializeToString,
             ),
             'sendOptions': grpc.unary_unary_rpc_method_handler(
                     servicer.sendOptions,
-                    request_deserializer=proto_dot_service__pb2.AnalyzeOptions.FromString,
-                    response_serializer=proto_dot_service__pb2.Ack.SerializeToString,
+                    request_deserializer=proto_dot_model__pb2.AnalyzeOptions.FromString,
+                    response_serializer=proto_dot_model__pb2.Ack.SerializeToString,
             ),
             'GetAnalyzerResults': grpc.unary_stream_rpc_method_handler(
                     servicer.GetAnalyzerResults,
-                    request_deserializer=proto_dot_service__pb2.Request.FromString,
-                    response_serializer=proto_dot_service__pb2.AnalyzerResults.SerializeToString,
+                    request_deserializer=proto_dot_model__pb2.Request.FromString,
+                    response_serializer=proto_dot_model__pb2.AnalyzerResults.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -94,7 +96,8 @@ def add_AnalyzerEntityServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class AnalyzerEntity(object):
-    """Missing associated documentation comment in .proto file."""
+    """define the analyze rservice
+    """
 
     @staticmethod
     def sendFileToAnalyze(request_iterator,
@@ -108,8 +111,8 @@ class AnalyzerEntity(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_unary(request_iterator, target, '/AnalyzerEntity/sendFileToAnalyze',
-            proto_dot_service__pb2.DataFile.SerializeToString,
-            proto_dot_service__pb2.FileAck.FromString,
+            proto_dot_model__pb2.DataFile.SerializeToString,
+            proto_dot_model__pb2.Ack.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -125,8 +128,8 @@ class AnalyzerEntity(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/AnalyzerEntity/sendEngineOptions',
-            proto_dot_service__pb2.AnalyzerEngineOptions.SerializeToString,
-            proto_dot_service__pb2.Ack.FromString,
+            proto_dot_model__pb2.AnalyzerEngineOptions.SerializeToString,
+            proto_dot_model__pb2.Ack.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -142,8 +145,8 @@ class AnalyzerEntity(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/AnalyzerEntity/sendOptions',
-            proto_dot_service__pb2.AnalyzeOptions.SerializeToString,
-            proto_dot_service__pb2.Ack.FromString,
+            proto_dot_model__pb2.AnalyzeOptions.SerializeToString,
+            proto_dot_model__pb2.Ack.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -159,7 +162,7 @@ class AnalyzerEntity(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/AnalyzerEntity/GetAnalyzerResults',
-            proto_dot_service__pb2.Request.SerializeToString,
-            proto_dot_service__pb2.AnalyzerResults.FromString,
+            proto_dot_model__pb2.Request.SerializeToString,
+            proto_dot_model__pb2.AnalyzerResults.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

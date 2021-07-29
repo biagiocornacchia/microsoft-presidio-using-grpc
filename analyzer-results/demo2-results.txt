@@ -1,0 +1,3 @@
+{ "start": 0, "end": 4, "score": 0.85, "entity_type": "PERSON", "analysis_explanation": "None" }
+{ "start": 33, "end": 44, "score": 0.85, "entity_type": "US_SSN", "analysis_explanation": "None" }
+{ "start": 73, "end": 81, "score": 0.65, "entity_type": "US_DRIVER_LICENSE", "analysis_explanation": "None" }

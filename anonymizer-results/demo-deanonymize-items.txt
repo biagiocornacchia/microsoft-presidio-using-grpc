@@ -1,0 +1,2 @@
+{ "start": 497, "end": 501, "operator": "decrypt", "text": "Kate", "entity_type": "NUMBER" }
+{ "start": 108, "end": 121, "operator": "decrypt", "text": "David Johnson", "entity_type": "NUMBER" }

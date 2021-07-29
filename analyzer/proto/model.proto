@@ -1,12 +1,14 @@
-syntax="proto3";
+syntax = "proto3";
 
+// define the analyze rservice
 service AnalyzerEntity {
-    rpc sendFileToAnalyze(stream DataFile) returns (FileAck) {} 
-    rpc sendEngineOptions(AnalyzerEngineOptions) returns (Ack) {}
-    rpc sendOptions(AnalyzeOptions) returns (Ack) {}
-    rpc GetAnalyzerResults(Request) returns (stream AnalyzerResults) {}
+    rpc sendFileToAnalyze(stream DataFile) returns (Ack); 
+    rpc sendEngineOptions(AnalyzerEngineOptions) returns (Ack);
+    rpc sendOptions(AnalyzeOptions) returns (Ack);
+    rpc GetAnalyzerResults(Request) returns (stream AnalyzerResults);
 }
 
+// files are divided into chunks (1MB)
 message DataFile {
     string chunk = 1;
 }
@@ -15,15 +17,11 @@ message Request {
     string uuidClient = 1;
 }
 
-message FileAck {
-    string uuidClient = 1;
-    int32 chunks = 2;
-}
-
+// options supported by AnalyzerEngine
 message AnalyzerEngineOptions {
     string uuidClient = 1;
-    optional string regex = 2;
-    optional string deny_list = 3;
+    optional string regex = 2; 
+    optional string deny_list = 3; 
 	optional string nlp_engine = 4;
 	optional string app_tracer = 5;
 	optional string log_decision_process = 6;
@@ -31,24 +29,26 @@ message AnalyzerEngineOptions {
 	optional string supported_languages = 8;
 }
 
+// options supported by analyze() function
 message AnalyzeOptions {
     string uuidClient = 1;
     optional string language = 2;
     optional string correlation_id = 3;
     optional string score_threshold = 4;
-    optional string entities = 5; // ex. PERSON, LOCATION, NRP etcc
+    optional string entities = 5; // ex. PERSON, LOCATION, NRP etc
     optional string return_decision_process = 6;
-    optional string ad_hoc_recognizers = 7;
 }
 
-message Ack {
-    string uuidClient = 1;
-}
-
+// results provided from presidio analyzer
 message AnalyzerResults {
     string entity_type = 1;
     int32 start = 2;
     int32 end = 3;
     float score = 4;
     optional string analysis_explanation = 5;
+}
+
+message Ack {
+    string uuidClient = 1;
+    optional int32 chunks = 2;
 }

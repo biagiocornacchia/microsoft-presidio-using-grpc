@@ -1,6 +1,6 @@
 import grpc 
-from proto import service_anon_pb2_grpc as pb2_grpc
-from proto import service_anon_pb2 as pb2
+from proto import model_pb2_grpc as pb2_grpc
+from proto import model_pb2 as pb2
 
 from presidio_anonymizer import DeanonymizeEngine
 from presidio_anonymizer.entities.engine import AnonymizerResult, OperatorConfig

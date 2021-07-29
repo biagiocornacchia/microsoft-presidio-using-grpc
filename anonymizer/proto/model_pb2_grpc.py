@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from proto import service_anon_pb2 as proto_dot_service__anon__pb2
+from proto import model_pb2 as proto_dot_model__pb2
 
 
 class AnonymizerEntityStub(object):
@@ -16,28 +16,28 @@ class AnonymizerEntityStub(object):
         """
         self.SendRecognizerResults = channel.stream_unary(
                 '/AnonymizerEntity/SendRecognizerResults',
-                request_serializer=proto_dot_service__anon__pb2.DataFile.SerializeToString,
-                response_deserializer=proto_dot_service__anon__pb2.FileAck.FromString,
+                request_serializer=proto_dot_model__pb2.DataFile.SerializeToString,
+                response_deserializer=proto_dot_model__pb2.FileAck.FromString,
                 )
         self.sendConfig = channel.unary_unary(
                 '/AnonymizerEntity/sendConfig',
-                request_serializer=proto_dot_service__anon__pb2.Config.SerializeToString,
-                response_deserializer=proto_dot_service__anon__pb2.FileAck.FromString,
+                request_serializer=proto_dot_model__pb2.Config.SerializeToString,
+                response_deserializer=proto_dot_model__pb2.FileAck.FromString,
                 )
         self.sendFile = channel.stream_unary(
                 '/AnonymizerEntity/sendFile',
-                request_serializer=proto_dot_service__anon__pb2.DataFile.SerializeToString,
-                response_deserializer=proto_dot_service__anon__pb2.FileAck.FromString,
+                request_serializer=proto_dot_model__pb2.DataFile.SerializeToString,
+                response_deserializer=proto_dot_model__pb2.FileAck.FromString,
                 )
         self.GetText = channel.unary_stream(
                 '/AnonymizerEntity/GetText',
-                request_serializer=proto_dot_service__anon__pb2.Request.SerializeToString,
-                response_deserializer=proto_dot_service__anon__pb2.DataFile.FromString,
+                request_serializer=proto_dot_model__pb2.Request.SerializeToString,
+                response_deserializer=proto_dot_model__pb2.DataFile.FromString,
                 )
         self.GetItems = channel.unary_stream(
                 '/AnonymizerEntity/GetItems',
-                request_serializer=proto_dot_service__anon__pb2.Request.SerializeToString,
-                response_deserializer=proto_dot_service__anon__pb2.Item.FromString,
+                request_serializer=proto_dot_model__pb2.Request.SerializeToString,
+                response_deserializer=proto_dot_model__pb2.Item.FromString,
                 )
 
 
@@ -45,13 +45,15 @@ class AnonymizerEntityServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def SendRecognizerResults(self, request_iterator, context):
-        """Missing associated documentation comment in .proto file."""
+        """sends analyzer or anonymizer results
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def sendConfig(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """sends anonymizers or deanonymizers 
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -79,28 +81,28 @@ def add_AnonymizerEntityServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'SendRecognizerResults': grpc.stream_unary_rpc_method_handler(
                     servicer.SendRecognizerResults,
-                    request_deserializer=proto_dot_service__anon__pb2.DataFile.FromString,
-                    response_serializer=proto_dot_service__anon__pb2.FileAck.SerializeToString,
+                    request_deserializer=proto_dot_model__pb2.DataFile.FromString,
+                    response_serializer=proto_dot_model__pb2.FileAck.SerializeToString,
             ),
             'sendConfig': grpc.unary_unary_rpc_method_handler(
                     servicer.sendConfig,
-                    request_deserializer=proto_dot_service__anon__pb2.Config.FromString,
-                    response_serializer=proto_dot_service__anon__pb2.FileAck.SerializeToString,
+                    request_deserializer=proto_dot_model__pb2.Config.FromString,
+                    response_serializer=proto_dot_model__pb2.FileAck.SerializeToString,
             ),
             'sendFile': grpc.stream_unary_rpc_method_handler(
                     servicer.sendFile,
-                    request_deserializer=proto_dot_service__anon__pb2.DataFile.FromString,
-                    response_serializer=proto_dot_service__anon__pb2.FileAck.SerializeToString,
+                    request_deserializer=proto_dot_model__pb2.DataFile.FromString,
+                    response_serializer=proto_dot_model__pb2.FileAck.SerializeToString,
             ),
             'GetText': grpc.unary_stream_rpc_method_handler(
                     servicer.GetText,
-                    request_deserializer=proto_dot_service__anon__pb2.Request.FromString,
-                    response_serializer=proto_dot_service__anon__pb2.DataFile.SerializeToString,
+                    request_deserializer=proto_dot_model__pb2.Request.FromString,
+                    response_serializer=proto_dot_model__pb2.DataFile.SerializeToString,
             ),
             'GetItems': grpc.unary_stream_rpc_method_handler(
                     servicer.GetItems,
-                    request_deserializer=proto_dot_service__anon__pb2.Request.FromString,
-                    response_serializer=proto_dot_service__anon__pb2.Item.SerializeToString,
+                    request_deserializer=proto_dot_model__pb2.Request.FromString,
+                    response_serializer=proto_dot_model__pb2.Item.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -124,8 +126,8 @@ class AnonymizerEntity(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_unary(request_iterator, target, '/AnonymizerEntity/SendRecognizerResults',
-            proto_dot_service__anon__pb2.DataFile.SerializeToString,
-            proto_dot_service__anon__pb2.FileAck.FromString,
+            proto_dot_model__pb2.DataFile.SerializeToString,
+            proto_dot_model__pb2.FileAck.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -141,8 +143,8 @@ class AnonymizerEntity(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/AnonymizerEntity/sendConfig',
-            proto_dot_service__anon__pb2.Config.SerializeToString,
-            proto_dot_service__anon__pb2.FileAck.FromString,
+            proto_dot_model__pb2.Config.SerializeToString,
+            proto_dot_model__pb2.FileAck.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -158,8 +160,8 @@ class AnonymizerEntity(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_unary(request_iterator, target, '/AnonymizerEntity/sendFile',
-            proto_dot_service__anon__pb2.DataFile.SerializeToString,
-            proto_dot_service__anon__pb2.FileAck.FromString,
+            proto_dot_model__pb2.DataFile.SerializeToString,
+            proto_dot_model__pb2.FileAck.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -175,8 +177,8 @@ class AnonymizerEntity(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/AnonymizerEntity/GetText',
-            proto_dot_service__anon__pb2.Request.SerializeToString,
-            proto_dot_service__anon__pb2.DataFile.FromString,
+            proto_dot_model__pb2.Request.SerializeToString,
+            proto_dot_model__pb2.DataFile.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -192,7 +194,7 @@ class AnonymizerEntity(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/AnonymizerEntity/GetItems',
-            proto_dot_service__anon__pb2.Request.SerializeToString,
-            proto_dot_service__anon__pb2.Item.FromString,
+            proto_dot_model__pb2.Request.SerializeToString,
+            proto_dot_model__pb2.Item.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
