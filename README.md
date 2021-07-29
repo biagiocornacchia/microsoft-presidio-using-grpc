@@ -129,8 +129,7 @@ Select PII recognition and then deny-list based PII recognition (command 1)
 
     1) Deny-list based PII recognition
     2) Regex based PII recognition
-    3) Ad-hoc recognition
-    4) Back
+    3) Back
 
     Command: 1
 
@@ -169,8 +168,7 @@ Select PII recognition and then Regex based PII recognition (command 2)
 
     1) Deny-list based PII recognition
     2) Regex based PII recognition
-    3) Ad-hoc recognition
-    4) Back
+    3) Back
 
     Command: 2
 
@@ -188,7 +186,7 @@ Define the entity name, name pattern, regex pattern, score and eventually contex
 Analyzer results will be
 
     Result:
-    [type: US_ZIP_CODE, start: 15, end: 20, score: 0.4]
+    [type: US_ZIP_CODE, start: 15, end: 20, score: 0.1]
 
 ## Presidio Anonymizer
 
