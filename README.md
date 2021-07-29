@@ -191,3 +191,5 @@ Analyzer results will be
     [type: US_ZIP_CODE, start: 15, end: 20, score: 0.4]
 
 ## Presidio Anonymizer
+
+Incomplete
