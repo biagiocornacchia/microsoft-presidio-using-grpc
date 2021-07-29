@@ -38,7 +38,7 @@ service AnalyzerEntity {
 }
 ```
 
-- `sendFileToAnalyze` </br> is used by the data loader to send the original text file that has to be analyzed. Files will be divided into chunks. The server will assign a UUID that will be used during all the communication to identify uniquely the client information
+- `sendFileToAnalyze` </br> is used by the data loader to send the original text file that needs to be analyzed. Files will be divided into chunks. The server will assign a UUID that will be used during all the communication to identify uniquely the client information
 
 - `sendEngineOptions`</br> AnalyzerEngine can be configured. Available options are:
     1. registry: an optional list of recognizers, that will be available instead of the predefined recognizers
@@ -48,7 +48,7 @@ service AnalyzerEntity {
     5. default_score_threshold: minimum confidence value for detected entities to be returned
     6. supported_languages: list of possible languages this engine could be run on. Used for loading the right NLP models and recognizers for these languages.
     
-    </br>So by this method the client eventually specifies analyzer engine options and sends them to the server. The server will store them into a json file and will return an acknowledgement message containing the UUID assigned from the server to the client during the first step.
+    Using this method the client eventually specifies analyzer engine options and sends them to the server. The server will store them into a json file and will return an acknowledgement message containing the UUID assigned from the server to the client during the first step.
 
 - `sendOptions` </br> AnalyzerEngine.analyze() can also be configured. Available options are:
     1. language: the language of the text 
@@ -57,7 +57,7 @@ service AnalyzerEntity {
     4. score_threshold: A minimum value for which to return an identified entity
     5. return_decision_process: it decides if the analysis decision process steps returned in the response.
                         
-    </br>By this "method" the client specifies eventually his options and sends them to the server. The server will store them into a json file and returns and Ack message containing UUID assigned from the server to the client during the first step.
+    Using this method the client specifies eventually his options and sends them to the server. The server will store them into a json file and returns and Ack message containing UUID assigned from the server to the client during the first step.
 
 - `GetAnalyzerResults` </br> The client specifies his UUID and makes a request to get analyzer results. 
 The server uses the original text and eventually json files containing the options specified by the client and performs the analisis. Then it returns found entities in the text, so the client will save them into a file called `"filename-results.txt"` which resides in `analyzer-results` folder.
@@ -86,7 +86,7 @@ Select `analyze` (command 3) and choose the file to analyze
     SERVER INFO: localhost:8061
 
     1) Setup AnalyzerEngine
-    2) Setup analyze params
+    2) Setup Analyze params
     3) Analyze
     4) Back
 
@@ -113,7 +113,7 @@ To use this features you have to setup an AnalyzeEngine configuration.
 In this example, we will pass a short list of tokens which should be marked as PII if detected. First, let's define the tokens we want to treat as PII. In this case it would be a list of titles:
 
     1) Setup AnalyzerEngine    
-    2) Setup analyze params    
+    2) Setup Analyze params    
     3) Analyze
     4) Back
 
@@ -159,7 +159,7 @@ File zip_test.txt contains
 Another simple recognizer we can add is based on regular expressions. In this case we would implement a zip code recognizer. 
     
     1) Setup AnalyzerEngine    
-    2) Setup analyze params    
+    2) Setup Analyze params    
     3) Analyze
     4) Back
 
