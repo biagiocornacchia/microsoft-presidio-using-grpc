@@ -16,8 +16,6 @@ PORT = "-1"
 SUPPORTED_ENTITIES = ['IBAN_CODE', 'US_PASSPORT', 'DATE_TIME', 'MEDICAL_LICENSE', 'CRYPTO', 'LOCATION', 'UK_NHS', 'US_SSN', 'CREDIT_CARD', 'US_BANK_NUMBER', 'US_ITIN', 'EMAIL_ADDRESS', 'PERSON', 'IP_ADDRESS', 'DOMAIN_NAME', 'PHONE_NUMBER', 'SG_NRIC_FIN', 'NRP', 'US_DRIVER_LICENSE']
 ANONYMIZERS = ['hash', 'mask', 'redact', 'replace', 'custom', 'encrypt', 'decrypt']
 
-# registry = RecognizerRegistry()
-
 CONFIG_FILE = 'config/operatorConfigAnonymizer.txt'
 CONFIG_FILE_DE = 'config/operatorConfigDeanonymizer.txt'
 
@@ -44,7 +42,7 @@ def exit():
             clear()
             break
 
-def check_duplicate(entity_type, configFile):
+def checkDuplicate(entity_type, configFile):
     
     try:
         with open(configFile, 'r') as f:
@@ -65,7 +63,7 @@ def check_duplicate(entity_type, configFile):
 
     return -1
 
-def read_configuration(configFile):
+def readConfiguration(configFile):
 
     with open(configFile, "r") as ConfigFile:
         print("\n")
@@ -76,14 +74,14 @@ def read_configuration(configFile):
     exit()
 
 
-def make_message(msg, uuid, requestType):
+def makeMessage(msg, uuid, requestType):
     
     if uuid:
         return pb2.DataFile(uuidClient = uuid, chunk = msg)
 
     return pb2.DataFile(chunk = msg)
 
-def generate_chunks(filename, uuid, requestType):
+def generateChunks(filename, uuid, requestType):
     
     global TOTAL_CHUNKS
     cont = 0
@@ -101,7 +99,7 @@ def generate_chunks(filename, uuid, requestType):
             cont += CHUNK_SIZE
             TOTAL_CHUNKS = cont
 
-            yield make_message(data, uuid, requestType)
+            yield makeMessage(data, uuid, requestType)
 
     except IOError:
         print("{} not exists!".format(filename))
@@ -109,7 +107,7 @@ def generate_chunks(filename, uuid, requestType):
 
 def sendRequestForText(stub, filename, uuidClient, requestType):
     
-    responses = stub.GetText(pb2.Request(uuidClient = uuidClient, type = requestType))
+    responses = stub.getText(pb2.Request(uuidClient = uuidClient, type = requestType))
 
     if requestType == "anonymize":
         with open(PATH_ANONYMIZER_RESULTS + filename + "-anonymized.txt", "w") as AnonymizerResults:
@@ -134,7 +132,7 @@ def sendRequestForText(stub, filename, uuidClient, requestType):
 
 def sendRequestForItems(stub, filename, uuidClient, requestType):
     
-    responses = stub.GetItems(pb2.Request(uuidClient = uuidClient, type = requestType))
+    responses = stub.getItems(pb2.Request(uuidClient = uuidClient, type = requestType))
 
     if requestType == "anonymize":
         with open(PATH_ANONYMIZER_RESULTS + filename + "-anonymize-items.txt", "w") as AnonymizerItemsResults:
@@ -261,7 +259,7 @@ def setupConfig(configFile):
             continue
                 
         # CHECK FOR DUPLICATES
-        check = check_duplicate(entity_type, configFile) 
+        check = checkDuplicate(entity_type, configFile) 
 
         if check == 1:
             os.remove(configFile)
@@ -284,10 +282,17 @@ def setupConfig(configFile):
             addOperator(entity_type, params, configFile)
             print("\n{} -> {} - Config successfully updated.\n".format(entity_type, params))
 
+def ReadResults(filename, uuidClient):
+    
+    with open(PATH_ANALYZER_RESULTS + filename + "-results.txt", "r") as resultsFile:
+        for line in resultsFile:
+            item = json.loads(line)
+            yield pb2.RecognizerResult(uuidClient = uuidClient, start = item['start'], end = item['end'], score = item['score'], entity_type = item['entity_type'])
+        
 def sendRequestAnonymize(stub, filename, config):
 
     # sending original text to anonymize
-    chunk_iterator = generate_chunks(PATH_FILES + filename, 0, "anonymize")
+    chunk_iterator = generateChunks(PATH_FILES + filename, 0, "anonymize")
     print("\nFROM CLIENT: sending original text...")
     response = stub.sendFile(chunk_iterator)
     uuidClient = response.uuidClient
@@ -296,11 +301,10 @@ def sendRequestAnonymize(stub, filename, config):
         print("FROM SERVER: file received correctly. UUID assigned: {}".format(uuidClient))
 
         # sending analyzer results
-        chunk_iterator = generate_chunks(PATH_ANALYZER_RESULTS + filename + "-results", uuidClient, "anonymize")
         print("FROM CLIENT: sending analyzer results...")
-        response = stub.SendRecognizerResults(chunk_iterator)
-        
-        if response.chunks == TOTAL_CHUNKS:
+        response = stub.sendRecognizerResults(ReadResults(filename, uuidClient))
+
+        if response.uuidClient == uuidClient:
             print("FROM SERVER: analyzer results received correctly. UUID: {}".format(uuidClient))
 
             # sending configuration file
@@ -352,7 +356,7 @@ def presidio_anonymizer_start():
                 elif command == 2:
 
                     if os.path.exists(CONFIG_FILE):
-                        read_configuration(CONFIG_FILE)
+                        readConfiguration(CONFIG_FILE)
                     else:
                         print("Configuration file not found!")
 
@@ -403,10 +407,18 @@ def presidio_anonymizer_start():
 
 ### STOP ANONYMIZER SECTION
 
+def ReadAnonymizedItems(filename, uuidClient):
+    
+    with open(PATH_ANONYMIZER_RESULTS + filename + "-anonymize-items.txt", "r") as itemsFile:
+        for line in itemsFile:
+            item = json.loads(line)
+            yield pb2.AnonymizedItem(uuidClient = uuidClient, start = item['start'], end = item['end'], entity_type = item['entity_type'], operator = item['operator'])
+
+
 def sendRequestDeanonymize(stub, filename):
 
     # sending anonymized text (UUID = 0 INSIGNIFICANT)
-    chunk_iterator = generate_chunks(PATH_ANONYMIZER_RESULTS + filename + "-anonymized", 0, "deanonymize")
+    chunk_iterator = generateChunks(PATH_ANONYMIZER_RESULTS + filename + "-anonymized", 0, "deanonymize")
     print("\nFROM CLIENT: sending anonymized text...")
     response = stub.sendFile(chunk_iterator)
     uuidClient = response.uuidClient
@@ -415,11 +427,10 @@ def sendRequestDeanonymize(stub, filename):
         print("FROM SERVER: file received correctly. UUID assigned: {}".format(uuidClient))
 
         # sending items results
-        chunk_iterator = generate_chunks(PATH_ANONYMIZER_RESULTS + filename + "-anonymize-items", uuidClient, "deanonymize")
         print("FROM CLIENT: sending items...")
-        response = stub.SendRecognizerResults(chunk_iterator)
+        response = stub.sendAnonymizedItems(ReadAnonymizedItems(filename, uuidClient))
 
-        if response.chunks == TOTAL_CHUNKS:
+        if response.uuidClient == uuidClient:
             print("FROM SERVER: analyzer results received correctly. UUID: {}".format(uuidClient))
 
             # sending configuration file (IS REQUIRED!)
@@ -468,7 +479,7 @@ def presidio_deanonymizer_start():
                 elif command == 2:
 
                     if os.path.exists(CONFIG_FILE_DE):
-                        read_configuration(CONFIG_FILE_DE)
+                        readConfiguration(CONFIG_FILE_DE)
                     else:
                         print("Configuration file not found!")
 
@@ -516,7 +527,11 @@ if __name__ == "__main__":
         print("3) Server configuration")
         print("4) Quit")
 
-        command = int(input("\nCommand: "))
+        try:
+            command = int(input("\nCommand: "))
+        except ValueError:
+            print('\nYou did not enter a valid command\n')
+            continue
 
         if command == 1:
             clear()
@@ -548,5 +563,4 @@ if __name__ == "__main__":
             break
         else:
             print("\nCommand not valid!\n") 
-            clear()
-            #time.sleep(1)   
+            clear() 

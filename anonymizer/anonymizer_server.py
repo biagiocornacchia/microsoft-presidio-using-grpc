@@ -187,24 +187,42 @@ class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
             
         return pb2.FileAck(chunks = TOTAL_CHUNKS, uuidClient = uuidClient)
 
-    def SendRecognizerResults(self, request_iterator, context):
-
-        TOTAL_CHUNKS = 0
+    def sendRecognizerResults(self, request_iterator, context):
+        
+        uuidClient = 0
 
         for request in request_iterator:
-            if TOTAL_CHUNKS == 0:
+            #print(request)
+            if uuidClient == 0:
                 uuidClient = request.uuidClient
                 print ("[+] UUID client: {}".format(uuidClient))
                 print("[+] Receiving a recognizer results file...")
                 fileText = open(PATH_TEMP + uuidClient + "-results.txt", "a")
-            
-            TOTAL_CHUNKS = TOTAL_CHUNKS + CHUNK_SIZE
-            fileText.write(request.chunk)
+
+            fileText.write("{ " + f'"start": {request.start}, "end": {request.end}, "score": {request.score}, "entity_type": "{request.entity_type}"' + " }\n")
 
         fileText.close()
         print("[+] File received")
             
-        return pb2.FileAck(chunks = TOTAL_CHUNKS, uuidClient = uuidClient)
+        return pb2.FileAck(uuidClient = uuidClient)
+
+    def sendAnonymizedItems(self, request_iterator, context):
+        
+        uuidClient = 0
+
+        for request in request_iterator:
+            if uuidClient == 0:
+                uuidClient = request.uuidClient
+                print ("[+] UUID client: {}".format(uuidClient))
+                print("[+] Receiving anonymizer results file...")
+                fileText = open(PATH_TEMP + uuidClient + "-results.txt", "a")
+
+            fileText.write("{ " + f'"start": {request.start}, "end": {request.end}, "entity_type": "{request.entity_type}", "operator": "{request.operator}"' + " }\n")
+
+        fileText.close()
+        print("[+] File received")
+            
+        return pb2.FileAck(uuidClient = uuidClient)
 
     def sendConfig(self, request, context):
 
@@ -219,7 +237,7 @@ class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
 
         return pb2.FileAck(chunks = -1, uuidClient = uuidClient)
     
-    def GetText(self, request, context):
+    def getText(self, request, context):
 
         uuidClient = request.uuidClient
         print ("[+] UUID client: {}".format(uuidClient))
@@ -261,7 +279,7 @@ class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
             print("[+] Error during operation")
             yield pb2.DataFile(chunk = "-1")
 
-    def GetItems(self, request, context):
+    def getItems(self, request, context):
         
         uuidClient = request.uuidClient
         print ("\n[+] UUID client: {}".format(uuidClient))
@@ -293,7 +311,7 @@ class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
 def run_server(port):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     pb2_grpc.add_AnonymizerEntityServicer_to_server(AnonymizerEntity(), server)
-    server.add_insecure_port('[::]:' + port)
+    server.add_insecure_port('[::]:' + str(port))
     server.start()
     print("Listening on port {}\n".format(port))
     server.wait_for_termination()
@@ -301,5 +319,5 @@ def run_server(port):
 if __name__ == "__main__":
 
     print("\n:::::::::::::::::: PRESIDIO ANONYMIZER (Server) ::::::::::::::::::\n")
-    port = input("PORT: ")
+    port = 8061 #input("PORT: ")
     run_server(port)

@@ -62,6 +62,8 @@ class AnalyzerEntity(pb2_grpc.AnalyzerEntityServicer):
         
         print("\n[+] Preparing for Presidio Analyzer")
         print("[+] Searching for {}".format(request.uuidClient))
+        
+        results = []
 
         try:
             with open(PATH_TEMP + request.uuidClient + ".txt", "r") as fileText:
@@ -195,15 +197,16 @@ def getAnalyzeOptions(uuid, ANALYZE_OPTIONS):
     except IOError:
         print("[+] Analyze config not exists!")   
 
-def run_server(port):
+def run_server():
+    port = 8061
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     pb2_grpc.add_AnalyzerEntityServicer_to_server(AnalyzerEntity(), server)
-    server.add_insecure_port('[::]:' + port)
+    server.add_insecure_port('[::]:' + str(port))
     server.start()
     print("Listening on port {}\n".format(port))
     server.wait_for_termination()
 
 if __name__ == '__main__':
     print(":::::::::::::::::: PRESIDIO ANALYZER (Server) ::::::::::::::::::\n")
-    port = input("PORT: ")
-    run_server(port)
+    #port = input("PORT: ")
+    run_server()
