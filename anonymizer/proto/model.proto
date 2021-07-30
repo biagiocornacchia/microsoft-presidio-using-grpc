@@ -16,7 +16,6 @@ message Request {
 
 message DataFile {
     string chunk = 1;
-    string uuidClient = 2; 
 }
 
 message Config {

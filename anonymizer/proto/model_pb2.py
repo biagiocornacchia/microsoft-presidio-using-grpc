@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11proto/model.proto\"+\n\x07Request\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\t\"-\n\x08\x44\x61taFile\x12\r\n\x05\x63hunk\x18\x01 \x01(\t\x12\x12\n\nuuidClient\x18\x02 \x01(\t\"=\n\x06\x43onfig\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x11\n\toperators\x18\x02 \x01(\t\x12\x0c\n\x04type\x18\x03 \x01(\t\"=\n\x07\x46ileAck\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x13\n\x06\x63hunks\x18\x02 \x01(\x05H\x00\x88\x01\x01\x42\t\n\x07_chunks\"W\n\x04Item\x12\x10\n\x08operator\x18\x01 \x01(\t\x12\x13\n\x0b\x65ntity_type\x18\x02 \x01(\t\x12\r\n\x05start\x18\x03 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x04 \x01(\x05\x12\x0c\n\x04text\x18\x05 \x01(\t\"f\n\x10RecognizerResult\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\x12\r\n\x05score\x18\x03 \x01(\x02\x12\x13\n\x0b\x65ntity_type\x18\x04 \x01(\t\x12\x12\n\nuuidClient\x18\x05 \x01(\t\"g\n\x0e\x41nonymizedItem\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\x12\x13\n\x0b\x65ntity_type\x18\x03 \x01(\t\x12\x10\n\x08operator\x18\x04 \x01(\t\x12\x12\n\nuuidClient\x18\x05 \x01(\t2\x83\x02\n\x10\x41nonymizerEntity\x12\x36\n\x15sendRecognizerResults\x12\x11.RecognizerResult\x1a\x08.FileAck(\x01\x12\x32\n\x13sendAnonymizedItems\x12\x0f.AnonymizedItem\x1a\x08.FileAck(\x01\x12\x1f\n\nsendConfig\x12\x07.Config\x1a\x08.FileAck\x12!\n\x08sendFile\x12\t.DataFile\x1a\x08.FileAck(\x01\x12 \n\x07getText\x12\x08.Request\x1a\t.DataFile0\x01\x12\x1d\n\x08getItems\x12\x08.Request\x1a\x05.Item0\x01\x62\x06proto3'
+  serialized_pb=b'\n\x11proto/model.proto\"+\n\x07Request\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\t\"\x19\n\x08\x44\x61taFile\x12\r\n\x05\x63hunk\x18\x01 \x01(\t\"=\n\x06\x43onfig\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x11\n\toperators\x18\x02 \x01(\t\x12\x0c\n\x04type\x18\x03 \x01(\t\"=\n\x07\x46ileAck\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x13\n\x06\x63hunks\x18\x02 \x01(\x05H\x00\x88\x01\x01\x42\t\n\x07_chunks\"W\n\x04Item\x12\x10\n\x08operator\x18\x01 \x01(\t\x12\x13\n\x0b\x65ntity_type\x18\x02 \x01(\t\x12\r\n\x05start\x18\x03 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x04 \x01(\x05\x12\x0c\n\x04text\x18\x05 \x01(\t\"f\n\x10RecognizerResult\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\x12\r\n\x05score\x18\x03 \x01(\x02\x12\x13\n\x0b\x65ntity_type\x18\x04 \x01(\t\x12\x12\n\nuuidClient\x18\x05 \x01(\t\"g\n\x0e\x41nonymizedItem\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\x12\x13\n\x0b\x65ntity_type\x18\x03 \x01(\t\x12\x10\n\x08operator\x18\x04 \x01(\t\x12\x12\n\nuuidClient\x18\x05 \x01(\t2\x83\x02\n\x10\x41nonymizerEntity\x12\x36\n\x15sendRecognizerResults\x12\x11.RecognizerResult\x1a\x08.FileAck(\x01\x12\x32\n\x13sendAnonymizedItems\x12\x0f.AnonymizedItem\x1a\x08.FileAck(\x01\x12\x1f\n\nsendConfig\x12\x07.Config\x1a\x08.FileAck\x12!\n\x08sendFile\x12\t.DataFile\x1a\x08.FileAck(\x01\x12 \n\x07getText\x12\x08.Request\x1a\t.DataFile0\x01\x12\x1d\n\x08getItems\x12\x08.Request\x1a\x05.Item0\x01\x62\x06proto3'
 )
 
 
@@ -79,13 +79,6 @@ _DATAFILE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='uuidClient', full_name='DataFile.uuidClient', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -99,7 +92,7 @@ _DATAFILE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=66,
-  serialized_end=111,
+  serialized_end=91,
 )
 
 
@@ -144,8 +137,8 @@ _CONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=113,
-  serialized_end=174,
+  serialized_start=93,
+  serialized_end=154,
 )
 
 
@@ -188,8 +181,8 @@ _FILEACK = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=176,
-  serialized_end=237,
+  serialized_start=156,
+  serialized_end=217,
 )
 
 
@@ -248,8 +241,8 @@ _ITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=239,
-  serialized_end=326,
+  serialized_start=219,
+  serialized_end=306,
 )
 
 
@@ -308,8 +301,8 @@ _RECOGNIZERRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=328,
-  serialized_end=430,
+  serialized_start=308,
+  serialized_end=410,
 )
 
 
@@ -368,8 +361,8 @@ _ANONYMIZEDITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=432,
-  serialized_end=535,
+  serialized_start=412,
+  serialized_end=515,
 )
 
 _FILEACK.oneofs_by_name['_chunks'].fields.append(
@@ -442,8 +435,8 @@ _ANONYMIZERENTITY = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=538,
-  serialized_end=797,
+  serialized_start=518,
+  serialized_end=777,
   methods=[
   _descriptor.MethodDescriptor(
     name='sendRecognizerResults',

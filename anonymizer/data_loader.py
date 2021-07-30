@@ -74,14 +74,11 @@ def readConfiguration(configFile):
     exit()
 
 
-def makeMessage(msg, uuid, requestType):
+def makeMessage(msg):
     
-    if uuid:
-        return pb2.DataFile(uuidClient = uuid, chunk = msg)
-
     return pb2.DataFile(chunk = msg)
 
-def generateChunks(filename, uuid, requestType):
+def generateChunks(filename):
     
     global TOTAL_CHUNKS
     cont = 0
@@ -99,7 +96,7 @@ def generateChunks(filename, uuid, requestType):
             cont += CHUNK_SIZE
             TOTAL_CHUNKS = cont
 
-            yield makeMessage(data, uuid, requestType)
+            yield makeMessage(data)
 
     except IOError:
         print("{} not exists!".format(filename))
@@ -292,7 +289,7 @@ def ReadResults(filename, uuidClient):
 def sendRequestAnonymize(stub, filename, config):
 
     # sending original text to anonymize
-    chunk_iterator = generateChunks(PATH_FILES + filename, 0, "anonymize")
+    chunk_iterator = generateChunks(PATH_FILES + filename)
     print("\nFROM CLIENT: sending original text...")
     response = stub.sendFile(chunk_iterator)
     uuidClient = response.uuidClient
@@ -418,7 +415,7 @@ def ReadAnonymizedItems(filename, uuidClient):
 def sendRequestDeanonymize(stub, filename):
 
     # sending anonymized text (UUID = 0 INSIGNIFICANT)
-    chunk_iterator = generateChunks(PATH_ANONYMIZER_RESULTS + filename + "-anonymized", 0, "deanonymize")
+    chunk_iterator = generateChunks(PATH_ANONYMIZER_RESULTS + filename + "-anonymized")
     print("\nFROM CLIENT: sending anonymized text...")
     response = stub.sendFile(chunk_iterator)
     uuidClient = response.uuidClient
