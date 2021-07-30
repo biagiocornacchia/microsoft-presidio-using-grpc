@@ -42,7 +42,8 @@ service AnonymizerEntity {
         int32 start = 1;
         int32 end = 2;
         string entity_type = 3;
-        string uuidClient = 4; 
+        string operator = 4;
+        string uuidClient = 5; 
     }
     ```
 
