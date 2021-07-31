@@ -10,7 +10,7 @@ python -m grpc_tools.protoc --proto_path=. ./proto/model.proto --python_out=. --
 
 ## Presidio Anonymizer
 
-The Analyzer Service has six service methods
+The Anonymizer Service has six service methods
 
 ```protobuf
 service AnonymizerEntity {
@@ -182,7 +182,7 @@ PATH_FILES = "../files/"
 * `PATH_ANONYMIZER_RESULTS`, `PATH_ANALYZER_RESULTS` and `PATH_FILES` are the directories where the anonymizer results will be saved and where the orignal text resides.
 
 ### Connection 
-You should first establish a connection between the gRPC analyzer client and the gRPC analyzer server. Here are two functions to manage connections:
+You should first establish a connection between the gRPC anonymizer client and the gRPC anonymizer server. Here are two functions to manage connections:
 
 ```python
 class ClientEntity:

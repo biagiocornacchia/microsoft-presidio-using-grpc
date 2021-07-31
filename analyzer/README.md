@@ -253,27 +253,27 @@ import analyzer_client as analyzer
 
 if __name__ == "__main__":
 
-	clientAnalyzer = analyzer.ClientEntity("localhost", 8061)
+    clientAnalyzer = analyzer.ClientEntity("localhost", 8061)
 
     # Setup entities that this recognizer can detect 
     option_name = "entities"
     values = "PERSON,LOCATION,IP_ADDRESS"
-	clientAnalyzer.setupOptions(option_name, values, analyzer.ANALYZE_CURR_CONFIG, 0)
+    clientAnalyzer.setupOptions(option_name, values, analyzer.ANALYZE_CURR_CONFIG, 0)
 
-	# SETUP REGEX 
-	patterns = []
-	
-	supported_entity = "US_ZIP_CODE"
-	name_pattern = "zip us"
-	regex = r'(\b\d{5}(?:\-\d{4})?\b)'
-	score = 0.01
-	context = "zip,zipcode"
-	patterns.append("{ " + f"'name_pattern' : '{name_pattern}', 'regex' : '{regex}', 'score' : {score}" + " }")
+    # SETUP REGEX 
+    patterns = []
 
-	clientAnalyzer.setupRegex(supported_entity, patterns, context)
+    supported_entity = "US_ZIP_CODE"
+    name_pattern = "zip us"
+    regex = r'(\b\d{5}(?:\-\d{4})?\b)'
+    score = 0.01
+    context = "zip,zipcode"
+    patterns.append("{ " + f"'name_pattern' : '{name_pattern}', 'regex' : '{regex}', 'score' : {score}" + " }")
 
-	clientAnalyzer.sendRequestAnalyze("zip_test")
-	clientAnalyzer.closeConnection()
+    clientAnalyzer.setupRegex(supported_entity, patterns, context)
+
+    clientAnalyzer.sendRequestAnalyze("zip_test")
+    clientAnalyzer.closeConnection()
 ```
 
 `sendRequestAnalyze(self, filename)` is used to perform analysis specifying a filename.
