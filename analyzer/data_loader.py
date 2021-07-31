@@ -70,6 +70,7 @@ def options():
             optionAvailable += option + "\n"
 
     print(optionAvailable)
+    print("AnalyzerEngine configuration (press Q for exit)\n")
 
     while True:
 
@@ -231,6 +232,8 @@ def setupAnalyze():
     for option in ANALYZE_OPTIONS:
         print(option)
 
+    print("\nAnalyze config (press Q for exit)")
+
     while True:
 
         option = input("\nOption name: ").lower()
@@ -331,12 +334,10 @@ def presidio_analyzer_start():
                 command = int(input("\nCommand: "))
         
                 if command == 1:
-
                     setupEngine()
                     clear()
 
                 elif command == 2:
-                    
                     setupAnalyze()
                     clear()
 
@@ -355,12 +356,12 @@ def presidio_analyzer_start():
                         exit()
                         continue
 
-                    # check conf setup (analyzeEngine and analyze params)
+                    # check conf setup (AnalyzerEngine and analyze params)
                     if ENGINE_CURR_CONFIG:
-                        print("AnalyzeEngine configuration found!")
+                        print("AnalyzerEngine configuration found!")
                         # print(ENGINE_CURR_CONFIG)
                     else:
-                        print("AnalyzeEngine configuration not found!")
+                        print("AnalyzerEngine configuration not found!")
 
                     if ANALYZE_CURR_CONFIG:
                         print("Analyze configuration found!")
@@ -383,9 +384,7 @@ def presidio_analyzer_start():
             print(f"Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n")   
 
 if __name__ == "__main__":
-
     clear()
-
     while True:
         print(":::::::::::::::::: PRESIDIO ANALYZER (data loader) ::::::::::::::::::\n")
         print("1) Analyzer")
@@ -408,6 +407,9 @@ if __name__ == "__main__":
                 presidio_analyzer_start()  
             
         elif command == 2:
+
+            if IP_ADDRESS != "NULL" and PORT != "-1":
+                print("\nCURRENT INFO: {}:{}".format(IP_ADDRESS, PORT))
 
             IP_ADDRESS = input("\nIP ADDRESS: ")
             PORT = input("SERVER PORT: ")
