@@ -217,7 +217,7 @@ class ClientEntity:
 
 `addOperator` has three arguments:
 1. the entity type
-2. params
+2. params: a string returned by the anonymizerOptions function
 3. configuration file
 
 Some utility functions:
