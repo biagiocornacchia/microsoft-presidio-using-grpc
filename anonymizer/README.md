@@ -218,7 +218,7 @@ class ClientEntity:
 `addOperator` has three arguments:
 1. the entity type
 2. params: a string returned by the anonymizerOptions function
-3. configuration file
+3. configuration file: CONFIG_FILE or CONFIG_FILE_DE
 
 Some utility functions:
 1. checkDuplicate(entity_type, configFile)
@@ -269,7 +269,10 @@ if __name__ == "__main__":
     clientAnonymizer.readConfiguration(anonymizer.CONFIG_FILE_DE)
 
     # Setup deanonymizer configuration file
-    params = anonymizer.anonymizerOptions("decrypt", "Daenonymizer")
+    params = anonymizer.anonymizerOptions("decrypt", "Deanonymizer")
+
+    if params != -1:
+        clientAnonymizer.addOperator("PERSON", params, anonymizer.CONFIG_FILE_DE)
 
     clientAnonymizer.sendRequestDeanonymize("demo")
     clientAnonymizer.closeConnection()
