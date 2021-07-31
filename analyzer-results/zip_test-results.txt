@@ -1,0 +1,2 @@
+{ "start": 15, "end": 20, "score": 0.85, "entity_type": "DATE_TIME", "analysis_explanation": "None" }
+{ "start": 15, "end": 20, "score": 0.40, "entity_type": "US_ZIP_CODE", "analysis_explanation": "None" }

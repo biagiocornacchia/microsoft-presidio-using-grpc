@@ -1,0 +1,2 @@
+{ "operator": "encrypt", "entity_type": "PERSON", "start": 556, "end": 600, "text": "RFKdde1F48+z7EaeOnKgAXZxULkNL1Eq8/OTppjyuCE=" }
+{ "operator": "encrypt", "entity_type": "PERSON", "start": 102, "end": 146, "text": "sto1/5din5CHFrOIqKgKpXqh75vL5vuO7wkVF9Kr0ws=" }

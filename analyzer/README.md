@@ -170,3 +170,110 @@ Analyzer results will be
 
     Result:
     [type: US_ZIP_CODE, start: 15, end: 20, score: 0.1]
+
+## Scheme API
+
+`analyzer_client.py` contains a ClientEntity class.
+
+### Global vars
+
+```python
+ENGINE_OPTIONS = [ "deny_list", "regex", "nlp_engine", "app_tracer", "log_decision_process", "default_score_threshold", "supported_languages" ]
+ANALYZE_OPTIONS = ["language", "entities", "correlation_id", "score_threshold", "return_decision_process"]
+
+ENGINE_CURR_CONFIG = {}
+ANALYZE_CURR_CONFIG = {}
+
+PATH_RESULTS = "../analyzer-results/"
+PATH_FILES = "../files/"
+```
+
+This variables are used to setup a configuration for the analyzer. </br>
+* `ENGINE_OPTIONS` and `ANALYZER_OPTIONS` are the possible options that Microsoft Presidio Analyzer supports.</br>
+* `ENGINE_CURR_CONFIG` and `ANALYZER_CURR_CONFIG` will contain the current configuration specified by the client.</br>
+* `PATH_RESULTS` and `PATH_FILES` are the directories where the analyzer results will be saved and where the orignal text resides.
+
+### Connection 
+You should first establish a connection between the gRPC analyzer client and the gRPC analyzer server. Here are two functions to manage connections:
+
+```python
+class ClientEntity:
+
+    def __init__(self, ip_address, port):
+
+        self.ip_address = ip_address
+        self.port = port
+        self.channel = grpc.insecure_channel(ip_address + ':' + str(port))
+        self.stub = pb2_grpc.AnalyzerEntityStub(self.channel)
+        .
+        .
+        .
+
+    def closeConnection(self):
+        print("Disconnected from the server")
+        self.channel.close()
+```
+
+The arguments are a string that denote the server ip address and a number to denote the server port.
+
+### Setup a configuration
+
+```python
+class ClientEntity:
+        .
+        .
+    def setupDenyList(self, supported_entity, values):
+        ENGINE_CURR_CONFIG["deny_list"] = "{ " + f'"supported_entity": "{supported_entity}", "deny_list": "{values}"' + " }"
+    
+    def setupRegex(self, supported_entity, patterns, context):
+        ENGINE_CURR_CONFIG['regex'] = "{ " + f'"supported_entity": "{supported_entity}", "pattern": {patterns}, "context": "{context}" ' + " }"
+
+    def setupOptions(self, option, value, configFile, update):
+        if update:
+            configFile.update({ option : value })
+        else:
+            configFile[option] = value
+```
+
+`setupDenyList` has two arguments:
+1. the entity supported by this recognizer
+2. a list of words to detect
+
+`setupRegex` has three arguments:
+1. the entity supported by this recognizer
+2. a list of words to detect
+3. list of context words to help detection
+
+`setupOptions` is used all the others options specifying the right configuration file (ANALYZER_CURR_CONFIG or ENGINE_CURR_CONFIG).
+
+### Example
+
+```python
+import analyzer_client as analyzer
+
+if __name__ == "__main__":
+
+	clientAnalyzer = analyzer.ClientEntity("localhost", 8061)
+
+    # Setup entities that this recognizer can detect 
+    option_name = "entities"
+    values = "PERSON,LOCATION,IP_ADDRESS"
+	clientAnalyzer.setupOptions(option_name, values, analyzer.ANALYZE_CURR_CONFIG, 0)
+
+	# SETUP REGEX 
+	patterns = []
+	
+	supported_entity = "US_ZIP_CODE"
+	name_pattern = "zip us"
+	regex = r'(\b\d{5}(?:\-\d{4})?\b)'
+	score = 0.01
+	context = "zip,zipcode"
+	patterns.append("{ " + f"'name_pattern' : '{name_pattern}', 'regex' : '{regex}', 'score' : {score}" + " }")
+
+	clientAnalyzer.setupRegex(supported_entity, patterns, context)
+
+	clientAnalyzer.sendRequestAnalyze("zip_test")
+	clientAnalyzer.closeConnection()
+```
+
+`sendRequestAnalyze(self, filename)` is used to perform analysis specifying a filename.

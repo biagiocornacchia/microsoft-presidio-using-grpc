@@ -159,3 +159,121 @@ Deanonymizer results saved into `anonymizer-results/` folder (anonymizer-results
     Items:
     { "start": 0, "end": 4, "operator": "decrypt", "text": "Kate", "entity_type": "NUMBER" }
 
+## Scheme API
+
+`anonymizer_client.py` contains a ClientEntity class.
+
+### Global vars
+
+```python
+SUPPORTED_ENTITIES = ['IBAN_CODE', 'US_PASSPORT', 'DATE_TIME', 'MEDICAL_LICENSE', 'CRYPTO', 'LOCATION', 'UK_NHS', 'US_SSN', 'CREDIT_CARD', 'US_BANK_NUMBER', 'US_ITIN', 'EMAIL_ADDRESS', 'PERSON', 'IP_ADDRESS', 'DOMAIN_NAME', 'PHONE_NUMBER', 'SG_NRIC_FIN', 'NRP', 'US_DRIVER_LICENSE']
+ANONYMIZERS = ['hash', 'mask', 'redact', 'replace', 'custom', 'encrypt', 'decrypt']
+
+CONFIG_FILE = 'config/operatorConfigAnonymizer.txt'
+CONFIG_FILE_DE = 'config/operatorConfigDeanonymizer.txt'
+
+PATH_ANONYMIZER_RESULTS = "../anonymizer-results/"
+PATH_ANALYZER_RESULTS = "../analyzer-results/"
+PATH_FILES = "../files/"
+```
+
+* `SUPPORTED_ENTITIES` and `ANONYMIZERS` are the list of entities and anonymizers supported by Microsoft Presidio.</br>
+* `CONFIG_FILE` and `CONFIG_FILE_DE` contains the path of the configuration files. One used by the anonymizer and one used during the deanoymization.</br>
+* `PATH_ANONYMIZER_RESULTS`, `PATH_ANALYZER_RESULTS` and `PATH_FILES` are the directories where the anonymizer results will be saved and where the orignal text resides.
+
+### Connection 
+You should first establish a connection between the gRPC analyzer client and the gRPC analyzer server. Here are two functions to manage connections:
+
+```python
+class ClientEntity:
+
+    def __init__(self, ip_address, port):
+
+        self.ip_address = ip_address
+        self.port = port
+        self.channel = grpc.insecure_channel(ip_address + ':' + str(port))
+        self.stub = pb2_grpc.AnonymizerEntityStub(self.channel)
+        .
+        .
+        .
+
+    def closeConnection(self):
+        print("Disconnected from the server")
+        self.channel.close()
+```
+
+The arguments are a string that denote the server ip address and a number to denote the server port.
+
+### Setup a configuration
+
+```python
+class ClientEntity:
+        .
+        .
+    def addOperator(self, entity_type, params, configFile):
+        with open(configFile, 'a') as f:
+            f.write(f'"{entity_type}" : "{params}"\n')
+```
+
+`addOperator` has three arguments:
+1. the entity type
+2. params
+3. configuration file
+
+Some utility functions:
+1. checkDuplicate(entity_type, configFile)
+2. anonymizerOptions(anonymizer, configType)
+
+`checkDuplicate` is used to check if a config option is already setted in the specified configuration file (CONFIG_FILE or CONFIG_FILE_DE) and returns an integer. <br> While `anonymizerOptions` has two arguments. Anonymizer (for example encrypt,hash,replace ecc) and configType (Anonymizer or Deanonymizer). This function will ask for some other input values and returns a string based on the type of anonymizer.
+
+### Example of anonymization
+
+```python
+import anonymizer_client as anonymizer
+import os
+
+if __name__ == "__main__":
+
+    clientAnonymizer = anonymizer.ClientEntity("localhost", 8061)
+    clientAnonymizer.readConfiguration(anonymizer.CONFIG_FILE)
+    
+    # Setup operator config
+    check = anonymizer.checkDuplicate("PERSON", anonymizer.CONFIG_FILE) 
+
+    if check == 1:
+        print("CONFIG: resetting config file")
+        os.remove(anonymizer.CONFIG_FILE)
+    elif check == 0:
+        print("CONFIG: ignoring...")
+
+    params = anonymizer.anonymizerOptions("hash", "Anonymizer")
+    # returns: { 'type': '{anonymizer}', 'hash_type': '{hash_type} }
+
+    if params != -1:
+        clientAnonymizer.addOperator("PERSON", params, anonymizer.CONFIG_FILE)
+
+    clientAnonymizer.sendRequestAnonymize("demo")
+    clientAnonymizer.closeConnection()
+```
+
+`sendRequestAnonymize(self, filename)` is used to perform anonymization specifying a filename.
+
+### Example of deanonymization
+
+```python
+import anonymizer_client as anonymizer
+
+if __name__ == "__main__":
+
+    clientAnonymizer = anonymizer.ClientEntity("localhost", 8061)
+    clientAnonymizer.readConfiguration(anonymizer.CONFIG_FILE_DE)
+
+    # Setup deanonymizer configuration file
+    params = anonymizer.anonymizerOptions("decrypt", "Daenonymizer")
+
+    clientAnonymizer.sendRequestDeanonymize("demo")
+    clientAnonymizer.closeConnection()
+
+```
+
+`sendRequestDeanonymize(self, filename)` is used to perform deanonymization specifying a filename.
