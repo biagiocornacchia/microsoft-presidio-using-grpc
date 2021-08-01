@@ -37,8 +37,10 @@ class ClientEntity():
                 print("\n")
                 for line in ConfigFile:
                     print(line.strip().replace("\"", ""))
+            return True
         else:
-            print("Config file not found!")
+            # config file not found
+            return False
 
     def addOperator(self, entity_type, params, configFile):
     

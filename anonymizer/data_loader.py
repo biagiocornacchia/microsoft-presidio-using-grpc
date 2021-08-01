@@ -3,9 +3,9 @@ import os
 from os import system, name
 import time
 
-def presidio_anonymizer_start(obj):
+def presidio_anonymizer_start(clientAnonymizer):
     
-    print("SERVER INFO: {}:{}".format(obj.ip_address, obj.port))
+    print("SERVER INFO: {}:{}".format(clientAnonymizer.ip_address, clientAnonymizer.port))
 
     while True:
         print("\n1) Setup config file")
@@ -17,19 +17,21 @@ def presidio_anonymizer_start(obj):
 
         if command == 1:
             
-            setupConfig(obj, anonymizer.CONFIG_FILE)
+            setupConfig(clientAnonymizer, anonymizer.CONFIG_FILE)
             exit()
 
         elif command == 2:
             
-            obj.readConfiguration(anonymizer.CONFIG_FILE)
+            if not clientAnonymizer.readConfiguration(anonymizer.CONFIG_FILE):
+                print("Configuration file not found!")
+
             exit()
 
         elif command == 3:
 
             filename = input("\nFilename: ")
 
-            if obj.sendRequestAnonymize(filename) != -1:
+            if clientAnonymizer.sendRequestAnonymize(filename) != -1:
                 print("\nSuccess!")
             else:
                 print("\nFile missing!")
@@ -41,9 +43,9 @@ def presidio_anonymizer_start(obj):
         else:
             print("\nCommand not valid!")
 
-def presidio_deanonymizer_start(obj):
+def presidio_deanonymizer_start(clientAnonymizer):
  
-    print("SERVER INFO:  {}:{}".format(obj.ip_address, obj.port))
+    print("SERVER INFO:  {}:{}".format(clientAnonymizer.ip_address, clientAnonymizer.port))
 
     while True:
         print("\n1) Setup config file")
@@ -55,19 +57,21 @@ def presidio_deanonymizer_start(obj):
 
         if command == 1:
             
-            setupConfig(obj, anonymizer.CONFIG_FILE_DE)
+            setupConfig(clientAnonymizer, anonymizer.CONFIG_FILE_DE)
             exit()
 
         elif command == 2:
 
-            obj.readConfiguration(anonymizer.CONFIG_FILE_DE)
+            if not clientAnonymizer.readConfiguration(anonymizer.CONFIG_FILE_DE):
+                print("Configuration file not found!")
+
             exit()
 
         elif command == 3:
 
             filename = input("\nFilename: ")
 
-            if obj.sendRequestDeanonymize(filename) != -1:
+            if clientAnonymizer.sendRequestDeanonymize(filename) != -1:
                 print("\nSuccess!")
             else:
                 print("\nFile missing!")
@@ -79,7 +83,7 @@ def presidio_deanonymizer_start(obj):
         else:
             print("\nCommand not valid!")
 
-def setupConfig(obj, configFile):
+def setupConfig(clientAnonymizer, configFile):
     
     if configFile == anonymizer.CONFIG_FILE:
         configType = "Anonymizer"
@@ -132,7 +136,7 @@ def setupConfig(obj, configFile):
         
         # save config
         if params != -1:
-            obj.addOperator(entity_type, params, configFile)
+            clientAnonymizer.addOperator(entity_type, params, configFile)
             print("\n{} -> {} - Config successfully updated.\n".format(entity_type, params))
 
 def clear():
@@ -167,8 +171,8 @@ if __name__ == "__main__":
             clear()
             
             try:
-                obj
-                presidio_anonymizer_start(obj) 
+                clientAnonymizer
+                presidio_anonymizer_start(clientAnonymizer) 
             except NameError:
                 print("No server info found!")
                 exit() 
@@ -177,8 +181,8 @@ if __name__ == "__main__":
             clear()
             
             try:
-                obj
-                presidio_deanonymizer_start(obj) 
+                clientAnonymizer
+                presidio_deanonymizer_start(clientAnonymizer) 
             except NameError:
                 print("No server info found!")
                 exit() 
@@ -188,7 +192,7 @@ if __name__ == "__main__":
             ip_address = input("\nIP ADDRESS: ")
             port = input("SERVER PORT: ")
             
-            obj = anonymizer.ClientEntity(ip_address, port)
+            clientAnonymizer = anonymizer.ClientEntity(ip_address, port)
             exit()
 
         elif command == 4:

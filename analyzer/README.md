@@ -91,7 +91,7 @@ It is also possible adapt Presidio to detect new types of PII entities.
 
 To use this features you have to setup an AnalyzeEngine configuration.
 
-### First Case (deny list)
+### First Case (Deny List based PII recognition)
     
 In this example, we will pass a short list of tokens which should be marked as PII if detected. First, let's define the tokens we want to treat as PII. In this case it would be a list of titles:
 
@@ -132,7 +132,7 @@ Text example:
     [type: TITLE, start: 10, end: 13, score: 1.0]
     [type: PERSON, start: 14, end: 18, score: 1.0]
 
-### Second Case (regex)
+### Second Case (Regex based PII recognition)
 
 File zip_test.txt contains
 
@@ -260,7 +260,7 @@ class ClientEntity:
 2. one or more patterns that define the recognizer
 3. list of context words to help detection
 
-`setupOptions` is used to setup all the others options specifying the right options file (ANALYZER_OPTIONS or ENGINE_OPTIONS).
+`setupOptions` is used to setup all the others options specifying the right options file (ANALYZER_OPTIONS or ENGINE_OPTIONS) and returns an integer.
 
 ### Example
 
@@ -293,7 +293,7 @@ if __name__ == "__main__":
 3. regexList: list of regex
 4. scoreList: list of scores
 
-In this case we setup a deny-list based PII recognition.
+This is an example of a deny-list based setup.
 
 ```python
 	# Setup a deny list config

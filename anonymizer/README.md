@@ -47,7 +47,7 @@ service AnonymizerEntity {
     }
     ```
 
-- `sendConfig`</br> is used to create an operator configuration. Possible operators for the anonymizer are:
+- `sendConfig`</br> is used to send the operator configuration. Possible operators for the anonymizer are:
     1. encrypt: anonymize the text with an encrypted text using Advanced Encryption Standard
     2. replace: replaces the PII text entity with a new string
     3. redact: redact the string - empty value
