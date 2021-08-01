@@ -9,9 +9,6 @@ import os
 ENGINE_OPTIONS = [ "deny_list", "regex", "nlp_engine", "app_tracer", "log_decision_process", "default_score_threshold", "supported_languages" ]
 ANALYZE_OPTIONS = ["language", "entities", "correlation_id", "score_threshold", "return_decision_process"]
 
-ENGINE_CURR_CONFIG = {}
-ANALYZE_CURR_CONFIG = {}
-
 PATH_RESULTS = "../analyzer-results/"
 PATH_FILES = "../files/"
 
@@ -27,9 +24,12 @@ class ClientEntity():
         self.channel = grpc.insecure_channel(ip_address + ':' + str(port))
         self.stub = pb2_grpc.AnalyzerEntityStub(self.channel)
 
+        self.engine_curr_config = {}
+        self.analyze_curr_config = {}
+
     def sendRequestAnalyze(self, filename):
 
-        if not checkRequiredFiles(filename):
+        if not self.checkRequiredFiles(filename):
             return -1
 
         # sending original text to analyze
@@ -41,20 +41,20 @@ class ClientEntity():
             print("FROM SERVER: file received correctly. UUID assigned: {}".format(response.uuidClient))
 
             my_uuid = response.uuidClient
-            
+
             # sending config options (if not empty)
-            if ENGINE_CURR_CONFIG:
+            if self.engine_curr_config:
                 print("FROM CLIENT: sending Engine configuration...")  
                 
-                ENGINE_CURR_CONFIG['uuidClient'] = my_uuid
-                json_msg = json.dumps(ENGINE_CURR_CONFIG) 
+                self.engine_curr_config['uuidClient'] = my_uuid
+                json_msg = json.dumps(self.engine_curr_config) 
                 response = self.stub.sendEngineOptions(Parse(json_msg, pb2.AnalyzerEngineOptions())) 
 
-            if ANALYZE_CURR_CONFIG:
+            if self.analyze_curr_config:
                 print("FROM CLIENT: sending analyze configuration...")
                 
-                ANALYZE_CURR_CONFIG['uuidClient'] = my_uuid
-                json_msg = json.dumps(ANALYZE_CURR_CONFIG) 
+                self.analyze_curr_config['uuidClient'] = my_uuid
+                json_msg = json.dumps(self.analyze_curr_config) 
                 response = self.stub.sendOptions(Parse(json_msg, pb2.AnalyzeOptions())) 
             
             responses = self.stub.GetAnalyzerResults(pb2.Request(uuidClient = my_uuid))
@@ -66,59 +66,68 @@ class ClientEntity():
                     RecognizerResults.write(string)
 
             print("\n{}-results.txt created".format(filename))
+            return 1
 
         else:
             print("FROM SERVER: original text file not received correctly")
+            return 0
 
-    def setupDenyList(self, supported_entity, values):
+    def checkRequiredFiles(self, filename):
 
-        ENGINE_CURR_CONFIG["deny_list"] = "{ " + f'"supported_entity": "{supported_entity}", "deny_list": "{values}"' + " }"
+        # check text file
+        if not os.path.exists(PATH_FILES + filename + ".txt"):
+            print("ERROR: file text not found!")
+            return False
+
+        # check conf setup (AnalyzerEngine and Analyze params)
+        if self.engine_curr_config:
+            print("AnalyzerEngine configuration found!")
+            # print(self.engine_curr_config)
+        else:
+            print("AnalyzerEngine configuration not found!")
+
+        if self.analyze_curr_config:
+            print("Analyze configuration found!")
+            # print(self.analyze_curr_config)
+        else:
+            print("Analyze configuration not found!")
+
+        return True
+
+    def setupDenyList(self, supported_entities, valuesList):
+
+        jsonString = "{ " + f'"supported_entity": {supported_entities}, "deny_list": {valuesList}' + " }"
+        self.engine_curr_config["deny_list"] = jsonString.replace("'", "\"")
     
     def setupRegex(self, supported_entity, patterns, context):
 
-        ENGINE_CURR_CONFIG['regex'] = "{ " + f'"supported_entity": "{supported_entity}", "pattern": {patterns}, "context": "{context}" ' + " }"
+        self.engine_curr_config['regex'] = "{ " + f'"supported_entity": "{supported_entity}", "pattern": {patterns}, "context": "{context}" ' + " }"
 
-    def setupOptions(self, option, value, configFile, update):
-
-        if update:
-            configFile.update({ option : value })
+    def setupOptions(self, option, value, optionFile):
+        
+        if optionFile == "ANALYZE_OPTIONS":
+            if option in ANALYZE_OPTIONS:
+                self.analyze_curr_config[option] = value
+                return 1
+            else:
+                # invalid option name
+                return -1
+        elif optionFile == "ENGINE_OPTIONS":
+            if option in ENGINE_OPTIONS:
+                self.engine_curr_config[option] = value
+                return 1
+            else:
+                # invalid option name
+                return -1
         else:
-            configFile[option] = value
+            # invalid optionFile 
+            return -2
 
     def closeConnection(self):
         print("Disconnected from the server")
         self.channel.close()
 
 # UTILITY FUNCTIONS
-
-def checkRequiredFiles(filename):
-
-    # check text file
-    if not os.path.exists(PATH_FILES + filename + ".txt"):
-        print("ERROR: file text not found!")
-        return False
-
-    # check conf setup (AnalyzerEngine and Analyze params)
-    if ENGINE_CURR_CONFIG:
-        print("AnalyzerEngine configuration found!")
-        # print(ENGINE_CURR_CONFIG)
-    else:
-        print("AnalyzerEngine configuration not found!")
-
-    if ANALYZE_CURR_CONFIG:
-        print("Analyze configuration found!")
-        # print(ANALYZE_CURR_CONFIG)
-    else:
-        print("Analyze configuration not found!")
-
-    return True
-
-def clear():
-
-    if name == "nt":
-        _ = system("cls")
-    else:
-        _ = system("clear")
 
 def makeMessage(msg):
     return pb2.DataFile(chunk = msg)
@@ -139,3 +148,11 @@ def generateChunks(filename):
             TOTAL_CHUNKS = cont
 
             yield makeMessage(data)
+
+def createPatternInfo(num, nameList, regexList, scoreList):
+    patterns = []
+    
+    for i in range(num):
+        patterns.append("{ " + f"\'name_pattern\' : \'{nameList[i]}\', \'regex\' : \'{regexList[i]}\', \'score\' : {scoreList[i]}" + " }")
+
+    return patterns

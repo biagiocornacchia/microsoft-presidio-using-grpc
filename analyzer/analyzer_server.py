@@ -154,10 +154,22 @@ def getEngineOptions(uuid, ENGINE_OPTIONS):
                     print("[+] Deny List recognizer found")
                 
                     deny_info = json.loads(options[elem])
-                    deny_list = deny_info['deny_list'].split(",")
 
-                    custom_recognizers.append(PatternRecognizer(supported_entity = deny_info['supported_entity'], deny_list = deny_list))                 
+                    deny_lists = []
+                    supported_entities = []
 
+                    for entity in deny_info['supported_entity']:
+                        supported_entities.append(entity)
+
+                    for tokens in deny_info['deny_list']:
+                        deny_lists.append(tokens.split(","))
+
+                    print("\n")
+                    for i in range(len(supported_entities)):
+                        print("{} | SUPPORTED_ENTITY: {} | DENY_LIST: {}".format(i, supported_entities[i], deny_lists[i]))
+                        custom_recognizers.append(PatternRecognizer(supported_entity = supported_entities[i], deny_list = deny_lists[i]))                 
+                    print("\n")
+                    
                 else:
                     ENGINE_OPTIONS.update({ elem : options[elem] })
             

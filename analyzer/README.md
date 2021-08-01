@@ -173,7 +173,7 @@ Analyzer results will be
 
 ## Scheme API
 
-`analyzer_client.py` contains a ClientEntity class.
+`analyzer_client.py` contains a ClientEntity class and some utility functions.
 
 ### Global vars
 
@@ -181,16 +181,12 @@ Analyzer results will be
 ENGINE_OPTIONS = [ "deny_list", "regex", "nlp_engine", "app_tracer", "log_decision_process", "default_score_threshold", "supported_languages" ]
 ANALYZE_OPTIONS = ["language", "entities", "correlation_id", "score_threshold", "return_decision_process"]
 
-ENGINE_CURR_CONFIG = {}
-ANALYZE_CURR_CONFIG = {}
-
 PATH_RESULTS = "../analyzer-results/"
 PATH_FILES = "../files/"
 ```
 
 This variables are used to setup a configuration for the analyzer. </br>
 * `ENGINE_OPTIONS` and `ANALYZER_OPTIONS` are the possible options that Microsoft Presidio Analyzer supports.</br>
-* `ENGINE_CURR_CONFIG` and `ANALYZER_CURR_CONFIG` will contain the current configuration specified by the client.</br>
 * `PATH_RESULTS` and `PATH_FILES` are the directories where the analyzer results will be saved and where the orignal text resides.
 
 ### Connection 
@@ -205,7 +201,10 @@ class ClientEntity:
         self.port = port
         self.channel = grpc.insecure_channel(ip_address + ':' + str(port))
         self.stub = pb2_grpc.AnalyzerEntityStub(self.channel)
-        .
+
+        self.engine_curr_config = {}
+        self.analyze_curr_config = {}
+        
         .
         .
 
@@ -214,7 +213,8 @@ class ClientEntity:
         self.channel.close()
 ```
 
-The arguments are a string that denote the server ip address and a number to denote the server port.
+The arguments are a string that denote the server ip address and a number to denote the server port. </br>
+`self.engine_curr_config` and `self.analyze_curr_config` will contain the current configuration specified by the client.
 
 ### Setup a configuration
 
@@ -222,29 +222,45 @@ The arguments are a string that denote the server ip address and a number to den
 class ClientEntity:
         .
         .
-    def setupDenyList(self, supported_entity, values):
-        ENGINE_CURR_CONFIG["deny_list"] = "{ " + f'"supported_entity": "{supported_entity}", "deny_list": "{values}"' + " }"
+
+    def setupDenyList(self, supported_entities, valuesList):
+        jsonString = "{ " + f'"supported_entity": {supported_entities}, "deny_list": {valuesList}' + " }"
+        self.engine_curr_config["deny_list"] = jsonString.replace("'", "\"")
     
     def setupRegex(self, supported_entity, patterns, context):
-        ENGINE_CURR_CONFIG['regex'] = "{ " + f'"supported_entity": "{supported_entity}", "pattern": {patterns}, "context": "{context}" ' + " }"
+        self.engine_curr_config['regex'] = "{ " + f'"supported_entity": "{supported_entity}", "pattern": {patterns}, "context": "{context}" ' + " }"
 
-    def setupOptions(self, option, value, configFile, update):
-        if update:
-            configFile.update({ option : value })
+    def setupOptions(self, option, value, optionFile):
+
+        if optionFile == "ANALYZE_OPTIONS":
+            if option in ANALYZE_OPTIONS:
+                self.analyze_curr_config[option] = value
+                return 1
+            else:
+                # invalid option name
+                return -1
+        elif optionFile == "ENGINE_OPTIONS":
+            if option in ENGINE_OPTIONS:
+                self.engine_curr_config[option] = value
+                return 1
+            else:
+                # invalid option name
+                return -1
         else:
-            configFile[option] = value
+            # invalid optionFile 
+            return -2
 ```
 
 `setupDenyList` has two arguments:
-1. the entity supported by this recognizer
+1. a list of the supported entity 
 2. a list of words to detect
 
 `setupRegex` has three arguments:
 1. the entity supported by this recognizer
-2. a list of words to detect
+2. one or more patterns that define the recognizer
 3. list of context words to help detection
 
-`setupOptions` is used all the others options specifying the right configuration file (ANALYZER_CURR_CONFIG or ENGINE_CURR_CONFIG).
+`setupOptions` is used to setup all the others options specifying the right options file (ANALYZER_OPTIONS or ENGINE_OPTIONS).
 
 ### Example
 
@@ -256,24 +272,42 @@ if __name__ == "__main__":
     clientAnalyzer = analyzer.ClientEntity("localhost", 8061)
 
     # Setup entities that this recognizer can detect 
-    option_name = "entities"
-    values = "PERSON,LOCATION,IP_ADDRESS"
-    clientAnalyzer.setupOptions(option_name, values, analyzer.ANALYZE_CURR_CONFIG, 0)
+	option_name = "entities"
+	values = "US_ZIP_CODE"
+	clientAnalyzer.setupOptions(option_name, values, "ANALYZE_OPTIONS")
+	
+	# Setup a regex configuration
+	supported_entity = "US_ZIP_CODE"
+	context = "zip,zipcode"
 
-    # SETUP REGEX 
-    patterns = []
+	patterns = analyzer.createPatternInfo(1, ["zip code us"], [r"(\b\d{5}(?:\-\d{4})?\b)"], [0.01])
+	clientAnalyzer.setupRegex(supported_entity, patterns, context)
 
-    supported_entity = "US_ZIP_CODE"
-    name_pattern = "zip us"
-    regex = r'(\b\d{5}(?:\-\d{4})?\b)'
-    score = 0.01
-    context = "zip,zipcode"
-    patterns.append("{ " + f"'name_pattern' : '{name_pattern}', 'regex' : '{regex}', 'score' : {score}" + " }")
-
-    clientAnalyzer.setupRegex(supported_entity, patterns, context)
-
-    clientAnalyzer.sendRequestAnalyze("zip_test")
-    clientAnalyzer.closeConnection()
+	clientAnalyzer.sendRequestAnalyze("zip_test")
+	clientAnalyzer.closeConnection()
 ```
+`sendRequestAnalyze(self, filename)` is used to perform analysis specifying a filename. <br>
+`createPatternInfo(num, nameList, regexList, scoreList)` is an utility fuction that has 4 arguments and returns a list of pattern:
+1. num: number of patterns
+2. nameList: list of name pattern
+3. regexList: list of regex
+4. scoreList: list of scores
 
-`sendRequestAnalyze(self, filename)` is used to perform analysis specifying a filename.
+In this case we setup a deny-list based PII recognition.
+
+```python
+	# Setup a deny list config
+	supported_entities = []
+	valuesList = []
+
+	supported_entities.append("TITLE")
+	valuesList.append("Mr.,Mrs.,Miss")
+
+	supported_entities.append("PRONOUN")
+	valuesList.append("he,He,his,His,she,She,hers,Hers")
+
+	clientAnalyzer.setupDenyList(supported_entities, valuesList)
+	
+	clientAnalyzer.sendRequestAnalyze("double_recognizer")
+	clientAnalyzer.closeConnection()
+```

@@ -3,9 +3,9 @@ import time
 import os
 from os import system, name
 
-def presidio_analyzer_start(obj):
+def presidio_analyzer_start(clientAnalyzer):
        
-    print("SERVER INFO: {}:{}\n".format(obj.ip_address, obj.port))
+    print("SERVER INFO: {}:{}\n".format(clientAnalyzer.ip_address, clientAnalyzer.port))
 
     while True:
         print("1) Setup AnalyzerEngine")
@@ -16,28 +16,32 @@ def presidio_analyzer_start(obj):
         command = int(input("\nCommand: "))
 
         if command == 1:
-            setupEngine(obj)
+            setupEngine(clientAnalyzer)
             clear()
 
         elif command == 2:
-            setupAnalyze(obj)
+            setupAnalyze(clientAnalyzer)
             clear()
 
         elif command == 3:
-
             filename = input("\nFilename: ")
             print("\nSearching for {}".format(filename))
 
-            if obj.sendRequestAnalyze(filename) != -1:
-                print("\nSuccess!")
-            else:
+            result = clientAnalyzer.sendRequestAnalyze(filename)
+
+            if result == -1:
                 print("\nMissing file!")
+            elif result == 0:
+                print("\nOriginal text file not received correctly")
+            else:
+                print("\nSuccess!")
 
             exit()
 
         elif command == 4:
             clear()
             break
+
         else:
             print("\nCommand not valid!")  
 
@@ -49,19 +53,19 @@ def clear():
 
 def exit():
     while True:
-        if input("\nPress q to exit: ").lower() == "q":
+        if input("\nPress Q to exit: ").lower() == "q":
             clear()
             break
 
-def setupEngine(obj):
+def setupEngine(clientAnalyzer):
     clear()
 
-    if analyzer.ENGINE_CURR_CONFIG:
+    if clientAnalyzer.engine_curr_config:
         print("\nENGINE CURRENT CONFIG FOUND: ")
 
-        for elem in analyzer.ENGINE_CURR_CONFIG:
+        for elem in clientAnalyzer.engine_curr_config:
             if elem != 'uuidClient':
-                print(elem + " : " +  analyzer.ENGINE_CURR_CONFIG[elem])
+                print(elem + " : " +  clientAnalyzer.engine_curr_config[elem])
 
         print('\n')
 
@@ -73,10 +77,10 @@ def setupEngine(obj):
         command = int(input("\nCommand: "))
 
         if command == 1:
-            setupPIIRecognition(obj)
+            setupPIIRecognition(clientAnalyzer)
 
         elif command == 2:
-            setupOptions(obj)
+            setupOptions(clientAnalyzer)
             exit()
 
         elif command == 3:
@@ -86,7 +90,7 @@ def setupEngine(obj):
         else:
             print("Command not valid\n")
 
-def setupPIIRecognition(obj):
+def setupPIIRecognition(clientAnalyzer):
     clear()
 
     while True:
@@ -102,32 +106,40 @@ def setupPIIRecognition(obj):
 
         if command == 1:
             
-            if "deny_list" not in analyzer.ENGINE_CURR_CONFIG:
+            if "deny_list" not in clientAnalyzer.engine_curr_config:
 
-                supported_entity = input("\nEntity: ").upper()
-                
-                if supported_entity == "Q":
-                    print("Exiting...")
-                    break
-                
-                print("\nNOTE: separate values with commas.\n")
-                values = input("Values list: ")
+                supported_entities = []
+                valuesList = []
 
-                obj.setupDenyList(supported_entity, values)
+                while True:
+                    supported_entity = input("\nEntity: ").upper()
+                    
+                    if supported_entity == "Q":
+                        print("Exiting...")
+                        break
+                    
+                    print("\nNOTE: separate values with commas.\n")
+                    values = input("Values list: ")
+
+                    supported_entities.append(supported_entity)
+                    valuesList.append(values)
+
+                clientAnalyzer.setupDenyList(supported_entities, valuesList)
 
             else:
-                print("\nDeny-list configuration found: {}".format(analyzer.ENGINE_CURR_CONFIG['deny_list']))
+
+                print("\nDeny-list configuration found: {}".format(clientAnalyzer.engine_curr_config['deny_list']))
                 response = input("\nDo you want to reset it? [Y/N]: ").upper()
 
                 if response == "Y":
-                    analyzer.ENGINE_CURR_CONFIG.pop('deny_list')
+                    clientAnalyzer.engine_curr_config.pop('deny_list')
                     print("Done")     
 
             exit()          
 
         elif command == 2:
             
-            if "regex" not in analyzer.ENGINE_CURR_CONFIG:
+            if "regex" not in clientAnalyzer.engine_curr_config:
 
                 supported_entity = input("\nEntity: ").upper()
                 
@@ -135,22 +147,35 @@ def setupPIIRecognition(obj):
                     print("Exiting...")
                     break
 
-                patterns = []
-                name_pattern = input("Name Pattern: ")
-                regex = input("Regex: ")
-                score = float(input("Score: "))
-                print("\nNOTE: separate context words with commas.\n")
+                num = int(input("\nNumber of patterns: "))
+
+                nameList = []
+                regexList = []
+                scoreList = []
+
+                for i in range(num):
+                    name_pattern = input("\nName Pattern: ")
+                    regex = input("Regex: ")
+                    score = float(input("Score: "))
+                    
+                    nameList.append(name_pattern)
+                    regexList.append(regex)
+                    scoreList.append(score)
+                    
+                print("\nNOTE: separate context words with commas.\n")    
                 context = input("Context words: ")
 
-                patterns.append("{ " + f"\'name_pattern\' : \'{name_pattern}\', \'regex\' : \'{regex}\', \'score\' : {score}" + " }")
-                obj.setupRegex(supported_entity, patterns, context)
+                patterns = analyzer.createPatternInfo(num, nameList, regexList, scoreList)
+                # Define the recognizer with one or more patterns
+                clientAnalyzer.setupRegex(supported_entity, patterns, context)
 
             else:
-                print("\nRegex based configuration found: {}".format(analyzer.ENGINE_CURR_CONFIG['regex']))
+
+                print("\nRegex based configuration found: {}".format(clientAnalyzer.engine_curr_config['regex']))
                 response = input("\nDo you want to reset it? [Y/N]: ").upper()
 
                 if response == "Y":
-                    analyzer.ENGINE_CURR_CONFIG.pop('regex')
+                    clientAnalyzer.engine_curr_config.pop('regex')
                     print("Done") 
 
             exit()                
@@ -158,81 +183,57 @@ def setupPIIRecognition(obj):
         elif command == 3:
             clear()
             break
+
         else:
             print("Command not valid\n")
             clear()
 
-def setupOptions(obj):
+def setupOptions(clientAnalyzer):
 
-    if analyzer.ENGINE_CURR_CONFIG:
+    if clientAnalyzer.engine_curr_config:
         print("\nANALYZER ENGINE CURRENT CONFIG FOUND: ")
 
-        for elem in analyzer.ENGINE_CURR_CONFIG:
+        for elem in clientAnalyzer.engine_curr_config:
             if elem != 'uuidClient':
-                print(elem + " : " +  analyzer.ENGINE_CURR_CONFIG[elem])
+                print(elem + " : " +  clientAnalyzer.engine_curr_config[elem])
 
     print("\nAvailable options: \n")
-    optionAvailable = ""
+    print("log_decision_process: possible values are 0 (False) or 1 (True)")
+    print("default_score_threshold")
+    print("supported_languages")
 
-    for option in analyzer.ENGINE_OPTIONS:
-        if option != "deny_list" and option != "regex" and option != "nlp_engine" and option != "app_tracer":
-            optionAvailable += option + "\n"
-
-    print(optionAvailable)
-    print("AnalyzerEngine configuration (press Q for exit)\n")
+    print("\nAnalyzerEngine configuration (press Q for exit)")
 
     while True:
 
-        option = input("Name: ").lower()
+        option = input("\nName: ").lower()
 
         if option == "q":
             break
 
-        if option in analyzer.ENGINE_OPTIONS:
-
-            if option == "log_decision_process":
-                print("\nNOTE: possible values are 0 (False) or 1 (True)\n")
-
-            value = input("Option value: ").lower()
-
-            if option in analyzer.ENGINE_CURR_CONFIG:
-
-                response = input("This config already exists. Do you want to update it? [Y/N]: ").upper()
-                if response == "Y":
-                    
-                    print("Updating...")
-                    obj.setupOptions(option, value, analyzer.ENGINE_CURR_CONFIG, 1)
-                    print("Option {} -> {}\n".format(option, value))
-
-                elif response == "N":
-                    print("Ignoring...")
-                else:
-                    print("Invalid command")
-                    continue
-
-            else:
-                # adding a new option
-                obj.setupOptions(option, value, analyzer.ENGINE_CURR_CONFIG, 0)
-                print("Option {} -> {}\n".format(option, value))
-
-        else:
-            print("Name option not valid!\n")
+        value = input("Option value: ").lower()
+        
+        if clientAnalyzer.setupOptions(option, value, "ENGINE_OPTIONS") == -1:
+            print("Invalid option name\n")
             continue
 
-def setupAnalyze(obj):
+        print("Option added: {} -> {}".format(option, value))
 
-    if analyzer.ANALYZE_CURR_CONFIG:
+def setupAnalyze(clientAnalyzer):
+
+    if clientAnalyzer.analyze_curr_config:
         print("\nANALYZE CURRENT CONFIG FOUND: ")
 
-        for elem in analyzer.ANALYZE_CURR_CONFIG:
+        for elem in clientAnalyzer.analyze_curr_config:
             if elem != 'uuidClient':
-                print(elem + " : " +  analyzer.ANALYZE_CURR_CONFIG[elem])
+                print(elem + " : " +  clientAnalyzer.analyze_curr_config[elem])
 
     print("\nAvailable options: \n")
-
-    for option in analyzer.ANALYZE_OPTIONS:
-        print(option)
-
+    print("language: 'en' by default")
+    print("entities: separate entities with commas (for example: PERSON,LOCATION,IP_ADDRESS..)")
+    print("correlation_id")
+    print("score_threshold")
+    print("return_decision_process: possible values are 0 (False) or 1 (True)")
     print("\nAnalyze config (press Q for exit)")
 
     while True:
@@ -242,40 +243,14 @@ def setupAnalyze(obj):
         if option == "q":
             print("Exting...")
             break
+        
+        value = input("Option value: ").lower()
 
-        if option in analyzer.ANALYZE_OPTIONS:
-
-            if option == "entities":
-                print("\nNOTE: separate entities with commas. For example: PERSON,LOCATION,IP_ADDRESS..\n")
-
-            if option == "return_decision_process":
-                print("\nNOTE: possible values are 0 (False) or 1 (True)\n")
-
-            value = input("Option value: ").lower()
-
-            if option in analyzer.ANALYZE_CURR_CONFIG:
-
-                response = input("This config already exists. Do you want to update it? [Y/N]: ").upper()
-                if response == "Y":
-                    
-                    print("Updating...")
-                    obj.setupOptions(option, value, analyzer.ANALYZE_CURR_CONFIG, 1)
-                    print("Option: {} -> {}".format(option, value))
-
-                elif response == "N":
-                    print("Ignoring...")
-                else:
-                    print("Invalid command")
-                    continue
-
-            else:
-                # adding a new option
-                obj.setupOptions(option, value, analyzer.ANALYZE_CURR_CONFIG, 0)
-                print("Option: {} -> {}".format(option, value))
-
-        else:
-            print("Name option not valid!")
+        if clientAnalyzer.setupOptions(option, value, "ANALYZE_OPTIONS") == -1:
+            print("Invalid option name\n")
             continue
+
+        print("Option added: {} -> {}".format(option, value))
 
 if __name__ == "__main__":
     
@@ -297,8 +272,8 @@ if __name__ == "__main__":
             clear()
 
             try:
-                obj
-                presidio_analyzer_start(obj)
+                clientAnalyzer
+                presidio_analyzer_start(clientAnalyzer)
             except NameError:
                 print("No server info found! You must set a server configuration.")
             
@@ -307,7 +282,7 @@ if __name__ == "__main__":
             ip_address = input("\nIP ADDRESS: ")
             port = input("SERVER PORT: ")
             
-            obj = analyzer.ClientEntity(ip_address, port)
+            clientAnalyzer = analyzer.ClientEntity(ip_address, port)
             exit()
 
         elif command == 3:
