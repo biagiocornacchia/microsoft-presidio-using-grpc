@@ -16,7 +16,7 @@ TOTAL_CHUNKS = 0
 
 PATH_TEMP = "analyzer-temp/"
 
-class AnalyzerEntity(pb2_grpc.AnalyzerEntityServicer):
+class AnalyzerEntityServicer(pb2_grpc.AnalyzerEntityServicer):
 
     def sendFileToAnalyze(self, request_iterator, context):
 
@@ -79,7 +79,7 @@ class AnalyzerEntity(pb2_grpc.AnalyzerEntityServicer):
             yield pb2.AnalyzerResults(entity_type = res.entity_type, start = res.start, end = res.end, score = res.score, analysis_explanation = str(res.analysis_explanation))
 
 
-def getResult(uuid, data):
+def getResult(uuid, fileText):
     
     # Default options
     ENGINE_OPTIONS = { "registry": None, "regex": None, "deny_list": None, "nlp_engine": None, "app_tracer": None, "log_decision_process": 0, "default_score_threshold": 0, "supported_languages": None }
@@ -98,7 +98,7 @@ def getResult(uuid, data):
                                 supported_languages = ENGINE_OPTIONS['supported_languages'] # list of specified languages
     )
     results = analyzer.analyze(
-                                data, 
+                                fileText, 
                                 language= ANALYZE_OPTIONS['language'], 
                                 entities = ANALYZE_OPTIONS['entities'],
                                 correlation_id = ANALYZE_OPTIONS['correlation_id'], 
@@ -212,7 +212,7 @@ def getAnalyzeOptions(uuid, ANALYZE_OPTIONS):
 def run_server():
     port = 8061
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    pb2_grpc.add_AnalyzerEntityServicer_to_server(AnalyzerEntity(), server)
+    pb2_grpc.add_AnalyzerEntityServicer_to_server(AnalyzerEntityServicer(), server)
     server.add_insecure_port('[::]:' + str(port))
     server.start()
     print("Listening on port {}\n".format(port))

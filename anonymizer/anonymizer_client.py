@@ -21,7 +21,7 @@ PATH_FILES = "../files/"
 CHUNK_SIZE = 1024*1024 # 1MB
 TOTAL_CHUNKS = 0
 
-class ClientEntity():
+class ClientEntity:
 
     def __init__(self, ip_address, port):
 
@@ -81,7 +81,8 @@ class ClientEntity():
                             if response.chunks == -1 and response.uuidClient == uuidClient:  
                                 print("FROM SERVER: configuration file received correctly")
                             else:  
-                                print("FROM SERVER: configuration file not received correctly")  
+                                print("FROM SERVER: configuration file not received correctly")
+                                return 0 
 
                     except IOError:
                         print("FROM CLIENT: using a default configuration")
@@ -89,12 +90,14 @@ class ClientEntity():
                     print("\nWaiting for Microsoft Presidio Anonymizer...")
                     self.sendRequestForText(filename, uuidClient, "anonymize")
                     self.sendRequestForItems(filename, uuidClient, "anonymize")
+                    return 1
 
                 else:
                     print("FROM SERVER: analyzer results not received correctly.")
-
+                    return 0
             else:
                 print("FROM SERVER: original text file not received correctly")
+                return 0
 
         except grpc.RpcError as rpc_error:
 
@@ -102,6 +105,8 @@ class ClientEntity():
                 print("Cannot connect to the server\n")
             else:
                 print(f"Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n")
+
+            return -2
 
     def sendRequestDeanonymize(self, filename):
 
@@ -136,17 +141,21 @@ class ClientEntity():
                         if response.chunks == -1 and response.uuidClient == uuidClient:  
                             print("FROM SERVER: configuration file received correctly")
                         else:  
-                            print("FROM SERVER: configuration file not received correctly")  
+                            print("FROM SERVER: configuration file not received correctly")
+                            return 0  
                     
                     print("\nWaiting for Microsoft Presidio Anonymizer...")
                     self.sendRequestForText(filename, uuidClient, "deanonymize")
                     self.sendRequestForItems(filename, uuidClient, "deanonymize")
+                    return 1
 
                 else:
                     print("FROM SERVER: items results not received correctly.")
+                    return 0
 
             else:
                 print("FROM SERVER: anonymized text file not received correctly")
+                return 0
             
         except grpc.RpcError as rpc_error:
             
@@ -154,6 +163,8 @@ class ClientEntity():
                 print("Cannot connect to the server\n")
             else:
                 print(f"Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n")
+
+            return -2
 
     def sendRequestForText(self, filename, uuidClient, requestType):
         # sends a request to get anonymized or deanonymized text

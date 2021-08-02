@@ -15,7 +15,7 @@ PATH_FILES = "../files/"
 CHUNK_SIZE = 1024*1024 # 1MB
 TOTAL_CHUNKS = 0
 
-class ClientEntity():
+class ClientEntity:
 
     def __init__(self, ip_address, port):
 
@@ -32,45 +32,55 @@ class ClientEntity():
         if not self.checkRequiredFiles(filename):
             return -1
 
-        # sending original text to analyze
-        chunk_iterator = generateChunks(filename)
-        print("\nFROM CLIENT: sending original text...")
-        response = self.stub.sendFileToAnalyze(chunk_iterator)
+        try:
+            # sending original text to analyze
+            chunk_iterator = generateChunks(filename)
+            print("\nFROM CLIENT: sending original text...")
+            response = self.stub.sendFileToAnalyze(chunk_iterator)
 
-        if response.chunks == TOTAL_CHUNKS:
-            print("FROM SERVER: file received correctly. UUID assigned: {}".format(response.uuidClient))
+            if response.chunks == TOTAL_CHUNKS:
+                print("FROM SERVER: file received correctly. UUID assigned: {}".format(response.uuidClient))
 
-            my_uuid = response.uuidClient
+                my_uuid = response.uuidClient
 
-            # sending config options (if not empty)
-            if self.engine_curr_config:
-                print("FROM CLIENT: sending Engine configuration...")  
+                # sending config options (if not empty)
+                if self.engine_curr_config:
+                    print("FROM CLIENT: sending Engine configuration...")  
+                    
+                    self.engine_curr_config['uuidClient'] = my_uuid
+                    json_msg = json.dumps(self.engine_curr_config) 
+                    response = self.stub.sendEngineOptions(Parse(json_msg, pb2.AnalyzerEngineOptions())) 
+
+                if self.analyze_curr_config:
+                    print("FROM CLIENT: sending analyze configuration...")
+                    
+                    self.analyze_curr_config['uuidClient'] = my_uuid
+                    json_msg = json.dumps(self.analyze_curr_config) 
+                    response = self.stub.sendOptions(Parse(json_msg, pb2.AnalyzeOptions())) 
                 
-                self.engine_curr_config['uuidClient'] = my_uuid
-                json_msg = json.dumps(self.engine_curr_config) 
-                response = self.stub.sendEngineOptions(Parse(json_msg, pb2.AnalyzerEngineOptions())) 
-
-            if self.analyze_curr_config:
-                print("FROM CLIENT: sending analyze configuration...")
+                responses = self.stub.GetAnalyzerResults(pb2.Request(uuidClient = my_uuid))
+                print("FROM CLIENT: waiting for analyzer results...")
                 
-                self.analyze_curr_config['uuidClient'] = my_uuid
-                json_msg = json.dumps(self.analyze_curr_config) 
-                response = self.stub.sendOptions(Parse(json_msg, pb2.AnalyzeOptions())) 
-            
-            responses = self.stub.GetAnalyzerResults(pb2.Request(uuidClient = my_uuid))
-            print("FROM CLIENT: waiting for analyzer results...")
-            
-            with open(PATH_RESULTS + filename + "-results.txt", "w") as RecognizerResults:
-                for response in responses:
-                    string = "{ " + f'"start": {response.start}, "end": {response.end}, "score": {response.score:.2f}, "entity_type": "{response.entity_type}", "analysis_explanation": "{response.analysis_explanation}"' + " }\n"
-                    RecognizerResults.write(string)
+                with open(PATH_RESULTS + filename + "-results.txt", "w") as RecognizerResults:
+                    for response in responses:
+                        string = "{ " + f'"start": {response.start}, "end": {response.end}, "score": {response.score:.2f}, "entity_type": "{response.entity_type}", "analysis_explanation": "{response.analysis_explanation}"' + " }\n"
+                        RecognizerResults.write(string)
 
-            print("\n{}-results.txt created".format(filename))
-            return 1
+                print("\n{}-results.txt created".format(filename))
+                return 1
 
-        else:
-            print("FROM SERVER: original text file not received correctly")
-            return 0
+            else:
+                print("FROM SERVER: original text file not received correctly")
+                return 0
+
+        except grpc.RpcError as rpc_error:
+
+            if rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
+                print("Cannot connect to the server")
+            else:
+                print(f"Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n")
+            
+            return -2
 
     def checkRequiredFiles(self, filename):
 

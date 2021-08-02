@@ -33,6 +33,8 @@ def presidio_analyzer_start(clientAnalyzer):
                 print("\nMissing file!")
             elif result == 0:
                 print("\nOriginal text file not received correctly")
+            elif result == -2:
+                print("\nConnection error")
             else:
                 print("\nSuccess!")
 

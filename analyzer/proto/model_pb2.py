@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11proto/model.proto\"\x19\n\x08\x44\x61taFile\x12\r\n\x05\x63hunk\x18\x01 \x01(\t\"\x1d\n\x07Request\x12\x12\n\nuuidClient\x18\x01 \x01(\t\"\xf7\x02\n\x15\x41nalyzerEngineOptions\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x12\n\x05regex\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x16\n\tdeny_list\x18\x03 \x01(\tH\x01\x88\x01\x01\x12\x17\n\nnlp_engine\x18\x04 \x01(\tH\x02\x88\x01\x01\x12\x17\n\napp_tracer\x18\x05 \x01(\tH\x03\x88\x01\x01\x12!\n\x14log_decision_process\x18\x06 \x01(\tH\x04\x88\x01\x01\x12$\n\x17\x64\x65\x66\x61ult_score_threshold\x18\x07 \x01(\tH\x05\x88\x01\x01\x12 \n\x13supported_languages\x18\x08 \x01(\tH\x06\x88\x01\x01\x42\x08\n\x06_regexB\x0c\n\n_deny_listB\r\n\x0b_nlp_engineB\r\n\x0b_app_tracerB\x17\n\x15_log_decision_processB\x1a\n\x18_default_score_thresholdB\x16\n\x14_supported_languages\"\xc8\x02\n\x0e\x41nalyzeOptions\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x15\n\x08language\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x1b\n\x0e\x63orrelation_id\x18\x03 \x01(\tH\x01\x88\x01\x01\x12\x1c\n\x0fscore_threshold\x18\x04 \x01(\tH\x02\x88\x01\x01\x12\x15\n\x08\x65ntities\x18\x05 \x01(\tH\x03\x88\x01\x01\x12$\n\x17return_decision_process\x18\x06 \x01(\tH\x04\x88\x01\x01\x12\x1f\n\x12\x61\x64_hoc_recognizers\x18\x07 \x01(\tH\x05\x88\x01\x01\x42\x0b\n\t_languageB\x11\n\x0f_correlation_idB\x12\n\x10_score_thresholdB\x0b\n\t_entitiesB\x1a\n\x18_return_decision_processB\x15\n\x13_ad_hoc_recognizers\"\x8d\x01\n\x0f\x41nalyzerResults\x12\x13\n\x0b\x65ntity_type\x18\x01 \x01(\t\x12\r\n\x05start\x18\x02 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x05\x12\r\n\x05score\x18\x04 \x01(\x02\x12!\n\x14\x61nalysis_explanation\x18\x05 \x01(\tH\x00\x88\x01\x01\x42\x17\n\x15_analysis_explanation\"9\n\x03\x41\x63k\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x13\n\x06\x63hunks\x18\x02 \x01(\x05H\x00\x88\x01\x01\x42\t\n\x07_chunks2\xc5\x01\n\x0e\x41nalyzerEntity\x12&\n\x11sendFileToAnalyze\x12\t.DataFile\x1a\x04.Ack(\x01\x12\x31\n\x11sendEngineOptions\x12\x16.AnalyzerEngineOptions\x1a\x04.Ack\x12$\n\x0bsendOptions\x12\x0f.AnalyzeOptions\x1a\x04.Ack\x12\x32\n\x12GetAnalyzerResults\x12\x08.Request\x1a\x10.AnalyzerResults0\x01\x62\x06proto3'
+  serialized_pb=b'\n\x11proto/model.proto\"\x19\n\x08\x44\x61taFile\x12\r\n\x05\x63hunk\x18\x01 \x01(\t\"\x1d\n\x07Request\x12\x12\n\nuuidClient\x18\x01 \x01(\t\"\xf7\x02\n\x15\x41nalyzerEngineOptions\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x12\n\x05regex\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x16\n\tdeny_list\x18\x03 \x01(\tH\x01\x88\x01\x01\x12\x17\n\nnlp_engine\x18\x04 \x01(\tH\x02\x88\x01\x01\x12\x17\n\napp_tracer\x18\x05 \x01(\tH\x03\x88\x01\x01\x12!\n\x14log_decision_process\x18\x06 \x01(\tH\x04\x88\x01\x01\x12$\n\x17\x64\x65\x66\x61ult_score_threshold\x18\x07 \x01(\tH\x05\x88\x01\x01\x12 \n\x13supported_languages\x18\x08 \x01(\tH\x06\x88\x01\x01\x42\x08\n\x06_regexB\x0c\n\n_deny_listB\r\n\x0b_nlp_engineB\r\n\x0b_app_tracerB\x17\n\x15_log_decision_processB\x1a\n\x18_default_score_thresholdB\x16\n\x14_supported_languages\"\x90\x02\n\x0e\x41nalyzeOptions\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x15\n\x08language\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x1b\n\x0e\x63orrelation_id\x18\x03 \x01(\tH\x01\x88\x01\x01\x12\x1c\n\x0fscore_threshold\x18\x04 \x01(\tH\x02\x88\x01\x01\x12\x15\n\x08\x65ntities\x18\x05 \x01(\tH\x03\x88\x01\x01\x12$\n\x17return_decision_process\x18\x06 \x01(\tH\x04\x88\x01\x01\x42\x0b\n\t_languageB\x11\n\x0f_correlation_idB\x12\n\x10_score_thresholdB\x0b\n\t_entitiesB\x1a\n\x18_return_decision_process\"\x8d\x01\n\x0f\x41nalyzerResults\x12\x13\n\x0b\x65ntity_type\x18\x01 \x01(\t\x12\r\n\x05start\x18\x02 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x05\x12\r\n\x05score\x18\x04 \x01(\x02\x12!\n\x14\x61nalysis_explanation\x18\x05 \x01(\tH\x00\x88\x01\x01\x42\x17\n\x15_analysis_explanation\"9\n\x03\x41\x63k\x12\x12\n\nuuidClient\x18\x01 \x01(\t\x12\x13\n\x06\x63hunks\x18\x02 \x01(\x05H\x00\x88\x01\x01\x42\t\n\x07_chunks2\xc5\x01\n\x0e\x41nalyzerEntity\x12&\n\x11sendFileToAnalyze\x12\t.DataFile\x1a\x04.Ack(\x01\x12\x31\n\x11sendEngineOptions\x12\x16.AnalyzerEngineOptions\x1a\x04.Ack\x12$\n\x0bsendOptions\x12\x0f.AnalyzeOptions\x1a\x04.Ack\x12\x32\n\x12GetAnalyzerResults\x12\x08.Request\x1a\x10.AnalyzerResults0\x01\x62\x06proto3'
 )
 
 
@@ -255,13 +255,6 @@ _ANALYZEOPTIONS = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='ad_hoc_recognizers', full_name='AnalyzeOptions.ad_hoc_recognizers', index=6,
-      number=7, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -298,14 +291,9 @@ _ANALYZEOPTIONS = _descriptor.Descriptor(
       index=4, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
-    _descriptor.OneofDescriptor(
-      name='_ad_hoc_recognizers', full_name='AnalyzeOptions._ad_hoc_recognizers',
-      index=5, containing_type=None,
-      create_key=_descriptor._internal_create_key,
-    fields=[]),
   ],
   serialized_start=458,
-  serialized_end=786,
+  serialized_end=730,
 )
 
 
@@ -369,8 +357,8 @@ _ANALYZERRESULTS = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=789,
-  serialized_end=930,
+  serialized_start=733,
+  serialized_end=874,
 )
 
 
@@ -413,8 +401,8 @@ _ACK = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=932,
-  serialized_end=989,
+  serialized_start=876,
+  serialized_end=933,
 )
 
 _ANALYZERENGINEOPTIONS.oneofs_by_name['_regex'].fields.append(
@@ -453,9 +441,6 @@ _ANALYZEOPTIONS.fields_by_name['entities'].containing_oneof = _ANALYZEOPTIONS.on
 _ANALYZEOPTIONS.oneofs_by_name['_return_decision_process'].fields.append(
   _ANALYZEOPTIONS.fields_by_name['return_decision_process'])
 _ANALYZEOPTIONS.fields_by_name['return_decision_process'].containing_oneof = _ANALYZEOPTIONS.oneofs_by_name['_return_decision_process']
-_ANALYZEOPTIONS.oneofs_by_name['_ad_hoc_recognizers'].fields.append(
-  _ANALYZEOPTIONS.fields_by_name['ad_hoc_recognizers'])
-_ANALYZEOPTIONS.fields_by_name['ad_hoc_recognizers'].containing_oneof = _ANALYZEOPTIONS.oneofs_by_name['_ad_hoc_recognizers']
 _ANALYZERRESULTS.oneofs_by_name['_analysis_explanation'].fields.append(
   _ANALYZERRESULTS.fields_by_name['analysis_explanation'])
 _ANALYZERRESULTS.fields_by_name['analysis_explanation'].containing_oneof = _ANALYZERRESULTS.oneofs_by_name['_analysis_explanation']
@@ -521,8 +506,8 @@ _ANALYZERENTITY = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=992,
-  serialized_end=1189,
+  serialized_start=936,
+  serialized_end=1133,
   methods=[
   _descriptor.MethodDescriptor(
     name='sendFileToAnalyze',

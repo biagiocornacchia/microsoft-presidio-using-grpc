@@ -2,11 +2,8 @@ import grpc
 from proto import model_pb2_grpc as pb2_grpc
 from proto import model_pb2 as pb2
 
-from presidio_anonymizer import DeanonymizeEngine
-from presidio_anonymizer.entities.engine import AnonymizerResult, OperatorConfig
-
-from presidio_anonymizer import AnonymizerEngine
-from presidio_anonymizer.entities.engine import RecognizerResult, OperatorConfig
+from presidio_anonymizer import DeanonymizeEngine, AnonymizerEngine
+from presidio_anonymizer.entities.engine import RecognizerResult, AnonymizerResult, OperatorConfig
 
 from concurrent import futures
 import uuid
@@ -18,7 +15,7 @@ PATH_TEMP = "anonymizer-temp/"
 CHUNK_SIZE = 1024*1024 # 1MB
 TOTAL_CHUNKS = 0
 
-class AnonymizerEntity(pb2_grpc.AnonymizerEntityServicer):
+class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
 
     def sendFile(self, request_iterator, context):
 
@@ -299,7 +296,7 @@ def startDeanonymization(uuidClient):
 
 def runServer(port):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    pb2_grpc.add_AnonymizerEntityServicer_to_server(AnonymizerEntity(), server)
+    pb2_grpc.add_AnonymizerEntityServicer_to_server(AnonymizerEntityServicer(), server)
     server.add_insecure_port('[::]:' + str(port))
     server.start()
     print("Listening on port {}\n".format(port))

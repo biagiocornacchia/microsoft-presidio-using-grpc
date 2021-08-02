@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-// define the analyze rservice
+// define the analyzer service
 service AnalyzerEntity {
     rpc sendFileToAnalyze(stream DataFile) returns (Ack); 
     rpc sendEngineOptions(AnalyzerEngineOptions) returns (Ack);
