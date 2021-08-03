@@ -76,7 +76,7 @@ class AnalyzerEntityServicer(pb2_grpc.AnalyzerEntityServicer):
             # context.set_code(5)
 
         for res in results:
-            yield pb2.AnalyzerResults(entity_type = res.entity_type, start = res.start, end = res.end, score = res.score, analysis_explanation = str(res.analysis_explanation))
+            yield pb2.AnalyzerResults(entity_type = res.entity_type, start = res.start, end = res.end, score = res.score, analysis_explanation = str(res.analysis_explanation).replace("\"", "'"))
 
 
 def getResult(uuid, fileText):
