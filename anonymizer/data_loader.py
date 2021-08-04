@@ -69,7 +69,7 @@ def presidio_deanonymizer_start(clientAnonymizer):
 
         elif command == 3:
 
-            filename = input("\nFilename: ")
+            filename = input("\nFilename (ex. filename-anonymized): ")
 
             if clientAnonymizer.sendRequestDeanonymize(filename) != -1:
                 print("\nSuccess!")
