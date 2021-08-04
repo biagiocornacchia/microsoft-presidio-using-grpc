@@ -42,11 +42,6 @@ class ClientEntity:
             # config file not found
             return False
 
-    def addOperator(self, entity_type, params, configFile):
-    
-        with open(configFile, 'a') as f:
-            f.write(f'"{entity_type}" : "{params}"\n')
-
     def sendRequestAnonymize(self, filename):
 
         if not checkRequiredFiles(filename, "anonymize"):
@@ -229,69 +224,47 @@ def ReadAnonymizedItems(filename, uuidClient):
             item = json.loads(line)
             yield pb2.AnonymizedItem(uuidClient = uuidClient, start = item['start'], end = item['end'], entity_type = item['entity_type'], operator = item['operator'])
 
-def anonymizerOptions(anonymizer, configType):
-    # RITORNA UNA STRINGA in base al tipo di anonymizer
-    # { "type": "mask", "masking_char": "*", "chars_to_mask": 4, "from_end": true }  { "type": "redact" } { "type": "replace", "new_value": "NEW VALUE" }  
-    # { "type": "encrypt", "key": "string" }  { "type": "hash", "hash_type": "string" }
+def addReplace(entity_type, new_value):
 
-    if configType == "Anonymizer":
-        if anonymizer == "replace":
-            
-            print("** replace **")
-            new_value = input("New value: ")
-            options = '{' + f"\'type\': \'{anonymizer}\', \'new_value\': \'{new_value}\'" + '}'
+    params = '{ ' + f'\\"type\\": \\"replace\\", \\"new_value\\": \\"{new_value}\\"' + ' }'
 
-        elif anonymizer == "redact":
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
-            print("** redact **")
-            options = '{' + f"\'type\': \'{anonymizer}\'" + '}'
+def addHash(entity_type, hash_type):
 
-        elif anonymizer == "mask":
+    params = '{ ' + f'\\"type\\": \\"hash\\", \\"hash_type\\": \\"{hash_type}\\"' + ' }'
 
-            print("** mask **")
-            masking_char = input("Masking char: ")
-            chars_to_mask = input("Chars to mask: ")
-            from_end = input("From end (0 or 1): ")
-            options = '{' + f"\'type\': \'{anonymizer}\', \'masking_char\': \'{masking_char}\', \'chars_to_mask\': {chars_to_mask}, \'from_end\': {from_end}" + '}'
-        
-        elif anonymizer == "hash":
-            
-            print("** hash **")
-            hash_type = input("Hash type (md5, sha256, sha512): ").lower()
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
-            if hash_type == "md5" or hash_type == "sha256" or hash_type == "sha512":
-                options = '{' + f"\'type\': \'{anonymizer}\', \'hash_type\': \'{hash_type}\'" + '}'
-            else:
-                print("Hash type error\n")
-                return -1
+def addEncrypt(entity_type, key):
 
-        elif anonymizer == "encrypt":
-            
-            print("** encrypt **")
-            key = input("Key: ")
-            options = '{' + f"\'type\': \'{anonymizer}\', \'key\': \'{key}\'" + '}'
+    params = '{ ' + f'\\"type\\": \\"encrypt\\", \\"key\\": \\"{key}\\"' + ' }'
 
-        else:
-            print("CONFIG: Invalid anonymizer\n")
-            return -1
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
-    elif configType == "Deanonymizer":
-        # DEANONYMIZER SUPPORTS ONLY 'DECRYPT' ANONYMIZER
-        if anonymizer == "decrypt":
-            
-            print("** decrypt **")
-            key = input("Key: ")
-            options = '{' + f"\'type\': \'{anonymizer}\', \'key\': \'{key}\'" + '}'
+def addMask(entity_type, masking_char, chars_to_mask, from_end):
 
-        else:
-            print("CONFIG: Invalid anonymizer\n")
-            return -1
+    params = '{ ' + f'\\"type\\": \\"mask\\", \\"masking_char\\": \\"{masking_char}\\", \\"chars_to_mask\\": {int(chars_to_mask)}, \\"from_end\\": {from_end.lower()}' + ' }'
 
-    else:
-        print("ConfigType error")
-        return -1
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
-    return options
+def addDecrypt(entity_type, key):
+
+    params = '{ ' + f'\\"type\\": \\"decrypt\\", \\"key\\": \\"{key}\\"' + ' }'
+
+    with open(CONFIG_FILE_DE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
+
+def addRedact(entity_type):
+
+    params = '{ ' + f'\\"type\\": \\"redact\\"' + ' }'
+
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
 def checkRequiredFiles(filename, requestType):
 
@@ -309,12 +282,6 @@ def checkRequiredFiles(filename, requestType):
 
         if configUp == 0:
             print("Config file not found! (Using a default conf)")
-            enableConfig = input("Do you want to use a default configuration? [Y/N] ").upper()
-
-            if enableConfig == "Y":
-                print("Anonymize with a default configuration")
-            else:
-                print("Setup a config file")
         else:
             print("Config file found!")
 

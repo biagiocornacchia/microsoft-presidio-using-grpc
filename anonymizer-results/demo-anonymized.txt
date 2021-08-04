@@ -2,7 +2,7 @@ Here are a few examples sentences we currently support:
 
 My zip code is <DATE_TIME>.
 
-Hello, my name is Mr. yhPGytyRPiELYJswVmCUITkUqTWgEQhxGbt6jsGRgJA= and I live in <LOCATION>.
+Hello, my name is Mr. CJtfcXNxA0MhbpJ0GQqTSeedYjgqolIXpUVGWQxCkQs= and I live in <LOCATION>.
 My credit card number is <CREDIT_CARD> and my crypto wallet id is <CRYPTO>.
 
 On <DATE_TIME> I visited <DOMAIN_NAME> and sent an email to <EMAIL_ADDRESS>,  from the IP <IP_ADDRESS>.
@@ -11,7 +11,7 @@ My passport: <US_PASSPORT> and my phone number: <PHONE_NUMBER>.
 
 This is a valid IBAN: <IBAN_CODE>. Can you please check the status on bank account <US_BANK_NUMBER>?
 
-SZarFG2KYmTdLaeUFLAQZn6Vr28TCcLUGWc51uh1uzg='s social security number is <US_SSN>.  Her driver license? it is <US_DRIVER_LICENSE>.
+Y2kUqcs6ZXRrdt8A91fIPCioP25BqYbnhw0mgFBJqRU='s social security number is <US_SSN>.  Her driver license? it is <US_DRIVER_LICENSE>.
 
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://<DOMAIN_NAME>

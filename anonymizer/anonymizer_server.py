@@ -188,19 +188,14 @@ def startAnonymization(uuidClient):
     except IOError:
         print("[+] No config file found (using default config)")
 
+    configResult = {}
+
     if configFile:
-        cstring = configFile.readline().strip()
-
-        if cstring:
-            for line in configFile:    
-                cstring += " , " + line.strip()
-
-        configResult = json.loads('{' + cstring + ' }')
-
-        for elem in configResult:
-            str_conf = configResult.get(elem)
-            str_conf = str_conf.replace("'", "\"")
-            configResult.update({elem : OperatorConfig.from_json(json.loads(str_conf))})
+        
+        for line in configFile:
+            configStr = json.loads(line)
+            print(json.loads(configStr['params']))
+            configResult[configStr['entity_type']] =  OperatorConfig.from_json(json.loads(configStr['params']))
 
         configFile.close()
 
@@ -260,19 +255,12 @@ def startDeanonymization(uuidClient):
         print("[+] No config file found - Cannot complete the deanonymization!")
         return -1
 
+    configResult = {}
+
     if configFile:
-        cstring = configFile.readline().strip()
-
-        if cstring:
-            for line in configFile:    
-                cstring += " , " + line.strip()
-
-        configResult = json.loads('{' + cstring + ' }')
-
-        for elem in configResult:
-            str_conf = configResult.get(elem)
-            str_conf = str_conf.replace("'", "\"")
-            configResult.update({elem : OperatorConfig.from_json(json.loads(str_conf))})
+        for line in configFile:
+            configStr = json.loads(line)
+            configResult[configStr['entity_type']] =  OperatorConfig.from_json(json.loads(configStr['params']))
 
         configFile.close()
 

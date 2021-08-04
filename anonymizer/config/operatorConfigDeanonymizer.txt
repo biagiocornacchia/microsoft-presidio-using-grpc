@@ -1,1 +1,1 @@
-"PERSON" : "{'type': 'decrypt', 'key': 'AAECAwQFBgcICQoLDA0ODw=='}"
+{ "entity_type" : "PERSON", "params" : "{ \"type\": \"decrypt\", \"key\": \"AAECAwQFBgcICQoLDA0ODw==\" }" }

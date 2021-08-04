@@ -18,7 +18,3 @@
 { "start": 598, "end": 606, "score": 0.65, "entity_type": "US_DRIVER_LICENSE", "analysis_explanation": "None" }
 { "start": 367, "end": 376, "score": 0.40, "entity_type": "US_PASSPORT", "analysis_explanation": "None" }
 { "start": 510, "end": 522, "score": 0.40, "entity_type": "US_BANK_NUMBER", "analysis_explanation": "None" }
-{ "start": 367, "end": 376, "score": 0.05, "entity_type": "US_BANK_NUMBER", "analysis_explanation": "None" }
-{ "start": 367, "end": 376, "score": 0.05, "entity_type": "US_SSN", "analysis_explanation": "None" }
-{ "start": 367, "end": 376, "score": 0.01, "entity_type": "US_DRIVER_LICENSE", "analysis_explanation": "None" }
-{ "start": 510, "end": 522, "score": 0.01, "entity_type": "US_DRIVER_LICENSE", "analysis_explanation": "None" }

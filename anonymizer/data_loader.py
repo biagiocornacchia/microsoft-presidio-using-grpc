@@ -131,13 +131,43 @@ def setupConfig(clientAnonymizer, configFile):
             print("CONFIG: anonymizer '{}' not exists\n".format(operator))
             continue
 
-        # get params   
-        params = anonymizer.anonymizerOptions(operator, configType)
+
+        ######## if operator == hash, if operator == encrypt etc
+
+        if operator == "hash":
+            hash_type = input("Hash type (md5, sha256, sha512): ").lower()
+
+            anonymizer.addHash(entity_type, hash_type)
+
+        elif operator == "replace":
+            new_value = input("New value: ")
+
+            anonymizer.addReplace(entity_type, new_value)
+
+        elif operator == "redact":
+            anonymizer.addRedact(entity_type)
+
+        elif operator == "encrypt":
+            key = input("Key: ")
+
+            anonymizer.addEncrypt(entity_type, key)
+
+        elif operator == "mask":
+            masking_char = input("Masking char: ")
+            chars_to_mask = input("Chars to mask: ")
+            from_end = input("From end (True or False): ")
+
+            anonymizer.addMask(entity_type, masking_char, chars_to_mask, from_end)
         
-        # save config
-        if params != -1:
-            clientAnonymizer.addOperator(entity_type, params, configFile)
-            print("\n{} -> {} - Config successfully updated.\n".format(entity_type, params))
+        elif operator == "decrypt":
+            key = input("Key: ")
+
+            anonymizer.addDecrypt(entity_type, key)
+
+        else:
+            print("Invalid operator!\n")
+
+        #print("\n{} -> {} - Config successfully updated.\n".format(entity_type, params))
 
 def clear():
     if name == "nt":

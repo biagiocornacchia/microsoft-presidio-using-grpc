@@ -9,8 +9,8 @@ import json
 import os
 from pathlib import Path
 
-IP_ADDRESS = "null"
-PORT = "null"
+IP_ADDRESS = "localhost"
+PORT = "8061"
 
 ENGINE_CURR_OPTIONS = {}
 ANALYZE_CURR_OPTIONS = {'language':'en', 'entities': None, 'correlation_id': None, 'score_threshold': "0.1", 'return_decision_process': "0" }
