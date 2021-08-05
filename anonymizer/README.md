@@ -278,7 +278,7 @@ Other utility functions are:
 1. checkDuplicate(entity_type, configFile)
 2. anonymizerOptions(anonymizer, configType)
 
-`checkDuplicate` is used to check if a config option is already setted in the specified configuration file (CONFIG_FILE or CONFIG_FILE_DE) and returns an integer which indicates if an opition was rewritter or not. <br> While `anonymizerOptions` has two arguments. Anonymizer (for example encrypt,hash,replace ecc) and configType (Anonymizer or Deanonymizer). This function will ask for some other input values and returns a string based on the type of anonymizer.
+`checkDuplicate` is used to check if a config option is already setted in the specified configuration file (CONFIG_FILE or CONFIG_FILE_DE) and returns an integer which indicates if an opition was rewritten or not. <br> While `anonymizerOptions` has two arguments. Anonymizer (for example encrypt,hash,replace ecc) and configType (Anonymizer or Deanonymizer). This function will ask for some other input values and returns a string based on the type of anonymizer.
 
 ### Example of anonymization
 
