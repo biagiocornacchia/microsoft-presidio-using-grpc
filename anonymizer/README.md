@@ -90,6 +90,8 @@ First you have to configure the server (in this example localhost:8061)
 
     Command: 3
 
+    =============== Server config ===============
+
     IP ADDRESS: localhost
     SERVER PORT: 8061
 
@@ -105,12 +107,12 @@ Select `anonymize` (command 1) and setup a configuration file for the anonymizer
 
     Command: 1
 
-    Anonymizer Operator config (press Q for exit)
+    =============== Anonymizer Operator config (Ctrl-Z for exit) ===============
 
-    Entity: PERSON 
+    Entity: PERSON
     Anonymizer: encrypt
-    ** encrypt **
-    Key: AAECAwQFBgcICQoLDA0ODw==
+    Key (128, 192 or 256 bits length): AAECAwQFBgcICQoLDA0ODw==
+    CONFIG: creating a new config file...
 
 So we can start anonymization using command 3 and choosing a file (in this case demo2)
 
@@ -121,7 +123,8 @@ So we can start anonymization using command 3 and choosing a file (in this case 
 
     Command: 3
 
-    Filename: demo2
+    How many files you want to analyze? 1
+    1) Filename: demo2
 
 Anonymizer results saved into `anonymizer-results/` folder (anonymizer-results/demo2-anonymized.txt and anonymizer-results/demo2-anonymized-items.txt) will be
 
@@ -145,12 +148,12 @@ Firstly, we have to setup a config file specifying the cryptographic key used fo
 
     Command: 1
 
-    Deanonymizer Operator config (press Q for exit)
+    =============== Deanonymizer Operator config (Ctrl-Z for exit) ===============
 
     Entity: PERSON
     Anonymizer: decrypt
-    ** decrypt **
-    Key: AAECAwQFBgcICQoLDA0ODw==
+    Key (128, 192 or 256 bits length): AAECAwQFBgcICQoLDA0ODw==
+    CONFIG: creating a new config file...
 
 Deanonymizer results saved into `anonymizer-results/` folder (anonymizer-results/demo2-deanonymized.txt and anonymizer-results/demo2-deanonymized-items.txt) will be
 
@@ -245,19 +248,27 @@ To perform anonymization/deanonymization there are four function:
 ```python
 # replaces the PII text entity with new string.
 def addReplace(entity_type, new_value):
+    # check for duplicate
+    found = checkDuplicate(entity_type, CONFIG_FILE)
 
     params = '{ ' + f'\\"type\\": \\"replace\\", \\"new_value\\": \\"{new_value}\\"' + ' }'
 
     with open(CONFIG_FILE, 'a') as f:
         f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
+    return found
+
 # anonymizes text to an encrypted form
 def addEncrypt(entity_type, key):
+    # check for duplicate
+    found = checkDuplicate(entity_type, CONFIG_FILE)
 
     params = '{ ' + f'\\"type\\": \\"encrypt\\", \\"key\\": \\"{key}\\"' + ' }'
 
     with open(CONFIG_FILE, 'a') as f:
         f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
+
+    return found
     .
     .
     .
@@ -267,7 +278,7 @@ Other utility functions are:
 1. checkDuplicate(entity_type, configFile)
 2. anonymizerOptions(anonymizer, configType)
 
-`checkDuplicate` is used to check if a config option is already setted in the specified configuration file (CONFIG_FILE or CONFIG_FILE_DE) and returns an integer. <br> While `anonymizerOptions` has two arguments. Anonymizer (for example encrypt,hash,replace ecc) and configType (Anonymizer or Deanonymizer). This function will ask for some other input values and returns a string based on the type of anonymizer.
+`checkDuplicate` is used to check if a config option is already setted in the specified configuration file (CONFIG_FILE or CONFIG_FILE_DE) and returns an integer which indicates if an opition was rewritter or not. <br> While `anonymizerOptions` has two arguments. Anonymizer (for example encrypt,hash,replace ecc) and configType (Anonymizer or Deanonymizer). This function will ask for some other input values and returns a string based on the type of anonymizer.
 
 ### Example of anonymization
 
@@ -310,11 +321,11 @@ if __name__ == "__main__":
     # Setup deanonymizer configuration file    
     print("Decrypt configuration\n")
     entity_type = input("Entity: ").upper()
-    key = input("Key: ")
+    key = input("Key (must be of length 128, 192 or 256 bits): ")
 
     anonymizer.addDecrypt(entity_type, key)
 
-    # Send request for denonymization
+    # Send request for deanonymization
     result = clientAnonymizer.sendRequestDeanonymize("demo-anonymized")
     
     if result == -2:

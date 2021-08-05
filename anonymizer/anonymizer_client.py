@@ -34,7 +34,7 @@ class ClientEntity:
         
         if os.path.exists(configFile):
             with open(configFile, "r") as ConfigFile:
-                print("============ CURRENT CONFIGURATION ============\n")
+                print("=============== CURRENT CONFIGURATION ===============\n")
                 for line in ConfigFile:
                     lineConfig = json.loads(line)
                     print("Entity type: " + lineConfig['entity_type'])
@@ -283,23 +283,26 @@ def checkRequiredFiles(filename, requestType):
 
 def checkDuplicate(entity_type, configFile):
     # checks if a config option is already setted
+    options = []
+    found = 0
+
     try:
         with open(configFile, 'r') as f:
             for line in f:
-                if entity_type in line:
-                    print("\nCONFIG: config entry type already exists: {}".format(line))
-                    response = input("Do you want to reset your conf file? [Y/N]: ").upper()
-                    
-                    if response == "Y":
-                        #print("CONFIG: resetting config file")
-                        return 1
-                    else:
-                        #print("CONFIG: ignoring...")
-                        return 0
+                if entity_type not in line:
+                    options.append(line)
+                else:
+                    print("Duplicate found: {}".format(line))
+                    found = 1
+
+        with open(configFile, 'w') as f:
+            for optionElem in options:
+                f.write(optionElem)
+
     except IOError:
         print("CONFIG: creating a new config file...")
 
-    return -1
+    return found
 
 def makeMessage(msg):
     return pb2.DataFile(chunk = msg)
@@ -325,49 +328,73 @@ def generateChunks(filename):
 
 # replaces the PII text entity with new string
 def addReplace(entity_type, new_value):
+    # check for duplicate
+    found = checkDuplicate(entity_type, CONFIG_FILE)
 
     params = '{ ' + f'\\"type\\": \\"replace\\", \\"new_value\\": \\"{new_value}\\"' + ' }'
 
     with open(CONFIG_FILE, 'a') as f:
         f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
+    return found
+
 # hashes the PII text entity
 def addHash(entity_type, hash_type):
+    # check for duplicate
+    found = checkDuplicate(entity_type, CONFIG_FILE)
 
     params = '{ ' + f'\\"type\\": \\"hash\\", \\"hash_type\\": \\"{hash_type}\\"' + ' }'
 
     with open(CONFIG_FILE, 'a') as f:
         f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
+    return found
+
 # anonymizes text to an encrypted form
-def addEncrypt(entity_type, key):
+def addEncrypt(entity_type, key):    
+    # check for duplicate
+    found = checkDuplicate(entity_type, CONFIG_FILE)
 
     params = '{ ' + f'\\"type\\": \\"encrypt\\", \\"key\\": \\"{key}\\"' + ' }'
 
     with open(CONFIG_FILE, 'a') as f:
         f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
+    return found
+
 # mask some or all given text entity PII with given character
 def addMask(entity_type, masking_char, chars_to_mask, from_end):
-    
+    # check for duplicate
+    found = checkDuplicate(entity_type, CONFIG_FILE)
+
     # from_end values: true or false only
     params = '{ ' + f'\\"type\\": \\"mask\\", \\"masking_char\\": \\"{masking_char}\\", \\"chars_to_mask\\": {int(chars_to_mask)}, \\"from_end\\": {from_end.lower()}' + ' }'
 
     with open(CONFIG_FILE, 'a') as f:
         f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
+    return found
+
 # decrypt text to from its encrypted form
 def addDecrypt(entity_type, key):
-
+    # check for duplicate
+    found = checkDuplicate(entity_type, CONFIG_FILE_DE)
+    
     params = '{ ' + f'\\"type\\": \\"decrypt\\", \\"key\\": \\"{key}\\"' + ' }'
 
     with open(CONFIG_FILE_DE, 'a') as f:
         f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
+    return found
+
 # replaces the PII text entity with empty string
 def addRedact(entity_type):
+    # check for duplicate
+    found = checkDuplicate(entity_type, CONFIG_FILE)
 
     params = '{ ' + f'\\"type\\": \\"redact\\"' + ' }'
 
     with open(CONFIG_FILE, 'a') as f:
         f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
+
+    return found

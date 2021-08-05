@@ -194,7 +194,7 @@ def startAnonymization(uuidClient):
         
         for line in configFile:
             configStr = json.loads(line)
-            print(json.loads(configStr['params']))
+            #print(json.loads(configStr['params']))
             configResult[configStr['entity_type']] =  OperatorConfig.from_json(json.loads(configStr['params']))
 
         configFile.close()

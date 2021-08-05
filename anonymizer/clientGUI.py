@@ -272,12 +272,13 @@ class Frames(object):
             dir_path = os.path.dirname(os.path.realpath(__file__))
             path = Path(dir_path)
 
-            with open(str(path) + "/config/operatorConfigAnonymizer.txt", "r") as fileConfig:
-                for line in fileConfig:
-                    options = json.loads(line)
-                    self.anonymizer_options.insert(END, f"ENTITY: {options['entity_type']} : {json.loads(options['params'])} \n")
+            if os.path.exists(str(path) + "/config/operatorConfigAnonymizer.txt"):
+                with open(str(path) + "/config/operatorConfigAnonymizer.txt", "r") as fileConfig:
+                    for line in fileConfig:
+                        options = json.loads(line)
+                        self.anonymizer_options.insert(END, f"ENTITY: {options['entity_type']} : {json.loads(options['params'])} \n")
 
-            self.anonymizer_options.configure(state='disabled')
+                self.anonymizer_options.configure(state='disabled')
             
         elif optionName == "Deanonymizer Config":
             
@@ -305,12 +306,13 @@ class Frames(object):
             dir_path = os.path.dirname(os.path.realpath(__file__))
             path = Path(dir_path)
 
-            with open(str(path) + "/config/operatorConfigDeanonymizer.txt", "r") as fileConfig:
-                for line in fileConfig:
-                    options = json.loads(line)
-                    self.deanonymizer_options.insert(END, f"ENTITY: {options['entity_type']} : {json.loads(options['params'])} \n")
+            if os.path.exists(str(path) + "/config/operatorConfigDeanonymizer.txt"):
+                with open(str(path) + "/config/operatorConfigDeanonymizer.txt", "r") as fileConfig:
+                    for line in fileConfig:
+                        options = json.loads(line)
+                        self.deanonymizer_options.insert(END, f"ENTITY: {options['entity_type']} : {json.loads(options['params'])} \n")
 
-            self.deanonymizer_options.configure(state='disabled')
+                self.deanonymizer_options.configure(state='disabled')
 
     def optionChanged(self, e):
 
@@ -327,7 +329,7 @@ class Frames(object):
             self.new_value.grid(row = 1, column = 1, pady = 5)
 
             Button(self.frameInsertOption, text = "Save", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.setupOperator).grid(row=3, column = 0, ipadx = 10, pady = 20)
-            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearConfig).grid(row=3, column = 1, ipadx = 10, pady = 20)
+            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearAnonymizerConfig).grid(row=3, column = 1, ipadx = 10, pady = 20)
         
         elif self.value_inside.get() == "Redact":
 
@@ -336,7 +338,7 @@ class Frames(object):
             self.entity.grid(row = 0, column = 1, pady = 5)
 
             Button(self.frameInsertOption, text = "Save", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.setupOperator).grid(row=1, column = 0, ipadx = 10, pady = 20)
-            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearConfig).grid(row=1, column = 1, ipadx = 10, pady = 20)
+            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearAnonymizerConfig).grid(row=1, column = 1, ipadx = 10, pady = 20)
 
         elif self.value_inside.get() == "Mask":
 
@@ -357,7 +359,7 @@ class Frames(object):
             self.from_end.grid(row = 3, column = 1, pady = 5)
 
             Button(self.frameInsertOption, text = "Save", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.setupOperator).grid(row=4, column = 0, ipadx = 10, pady = 20)
-            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearConfig).grid(row=4, column = 1, ipadx = 10, pady = 20)
+            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearAnonymizerConfig).grid(row=4, column = 1, ipadx = 10, pady = 20)
         
         elif self.value_inside.get() == "Encrypt":
 
@@ -370,7 +372,7 @@ class Frames(object):
             self.key.grid(row = 1, column = 1, pady = 5)
 
             Button(self.frameInsertOption, text = "Save", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.setupOperator).grid(row=3, column = 0, ipadx = 10, pady = 20)
-            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearConfig).grid(row=3, column = 1, ipadx = 10, pady = 20)
+            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearAnonymizerConfig).grid(row=3, column = 1, ipadx = 10, pady = 20)
         
         elif self.value_inside.get() == "Hash":
             Label(self.frameInsertOption, text = "ENTITY", font=("helvetica", 13), bg="#0B0C10", fg="#C5C6C7").grid(row = 0, column = 0, pady = 5, padx = 5)
@@ -382,7 +384,7 @@ class Frames(object):
             self.hash_type.grid(row = 1, column = 1, pady = 5)
 
             Button(self.frameInsertOption, text = "Save", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.setupOperator).grid(row=3, column = 0, ipadx = 10, pady = 20)
-            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearConfig).grid(row=3, column = 1, ipadx = 10, pady = 20)
+            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearAnonymizerConfig).grid(row=3, column = 1, ipadx = 10, pady = 20)
 
         elif self.value_inside.get() == "Decrypt":
 
@@ -395,42 +397,72 @@ class Frames(object):
             self.key.grid(row = 1, column = 1, pady = 5)
 
             Button(self.frameInsertOption, text = "Save", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.setupOperator).grid(row=3, column = 0, ipadx = 10, pady = 20)
-            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7").grid(row=3, column = 1, ipadx = 10, pady = 20)
+            Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.clearDeanonymizerConfig).grid(row=3, column = 1, ipadx = 10, pady = 20)
                 
     def setupOperator(self):
 
+        res = -1
         entity = str(self.entity.get()).upper()
 
-        if self.value_inside.get() == "Hash":
-            anonymizer.addHash(entity, self.hash_type.get())
-        elif self.value_inside.get() == "Replace":
-            anonymizer.addReplace(entity, self.new_value.get())
-        elif self.value_inside.get() == "Redact":
-            anonymizer.addRedact(entity)
-        elif self.value_inside.get() == "Mask":
-            anonymizer.addMask(entity, self.masking_char.get(), self.chars_to_mask.get(), self.from_end.get())
-        elif self.value_inside.get() == "Encrypt":
-            anonymizer.addEncrypt(entity, self.key.get())
-        elif self.value_inside.get() == "Decrypt":
-            anonymizer.addDecrypt(entity, self.key.get())
+        if len(entity) > 2:
+            if self.value_inside.get() == "Hash":
+                res = anonymizer.addHash(entity, self.hash_type.get())
+            elif self.value_inside.get() == "Replace":
+                res = anonymizer.addReplace(entity, self.new_value.get())
+            elif self.value_inside.get() == "Redact":
+                res = anonymizer.addRedact(entity)
+            elif self.value_inside.get() == "Mask":
+                res = anonymizer.addMask(entity, self.masking_char.get(), self.chars_to_mask.get(), self.from_end.get())
+            elif self.value_inside.get() == "Encrypt":
+                res = anonymizer.addEncrypt(entity, self.key.get())
+            elif self.value_inside.get() == "Decrypt":
+                res = anonymizer.addDecrypt(entity, self.key.get())
 
-    def clearConfig(self):
+            if res == 1:
+                messagebox.showinfo(parent=self.settings, title = "Update", message=f"Option for {entity} updated!")
+            elif res == 0:
+                # saved
+                messagebox.showinfo(parent=self.settings, title = "Save", message=f"Option for {entity} saved!")
+        else:
+            messagebox.showerror(parent=self.settings, title = "Error configuration", message=f"You have to fill in all the fields!")
+
+    def clearAnonymizerConfig(self):
 
         dir_path = os.path.dirname(os.path.realpath(__file__))
         path = Path(dir_path)
 
-        os.remove(str(path) + "/config/operatorConfigAnonymizer.txt")
+        answer = messagebox.askyesno(parent=self.settings, title = None, message="Do you want to reset configuration file?")
+        
+        if answer and os.path.exists(str(path) + "/config/operatorConfigAnonymizer.txt"):
 
-        self.anonymizer_options.configure(state='normal')
-        self.anonymizer_options.delete("1.0", END)
-        self.anonymizer_options.configure(state='disabled')
+            os.remove(str(path) + "/config/operatorConfigAnonymizer.txt")
+
+            self.anonymizer_options.configure(state='normal')
+            self.anonymizer_options.delete("1.0", END)
+            self.anonymizer_options.configure(state='disabled')
+
+    def clearDeanonymizerConfig(self):
+
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        path = Path(dir_path)
+
+        answer = messagebox.askyesno(parent=self.settings, title = None, message="Do you want to reset configuration file?")
+        
+        if answer and os.path.exists(str(path) + "/config/operatorConfigDeanonymizer.txt"):
+
+            os.remove(str(path) + "/config/operatorConfigDeanonymizer.txt")
+
+            self.deanonymizer_options.configure(state='normal')
+            self.deanonymizer_options.delete("1.0", END)
+            self.deanonymizer_options.configure(state='disabled')
 
     def setupServer(self):
         global IP_ADDRESS, PORT
 
         IP_ADDRESS = self.server_ip.get()
         PORT = self.server_port.get()
-        #messagebox.showinfo('Info', 'Saved')
+
+        messagebox.showinfo(parent=self.settings, title = "Save", message=f"Server options saved succefully!")
 
 root = Tk()
 app = Frames(root)
