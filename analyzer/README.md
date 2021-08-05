@@ -61,6 +61,8 @@ First you have to configure the server (in this example localhost:8061)
 
     Command: 2
 
+    =============== Server config ===============
+
     IP ADDRESS: localhost
     SERVER PORT: 8061
 
@@ -75,7 +77,8 @@ Select `analyze` (command 3) and choose the file to analyze
 
     Command: 3
 
-    Filename: demo2
+    How many files do you want to anonymize? 1
+    1) Filename: demo2
 
 Analyzer results saved into `analyzer-results/` folder (analyzer-results/demo2-results.txt) will be
     
@@ -155,21 +158,24 @@ Select PII recognition and then Regex based PII recognition (command 2)
 
     Command: 2
 
-Define the entity name, name pattern, regex pattern, score and eventually context words to increase the confidence (this parameter is optional)
+Define the entity name, number of patterns, name pattern, regex pattern, score and eventually context words to increase the confidence (this parameter is optional)
 
     Entity: US_ZIP_CODE
+
+    Number of patterns: 1
+
     Name Pattern: us zip code
     Regex: (\b\d{5}(?:\-\d{4})?\b)
-    Score: 0.01
+    Score: 0.01 
 
     NOTE: separate context words with commas.
 
-    Context words: 
+    Context words: zip,zipcode
 
 Analyzer results will be
 
     Result:
-    [type: US_ZIP_CODE, start: 15, end: 20, score: 0.1]
+    [type: US_ZIP_CODE, start: 15, end: 20, score: 0.4]
 
 ## Scheme API
 
@@ -262,6 +268,12 @@ class ClientEntity:
 
 `setupOptions` is used to setup all the others options specifying the right options file (ANALYZER_OPTIONS or ENGINE_OPTIONS) and returns an integer.
 
+In the end, to perform analysis there is a function: `sendRequestAnalyze(filename)` </br>This function takes an argument (a filename) and (after a check for the required files) sends the original text file (divided into chunks of 1 MB) and eventually the AnalyzerEngine and the analyze function configuration. Then makes a request to get the analyzer results (calling `self.stub.GetAnalyzerResults(pb2.Request(uuidClient = my_uuid))`). </br> It returns an integer:
+* if some required files not exist or the request for the analyzer results fails returns -1;
+* if there is a gRPC exception such as 'server unavailable' returns -2;
+* if some required file were not received correctly by the server return 0; 
+* if the operation was successful returns 1;
+
 ### Example
 
 ```python
@@ -286,7 +298,6 @@ if __name__ == "__main__":
 	clientAnalyzer.sendRequestAnalyze("zip_test")
 	clientAnalyzer.closeConnection()
 ```
-`sendRequestAnalyze(self, filename)` is used to perform analysis specifying a filename. <br>
 `createPatternInfo(num, nameList, regexList, scoreList)` is an utility fuction that has 4 arguments and returns a list of pattern:
 1. num: number of patterns
 2. nameList: list of name pattern

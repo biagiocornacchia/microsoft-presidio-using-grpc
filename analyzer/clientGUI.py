@@ -66,6 +66,8 @@ class Frames(object):
                 patterns = analyzer.createPatternInfo(1, REGEX_LIST['names_pattern'], REGEX_LIST['patterns'], REGEX_LIST['scores'])
                 clientAnalyzer.setupRegex(REGEX_LIST['entities'][0], patterns, REGEX_LIST['context_words'][0])
 
+            #messagebox.showinfo(title = "gRPC Analyzer  Client", message=f"Analyzer process is sarting..it may take a while!")
+
             filenameList = []
             for path in self.root.filenames:
                 filename, ext = os.path.basename(path).split(".")
@@ -262,7 +264,8 @@ class Frames(object):
 
         IP_ADDRESS = self.server_ip.get()
         PORT = self.server_port.get()
-        #messagebox.showinfo('Info', 'Saved')
+
+        messagebox.showinfo(parent=self.settings, title = "Save", message=f"Server options saved succefully!")
     
     def saveAnalyzeConfig(self):
 
@@ -286,6 +289,8 @@ class Frames(object):
         ANALYZE_CURR_OPTIONS['return_decision_process'] = str(self.decision_process.get())
 
         print(ANALYZE_CURR_OPTIONS)
+
+        messagebox.showinfo(parent=self.settings, title = "Save", message=f"Options saved succefully!")
 
     def optionChanged(self, e):
 
@@ -344,39 +349,40 @@ class Frames(object):
             self.regex_widget = Text(self.frameCurr, font=("helvetica", 13), width = 60, height = 6, spacing1=3, bg="#1F2833", fg="#C5C6C7")
             self.regex_widget.grid(row = 0, column = 0)
 
-            for i in range(DENY_LIST['length']):
-                self.regex_widget.insert(END, f"{DENY_LIST['supported_entities'][i]} - {DENY_LIST['valuesList'][i]}\n")
+            # print current regex patterns
+            for i in range(REGEX_LIST['length']):
+                self.regex_widget.insert(END, f"{REGEX_LIST['entities'][i]} - {REGEX_LIST['names_pattern'][i]} - {REGEX_LIST['patterns'][i]} - {REGEX_LIST['scores'][i]} - {REGEX_LIST['context_words'][i]}\n")
 
             self.regex_widget.configure(state='disabled')
 
-        #print(self.value_inside.get())
-
     def setupDenyList(self):
-        
-        if self.entity.get() != "" and self.values.get() != "":
+        if len(self.entity.get()) > 2 and len(self.values.get()) > 2:
             DENY_LIST['supported_entities'].append(self.entity.get())
             DENY_LIST['valuesList'].append(self.values.get())
             DENY_LIST['length'] += 1
             self.deny_widget.configure(state='normal')
             self.deny_widget.insert(END, f"{self.entity.get()} - {self.values.get()}\n")
             self.deny_widget.configure(state='disabled')
+            messagebox.showinfo(parent=self.settings, title = "Save", message=f"Deny list for {self.entity.get()} saved!")
         else:
-            messagebox.showerror("Error", "Compile all the fields!")
+            messagebox.showerror(parent=self.settings, title ="Error", message="Compile all the fields!")
 
-
-        print(DENY_LIST)
+        #print(DENY_LIST)
 
     def clearDenyConfig(self):
-        DENY_LIST['supported_entities'] = []
-        DENY_LIST['valuesList'] = []
-        DENY_LIST['length'] = 0
+        answer = messagebox.askyesno(parent=self.settings, title = None, message="Do you want to reset deny list configuration?")
+        
+        if answer:
+            DENY_LIST['supported_entities'] = []
+            DENY_LIST['valuesList'] = []
+            DENY_LIST['length'] = 0
 
-        self.deny_widget.configure(state='normal')
-        self.deny_widget.delete("1.0", END)
-        self.deny_widget.configure(state='disabled')
+            self.deny_widget.configure(state='normal')
+            self.deny_widget.delete("1.0", END)
+            self.deny_widget.configure(state='disabled')
 
     def setupRegexList(self):
-        if self.entity_regex.get() != "":
+        if len(self.entity_regex.get()) > 2:
             REGEX_LIST['entities'].append(self.entity_regex.get())
             REGEX_LIST['names_pattern'].append(self.name_pattern.get())
             REGEX_LIST['patterns'].append(self.regex.get())
@@ -384,25 +390,28 @@ class Frames(object):
             REGEX_LIST['context_words'].append(self.context.get())
             REGEX_LIST['length'] += 1
             self.regex_widget.configure(state='normal')
-            self.regex_widget.insert(END, f"{self.entity_regex.get()} - {self.regex.get()}\n")
+            self.regex_widget.insert(END, f"{self.entity_regex.get()} - {self.name_pattern.get()} - {self.regex.get()} - {self.score_regex.get()} - {self.context.get()}\n")
             self.regex_widget.configure(state='disabled')
+            messagebox.showinfo(parent=self.settings, title = "Save", message=f"Regex for {self.entity_regex.get()} saved!")
         else:
-            messagebox.showerror("Error", "Compile all the fields!")
+            messagebox.showerror(parent=self.settings, title ="Error", message="Compile all the fields!")
 
-        print(REGEX_LIST)
+        #print(REGEX_LIST)
     
     def clearRegexConfig(self):
+        answer = messagebox.askyesno(parent=self.settings, title = None, message="Do you want to reset regex configuration?")
+        
+        if answer:
+            REGEX_LIST['entities'] = []
+            REGEX_LIST['names_pattern'] = []
+            REGEX_LIST['patterns'] = []
+            REGEX_LIST['scores'] = []
+            REGEX_LIST['context_words'] = []
+            REGEX_LIST['length'] = 0
 
-        REGEX_LIST['entities'] = []
-        REGEX_LIST['names_pattern'] = []
-        REGEX_LIST['patterns'] = []
-        REGEX_LIST['scores'] = []
-        REGEX_LIST['context_words'] = []
-        REGEX_LIST['length'] = 0
-
-        self.regex_widget.configure(state='normal')
-        self.regex_widget.delete("1.0", END)
-        self.regex_widget.configure(state='disabled')
+            self.regex_widget.configure(state='normal')
+            self.regex_widget.delete("1.0", END)
+            self.regex_widget.configure(state='disabled')
 
 root = Tk()
 app = Frames(root)

@@ -45,7 +45,7 @@ class ClientEntity:
 
                 # sending config options (if not empty)
                 if self.engine_curr_config:
-                    print("FROM CLIENT: sending Engine configuration...")  
+                    print("FROM CLIENT: sending AnalyzerEngine configuration...")  
                     
                     self.engine_curr_config['uuidClient'] = my_uuid
                     json_msg = json.dumps(self.engine_curr_config) 

@@ -1,0 +1,4 @@
+{ "start": 4698, "end": 4702, "operator": "decrypt", "text": "RAAF", "entity_type": "NUMBER" }
+{ "start": 4596, "end": 4605, "operator": "decrypt", "text": "Peter Raw", "entity_type": "NUMBER" }
+{ "start": 3167, "end": 3179, "operator": "decrypt", "text": "Charles Read", "entity_type": "NUMBER" }
+{ "start": 2246, "end": 2261, "operator": "decrypt", "text": "Douglas Dakotas", "entity_type": "NUMBER" }
