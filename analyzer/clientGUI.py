@@ -85,6 +85,7 @@ class Frames(object):
                 res = clientAnalyzer.sendRequestAnalyze(os.path.basename(filename))
                 
                 if res == -2:
+                    progressWindow.destroy()
                     messagebox.showerror("gRPC Server Error", "Cannot connect to the server! Check your server settings")
                     break
                 
