@@ -3,6 +3,7 @@ import analyzer_client as analyzer
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter import ttk
 
 import json
 
@@ -45,14 +46,12 @@ class Frames(object):
         analyzeBtn = Button(frameTitle, text="Start analyzer", font=("Helvetica", 14), bg="#0B0C10", fg="#C5C6C7", command = self.startAnalyzer).pack(pady = 22, ipadx= 10, ipady = 3)
 
     def startAnalyzer(self):
-
         dir_path = os.path.dirname(os.path.realpath(__file__))
         path = Path(dir_path)
 
         self.root.filenames = filedialog.askopenfilenames(initialdir= str(path.parent.absolute()) + "/files", title="Select A File", filetypes=(("txt files", "*.txt"),("all files", "*.*")))
         
         if self.root.filenames:
-
             clientAnalyzer = analyzer.ClientEntity(IP_ADDRESS, PORT)
 
             # send options if setted
@@ -66,10 +65,20 @@ class Frames(object):
                 patterns = analyzer.createPatternInfo(1, REGEX_LIST['names_pattern'], REGEX_LIST['patterns'], REGEX_LIST['scores'])
                 clientAnalyzer.setupRegex(REGEX_LIST['entities'][0], patterns, REGEX_LIST['context_words'][0])
 
-            #messagebox.showinfo(title = "gRPC Analyzer  Client", message=f"Analyzer process is sarting..it may take a while!")
+            progressWindow = Toplevel()
+            progressWindow.title("Analyzer Status")
+            progressWindow.geometry("330x80")
+            progressWindow.configure(bg="white")
+            self.root.update_idletasks()
+
+            Label(progressWindow, text="Analyzer process is starting..it may take a while!", font=("Helvetica", 10), bg="white", fg="black").pack(side=TOP, padx = 15, pady = 7)
+            progressBar = ttk.Progressbar(progressWindow, orient=HORIZONTAL, length=200, mode="determinate")
+            progressBar.pack(side=TOP, pady = 14)
+            self.root.update_idletasks()
 
             filenameList = []
             for path in self.root.filenames:
+
                 filename, ext = os.path.basename(path).split(".")
                 filenameList.append(filename)
 
@@ -78,6 +87,14 @@ class Frames(object):
                 if res == -2:
                     messagebox.showerror("gRPC Server Error", "Cannot connect to the server! Check your server settings")
                     break
+                
+                if progressBar['value'] < 100:
+                    progressBar['value'] += (100/len(self.root.filenames))
+                    self.root.update_idletasks()
+                
+                if int(progressBar['value']) == 100:
+                    messagebox.showinfo(parent=progressWindow, message='Analyzer process completed!')
+                    progressWindow.destroy()
 
             if res != -2:
                 clientAnalyzer.closeConnection()
