@@ -77,7 +77,7 @@ Select `analyze` (command 3) and choose the file to analyze
 
     Command: 3
 
-    How many files do you want to anonymize? 1
+    How many files do you want to analyze? 1
     1) Filename: demo2
 
 Analyzer results saved into `analyzer-results/` folder (analyzer-results/demo2-results.txt) will be

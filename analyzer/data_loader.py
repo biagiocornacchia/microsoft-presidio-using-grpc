@@ -24,7 +24,7 @@ def presidio_analyzer_start(clientAnalyzer):
             clear()
         elif command == 3:
             filenameList = []
-            numFiles = int(input("\nHow many files do you want to anonymize? "))
+            numFiles = int(input("\nHow many files do you want to analyze? "))
 
             for i in range(numFiles):
                 filenameList.append(input("{}) Filename: ".format(i+1)))
