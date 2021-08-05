@@ -34,9 +34,11 @@ class ClientEntity:
         
         if os.path.exists(configFile):
             with open(configFile, "r") as ConfigFile:
-                print("\n")
+                print("============ CURRENT CONFIGURATION ============\n")
                 for line in ConfigFile:
-                    print(line.strip().replace("\"", ""))
+                    lineConfig = json.loads(line)
+                    print("Entity type: " + lineConfig['entity_type'])
+                    print("Parameters: " + lineConfig['params'] + "\n")
             return True
         else:
             # config file not found
@@ -83,8 +85,13 @@ class ClientEntity:
                         print("FROM CLIENT: using a default configuration")
                     
                     print("\nWaiting for Microsoft Presidio Anonymizer...")
-                    self.sendRequestForText(filename, uuidClient, "anonymize")
-                    self.sendRequestForItems(filename, uuidClient, "anonymize")
+                    
+                    if self.sendRequestForText(filename, uuidClient, "anonymize") == -1:
+                        return -1
+
+                    if self.sendRequestForItems(filename, uuidClient, "anonymize") == -1:
+                        return -1
+                    
                     return 1
 
                 else:
@@ -140,8 +147,13 @@ class ClientEntity:
                             return 0  
                     
                     print("\nWaiting for Microsoft Presidio Anonymizer...")
-                    self.sendRequestForText(filename, uuidClient, "deanonymize")
-                    self.sendRequestForItems(filename, uuidClient, "deanonymize")
+
+                    if self.sendRequestForText(filename, uuidClient, "deanonymize") == -1:
+                        return -1
+
+                    if self.sendRequestForItems(filename, uuidClient, "deanonymize") == -1:
+                        return -1
+
                     return 1
 
                 else:
@@ -171,9 +183,11 @@ class ClientEntity:
                     if response.chunk == -1:
                         # received a NAK
                         print("FROM SERVER: Error during anonymization")
+                        return -1
                     else:
                         AnonymizerResults.write(response.chunk)
                         print("{}-anonymized.txt created".format(filename))
+                        return 1
 
         else:
             filename = filename.split("-")
@@ -183,9 +197,11 @@ class ClientEntity:
                     if response.chunk == -1:
                         # received a NAK
                         print("FROM SERVER: Error during deanonymization")
+                        return -1
                     else:
                         DeanonymizerResults.write(response.chunk)
                         print("{}-deanonymized.txt created".format(filename[0]))
+                        return 1
 
     def sendRequestForItems(self, filename, uuidClient, requestType):
         # sends a request to get items generated during the anonymization or deanonymization
@@ -223,48 +239,6 @@ def ReadAnonymizedItems(filename, uuidClient):
         for line in itemsFile:
             item = json.loads(line)
             yield pb2.AnonymizedItem(uuidClient = uuidClient, start = item['start'], end = item['end'], entity_type = item['entity_type'], operator = item['operator'])
-
-def addReplace(entity_type, new_value):
-
-    params = '{ ' + f'\\"type\\": \\"replace\\", \\"new_value\\": \\"{new_value}\\"' + ' }'
-
-    with open(CONFIG_FILE, 'a') as f:
-        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
-
-def addHash(entity_type, hash_type):
-
-    params = '{ ' + f'\\"type\\": \\"hash\\", \\"hash_type\\": \\"{hash_type}\\"' + ' }'
-
-    with open(CONFIG_FILE, 'a') as f:
-        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
-
-def addEncrypt(entity_type, key):
-
-    params = '{ ' + f'\\"type\\": \\"encrypt\\", \\"key\\": \\"{key}\\"' + ' }'
-
-    with open(CONFIG_FILE, 'a') as f:
-        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
-
-def addMask(entity_type, masking_char, chars_to_mask, from_end):
-
-    params = '{ ' + f'\\"type\\": \\"mask\\", \\"masking_char\\": \\"{masking_char}\\", \\"chars_to_mask\\": {int(chars_to_mask)}, \\"from_end\\": {from_end.lower()}' + ' }'
-
-    with open(CONFIG_FILE, 'a') as f:
-        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
-
-def addDecrypt(entity_type, key):
-
-    params = '{ ' + f'\\"type\\": \\"decrypt\\", \\"key\\": \\"{key}\\"' + ' }'
-
-    with open(CONFIG_FILE_DE, 'a') as f:
-        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
-
-def addRedact(entity_type):
-
-    params = '{ ' + f'\\"type\\": \\"redact\\"' + ' }'
-
-    with open(CONFIG_FILE, 'a') as f:
-        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
 
 def checkRequiredFiles(filename, requestType):
 
@@ -348,3 +322,52 @@ def generateChunks(filename):
         TOTAL_CHUNKS = cont
 
         yield makeMessage(data)
+
+# replaces the PII text entity with new string
+def addReplace(entity_type, new_value):
+
+    params = '{ ' + f'\\"type\\": \\"replace\\", \\"new_value\\": \\"{new_value}\\"' + ' }'
+
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
+
+# hashes the PII text entity
+def addHash(entity_type, hash_type):
+
+    params = '{ ' + f'\\"type\\": \\"hash\\", \\"hash_type\\": \\"{hash_type}\\"' + ' }'
+
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
+
+# anonymizes text to an encrypted form
+def addEncrypt(entity_type, key):
+
+    params = '{ ' + f'\\"type\\": \\"encrypt\\", \\"key\\": \\"{key}\\"' + ' }'
+
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
+
+# mask some or all given text entity PII with given character
+def addMask(entity_type, masking_char, chars_to_mask, from_end):
+    
+    # from_end values: true or false only
+    params = '{ ' + f'\\"type\\": \\"mask\\", \\"masking_char\\": \\"{masking_char}\\", \\"chars_to_mask\\": {int(chars_to_mask)}, \\"from_end\\": {from_end.lower()}' + ' }'
+
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
+
+# decrypt text to from its encrypted form
+def addDecrypt(entity_type, key):
+
+    params = '{ ' + f'\\"type\\": \\"decrypt\\", \\"key\\": \\"{key}\\"' + ' }'
+
+    with open(CONFIG_FILE_DE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")
+
+# replaces the PII text entity with empty string
+def addRedact(entity_type):
+
+    params = '{ ' + f'\\"type\\": \\"redact\\"' + ' }'
+
+    with open(CONFIG_FILE, 'a') as f:
+        f.write("{ " + f'"entity_type" : "{entity_type}", "params" : "{params}"' + " }\n")

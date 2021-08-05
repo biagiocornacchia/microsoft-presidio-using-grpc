@@ -396,8 +396,7 @@ class Frames(object):
 
             Button(self.frameInsertOption, text = "Save", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7", command=self.setupOperator).grid(row=3, column = 0, ipadx = 10, pady = 20)
             Button(self.frameInsertOption, text = "Reset", font=("helvetica", 12), bg="#0B0C10", fg="#C5C6C7").grid(row=3, column = 1, ipadx = 10, pady = 20)
-        
-        
+                
     def setupOperator(self):
 
         entity = str(self.entity.get()).upper()
