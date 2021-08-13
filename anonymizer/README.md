@@ -107,7 +107,7 @@ Select `anonymize` (command 1) and setup a configuration file for the anonymizer
 
     Command: 1
 
-    =============== Anonymizer Operator config (Ctrl-Z for exit) ===============
+    =============== Anonymizer Operator config (Ctrl-C for exit) ===============
 
     Entity: PERSON
     Anonymizer: encrypt
@@ -148,7 +148,7 @@ Firstly, we have to setup a config file specifying the cryptographic key used fo
 
     Command: 1
 
-    =============== Deanonymizer Operator config (Ctrl-Z for exit) ===============
+    =============== Deanonymizer Operator config (Ctrl-C for exit) ===============
 
     Entity: PERSON
     Anonymizer: decrypt

@@ -107,7 +107,7 @@ def setupConfig(clientAnonymizer, configFile):
         if res == "Y":
             os.remove(configFile)
     
-    print("\n=============== {} Operator config (Ctrl-Z for exit) ===============".format(configType))
+    print("\n=============== {} Operator config (Ctrl-C for exit) ===============".format(configType))
     
     while True:
         try:

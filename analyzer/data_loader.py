@@ -101,7 +101,7 @@ def setupPIIRecognition(clientAnalyzer):
 
         if command == 1:
             
-            print("\n=============== Deny-list configuration (Ctrl-Z for exit) ===============")
+            print("\n=============== Deny-list configuration (Ctrl-C for exit) ===============")
 
             if "deny_list" not in clientAnalyzer.engine_curr_config:
 
@@ -136,7 +136,7 @@ def setupPIIRecognition(clientAnalyzer):
                 exit()          
 
         elif command == 2:
-            print("\n=============== Regex configuration (Ctrl-Z for exit) ===============") 
+            print("\n=============== Regex configuration (Ctrl-C for exit) ===============") 
             
             if "regex" not in clientAnalyzer.engine_curr_config:
                 try:
@@ -199,7 +199,7 @@ def setupOptions(clientAnalyzer):
     print("2) default_score_threshold")
     print("3) supported_languages")
 
-    print("\n=============== AnalyzerEngine config (Ctrl-Z for exit) ===============")
+    print("\n=============== AnalyzerEngine config (Ctrl-C for exit) ===============")
 
     while True:
         try:
@@ -232,7 +232,7 @@ def setupAnalyze(clientAnalyzer):
     print("4) score_threshold")
     print("5) return_decision_process: possible values are 0 (False) or 1 (True)")
     
-    print("\n=============== Analyze config (Ctrl-Z for exit) ===============")
+    print("\n=============== Analyze config (Ctrl-C for exit) ===============")
 
     while True:
         try:

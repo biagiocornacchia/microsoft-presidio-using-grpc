@@ -1,3 +1,0 @@
-{ "operator": "replace", "entity_type": "US_DRIVER_LICENSE", "start": 109, "end": 128, "text": "<US_DRIVER_LICENSE>" }
-{ "operator": "replace", "entity_type": "US_SSN", "start": 73, "end": 81, "text": "<US_SSN>" }
-{ "operator": "encrypt", "entity_type": "PERSON", "start": 0, "end": 44, "text": "DmQdfOdKUkKA2SF3/NybzgUqfSggZZiWfm+pDhhZZrs=" }

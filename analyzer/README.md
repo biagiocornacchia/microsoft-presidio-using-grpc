@@ -284,19 +284,19 @@ if __name__ == "__main__":
     clientAnalyzer = analyzer.ClientEntity("localhost", 8061)
 
     # Setup entities that this recognizer can detect 
-	option_name = "entities"
-	values = "US_ZIP_CODE"
-	clientAnalyzer.setupOptions(option_name, values, "ANALYZE_OPTIONS")
-	
-	# Setup a regex configuration
-	supported_entity = "US_ZIP_CODE"
-	context = "zip,zipcode"
+    option_name = "entities"
+    values = "US_ZIP_CODE"
+    clientAnalyzer.setupOptions(option_name, values, "ANALYZE_OPTIONS")
 
-	patterns = analyzer.createPatternInfo(1, ["zip code us"], [r"(\b\d{5}(?:\-\d{4})?\b)"], [0.01])
-	clientAnalyzer.setupRegex(supported_entity, patterns, context)
+    # Setup a regex configuration
+    supported_entity = "US_ZIP_CODE"
+    context = "zip,zipcode"
 
-	clientAnalyzer.sendRequestAnalyze("zip_test")
-	clientAnalyzer.closeConnection()
+    patterns = analyzer.createPatternInfo(1, ["zip code us"], [r"(\b\d{5}(?:\-\d{4})?\b)"], [0.01])
+    clientAnalyzer.setupRegex(supported_entity, patterns, context)
+
+    clientAnalyzer.sendRequestAnalyze("zip_test")
+    clientAnalyzer.closeConnection()
 ```
 `createPatternInfo(num, nameList, regexList, scoreList)` is an utility fuction that has 4 arguments and returns a list of pattern:
 1. num: number of patterns
