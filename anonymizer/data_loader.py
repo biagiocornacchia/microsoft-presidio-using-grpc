@@ -6,7 +6,7 @@ import sys
 
 def presidio_anonymizer_start(clientAnonymizer):
     
-    print("SERVER INFO: {}:{}".format(clientAnonymizer.ip_address, clientAnonymizer.port))
+    print(f"SERVER INFO: {clientAnonymizer.ip_address}:{clientAnonymizer.port}")
 
     while True:
         print("\n1) Setup config file")
@@ -30,15 +30,15 @@ def presidio_anonymizer_start(clientAnonymizer):
             numFiles = int(input("\nHow many files do you want to anonymize? "))
 
             for i in range(numFiles):
-                filenameList.append(input("{}) Filename: ".format(i+1)))
+                filenameList.append(input(f"{i+1}) Filename: "))
 
             for filename in filenameList:
-                print("\n=============== {} ANONYMIZATION ===============\n".format(filename))
+                print(f"\n=============== {filename} ANONYMIZATION ===============\n")
                 
                 if clientAnonymizer.sendRequestAnonymize(filename) != -1:
-                    print("\n{} anonmized successfully!\n".format(filename))
+                    print(f"\n{filename} anonmized successfully!\n")
                 else:
-                    print("\nFile missing for {}!\n".format(filename))
+                    print(f"\nFile missing for {filename}!\n")
 
             exit()
         elif command == 4:
@@ -48,7 +48,7 @@ def presidio_anonymizer_start(clientAnonymizer):
 
 def presidio_deanonymizer_start(clientAnonymizer):
  
-    print("SERVER INFO:  {}:{}".format(clientAnonymizer.ip_address, clientAnonymizer.port))
+    print(f"SERVER INFO: {clientAnonymizer.ip_address}:{clientAnonymizer.port}")
 
     while True:
         print("\n1) Setup config file")
@@ -72,15 +72,15 @@ def presidio_deanonymizer_start(clientAnonymizer):
             numFiles = int(input("\nHow many files do you want to anonymize? "))
 
             for i in range(numFiles):
-                filenameList.append(input("{}) Filename (ex. filename-anonymized): ".format(i+1)))
+                filenameList.append(input(f"{i+1}) Filename (ex. filename-anonymized): "))
 
             for filename in filenameList:
-                print("\n=============== {} DEANONYMIZATION ===============\n".format(filename))
+                print(f"\n=============== {filename} DEANONYMIZATION ===============\n")
                 
                 if clientAnonymizer.sendRequestDeanonymize(filename) != -1:
-                    print("\n{} deanonmized successfully!\n".format(filename))
+                    print(f"\n{filename} deanonmized successfully!\n")
                 else:
-                    print("\nFile missing for {}!\n".format(filename))
+                    print(f"\nFile missing for {filename}!\n")
 
             exit()
 
@@ -99,7 +99,7 @@ def setupConfig(clientAnonymizer, configFile):
         print("ERROR: configuration file not valid!")
 
     if os.path.exists(configFile):
-        print("\nCONFIG: {} found\n".format(configFile))
+        print(f"\nCONFIG: {configFile} found\n")
         clientAnonymizer.readConfiguration(configFile)
 
         res = input("\nDo you want to reset the configuration? [Y/N] ").upper()
@@ -107,7 +107,7 @@ def setupConfig(clientAnonymizer, configFile):
         if res == "Y":
             os.remove(configFile)
     
-    print("\n=============== {} Operator config (Ctrl-C for exit) ===============".format(configType))
+    print(f"\n=============== {configType} Operator config (Ctrl-C for exit) ===============")
     
     while True:
         try:
@@ -115,13 +115,13 @@ def setupConfig(clientAnonymizer, configFile):
 
             # Check entity validity
             if entity_type.upper() not in anonymizer.SUPPORTED_ENTITIES:
-                print("CONFIG: entity '{}' not exits\n".format(entity_type))
+                print(f"CONFIG: entity '{entity_type}' not exits\n")
                 continue
 
             operator = input("Anonymizer: ").lower()
 
             if operator not in anonymizer.ANONYMIZERS:
-                print("CONFIG: anonymizer '{}' not exists\n".format(operator))
+                print(f"CONFIG: anonymizer '{operator}' not exists\n")
                 continue
             if operator == "hash":
                 hash_type = input("Hash type (md5, sha256, sha512): ").lower()

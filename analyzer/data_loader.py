@@ -6,7 +6,7 @@ import sys
 
 def presidio_analyzer_start(clientAnalyzer):
        
-    print("SERVER INFO: {}:{}\n".format(clientAnalyzer.ip_address, clientAnalyzer.port))
+    print(f"SERVER INFO: {clientAnalyzer.ip_address}:{clientAnalyzer.port}\n")
 
     while True:
         print("1) Setup AnalyzerEngine")
@@ -27,11 +27,11 @@ def presidio_analyzer_start(clientAnalyzer):
             numFiles = int(input("\nHow many files do you want to analyze? "))
 
             for i in range(numFiles):
-                filenameList.append(input("{}) Filename: ".format(i+1)))
+                filenameList.append(input(f"{i+1}) Filename: "))
 
             for filename in filenameList:
-                print("\n=============== {} ANALYSES ===============\n".format(filename))
-                print("Searching for {}".format(filename))
+                print(f"\n=============== {filename} ANALYSES ===============\n")
+                print(f"Searching for {filename}")
 
                 result = clientAnalyzer.sendRequestAnalyze(filename)
 
@@ -42,7 +42,7 @@ def presidio_analyzer_start(clientAnalyzer):
                 elif result == -2:
                     print("\nERROR: connection error")
                 else:
-                    print("\n{} analyzed successfully!".format(filename))
+                    print(f"\n{filename} analyzed successfully!")
 
             exit()
         elif command == 4:
@@ -126,7 +126,7 @@ def setupPIIRecognition(clientAnalyzer):
 
             else:
 
-                print("\nDeny-list configuration found: {}".format(clientAnalyzer.engine_curr_config['deny_list']))
+                print(f"\nDeny-list configuration found: {clientAnalyzer.engine_curr_config['deny_list']}")
                 response = input("\nDo you want to reset it? [Y/N]: ").upper()
 
                 if response == "Y":
@@ -170,7 +170,7 @@ def setupPIIRecognition(clientAnalyzer):
                         break
             else:
 
-                print("\nRegex based configuration found: {}".format(clientAnalyzer.engine_curr_config['regex']))
+                print(f"\nRegex based configuration found: {clientAnalyzer.engine_curr_config['regex']}")
                 response = input("\nDo you want to reset it? [Y/N]: ").upper()
 
                 if response == "Y":
@@ -210,7 +210,7 @@ def setupOptions(clientAnalyzer):
                 print("Invalid option name")
                 continue
 
-            print("Option added: {} -> {}".format(option, value))
+            print(f"Option added: {option} -> {value}")
         except KeyboardInterrupt:
             print("Configuration completed")
             time.sleep(1)
@@ -243,7 +243,7 @@ def setupAnalyze(clientAnalyzer):
                 print("Invalid option name")
                 continue
 
-            print("Option added: {} -> {}".format(option, value))
+            print(f"Option added: {option} -> {value}")
         except KeyboardInterrupt:
             print("Configuration completed")
             time.sleep(1)

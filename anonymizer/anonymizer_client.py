@@ -57,14 +57,14 @@ class ClientEntity:
             uuidClient = response.uuidClient
 
             if response.chunks == TOTAL_CHUNKS:
-                print("FROM SERVER: file received correctly. UUID assigned: {}".format(uuidClient))
+                print(f"FROM SERVER: file received correctly. UUID assigned: {uuidClient}")
 
                 # sending analyzer results
                 print("FROM CLIENT: sending analyzer results...")
                 response = self.stub.sendRecognizerResults(ReadRecognizerResults(filename, uuidClient))
 
                 if response.uuidClient == uuidClient:
-                    print("FROM SERVER: analyzer results received correctly. UUID: {}".format(uuidClient))
+                    print(f"FROM SERVER: analyzer results received correctly. UUID: {uuidClient}")
 
                     # sending configuration file
                     try:
@@ -124,14 +124,14 @@ class ClientEntity:
             uuidClient = response.uuidClient
 
             if response.chunks == TOTAL_CHUNKS:
-                print("FROM SERVER: file received correctly. UUID assigned: {}".format(uuidClient))
+                print(f"FROM SERVER: file received correctly. UUID assigned: {uuidClient}")
 
                 # sending items results
                 print("FROM CLIENT: sending items...")
                 response = self.stub.sendAnonymizedItems(ReadAnonymizedItems(filename, uuidClient))
 
                 if response.uuidClient == uuidClient:
-                    print("FROM SERVER: analyzer results received correctly. UUID: {}".format(uuidClient))
+                    print(f"FROM SERVER: analyzer results received correctly. UUID: {uuidClient}")
 
                     # sending configuration file (IS REQUIRED!)
                     print("FROM CLIENT: sending file config...")
@@ -186,7 +186,7 @@ class ClientEntity:
                         return -1
                     else:
                         AnonymizerResults.write(response.chunk)
-                        print("{}-anonymized.txt created".format(filename))
+                        print(f"{filename}-anonymized.txt created")
                         return 1
 
         else:
@@ -200,7 +200,7 @@ class ClientEntity:
                         return -1
                     else:
                         DeanonymizerResults.write(response.chunk)
-                        print("{}-deanonymized.txt created".format(filename[0]))
+                        print(f"{filename[0]}-deanonymized.txt created")
                         return 1
 
     def sendRequestForItems(self, filename, uuidClient, requestType):
@@ -212,7 +212,7 @@ class ClientEntity:
                 for response in responses:
                     AnonymizerItemsResults.write('{' + f' "operator": "{response.operator}", "entity_type": "{response.entity_type}", "start": {response.start}, "end": {response.end}, "text": "{response.text}" ' + '}\n')
 
-            print("{}-anonymized-items.txt created".format(filename))
+            print(f"{filename}-anonymized-items.txt created")
 
         else:
             filename = filename.split("-")
@@ -220,7 +220,7 @@ class ClientEntity:
                 for response in responses:
                     DeanonymizerItemsResults.write('{' + f' "start": {response.start}, "end": {response.end}, "operator": "{response.operator}", "text": "{response.text}", "entity_type": "NUMBER" ' + '}\n')
 
-            print("{}-deanonymized-items.txt created".format(filename[0]))
+            print(f"{filename[0]}-deanonymized-items.txt created")
 
     def closeConnection(self):
         print("Disconnected from the server")
@@ -292,7 +292,7 @@ def checkDuplicate(entity_type, configFile):
                 if entity_type not in line:
                     options.append(line)
                 else:
-                    print("Duplicate found: {}".format(line))
+                    print(f"Duplicate found: {line}")
                     found = 1
 
         with open(configFile, 'w') as f:

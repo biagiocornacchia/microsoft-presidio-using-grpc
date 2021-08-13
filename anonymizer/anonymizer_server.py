@@ -20,7 +20,7 @@ class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
     def sendFile(self, request_iterator, context):
 
         uuidClient = str(uuid.uuid1())
-        print ("\n[+] UUID for the client: {}".format(uuidClient))
+        print (f"\n[+] UUID for the client: {uuidClient}")
         print("[+] Receiving a new file...")
 
         TOTAL_CHUNKS = 0
@@ -41,7 +41,7 @@ class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
         for request in request_iterator:
             if uuidClient == 0:
                 uuidClient = request.uuidClient
-                print ("[+] UUID client: {}".format(uuidClient))
+                print (f"[+] UUID client: {uuidClient}")
                 print("[+] Receiving a recognizer results file...")
                 fileText = open(PATH_TEMP + uuidClient + "-results.txt", "a")
 
@@ -59,7 +59,7 @@ class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
         for request in request_iterator:
             if uuidClient == 0:
                 uuidClient = request.uuidClient
-                print ("[+] UUID client: {}".format(uuidClient))
+                print (f"[+] UUID client: {uuidClient}")
                 print("[+] Receiving anonymizer results file...")
                 fileText = open(PATH_TEMP + uuidClient + "-results.txt", "a")
 
@@ -73,7 +73,7 @@ class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
     def sendConfig(self, request, context):
 
         uuidClient = request.uuidClient
-        print ("[+] UUID client: {}".format(uuidClient))
+        print (f"[+] UUID client: {uuidClient}")
         print("[+] Receiving a config file...")
 
         with open(PATH_TEMP + uuidClient + "-config.txt", "w") as configFile:
@@ -86,7 +86,7 @@ class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
     def getText(self, request, context):
 
         uuidClient = request.uuidClient
-        print ("[+] UUID client: {}".format(uuidClient))
+        print (f"[+] UUID client: {uuidClient}")
         
         if request.type == "anonymize":
             print("[+] Receiving a request for anonymization...")        
@@ -127,7 +127,7 @@ class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
     def getItems(self, request, context):
         
         uuidClient = request.uuidClient
-        print ("\n[+] UUID client: {}".format(uuidClient))
+        print (f"\n[+] UUID client: {uuidClient}")
         print("[+] Receiving a request for items anonymized...")
 
         itemsList = []
@@ -287,7 +287,7 @@ def runServer(port):
     pb2_grpc.add_AnonymizerEntityServicer_to_server(AnonymizerEntityServicer(), server)
     server.add_insecure_port('[::]:' + str(port))
     server.start()
-    print("Listening on port {}\n".format(port))
+    print(f"Listening on port {port}\n")
     server.wait_for_termination()
 
 if __name__ == "__main__":

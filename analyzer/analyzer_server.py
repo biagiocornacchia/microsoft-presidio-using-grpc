@@ -22,7 +22,7 @@ class AnalyzerEntityServicer(pb2_grpc.AnalyzerEntityServicer):
 
         # generate a unique id for the client
         uuidClient = str(uuid.uuid1())
-        print("[+] UUID for the client: {}".format(uuidClient))
+        print(f"[+] UUID for the client: {uuidClient}")
         print("[+] Receiving a new file...")
     
         TOTAL_CHUNKS = 0
@@ -61,7 +61,7 @@ class AnalyzerEntityServicer(pb2_grpc.AnalyzerEntityServicer):
     def GetAnalyzerResults(self, request, context):
         
         print("\n[+] Preparing for Presidio Analyzer")
-        print("[+] Searching for {}".format(request.uuidClient))
+        print(f"[+] Searching for {request.uuidClient}")
         
         results = []
 
@@ -166,7 +166,7 @@ def getEngineOptions(uuid, ENGINE_OPTIONS):
 
                     print("\n")
                     for i in range(len(supported_entities)):
-                        print("{} | SUPPORTED_ENTITY: {} | DENY_LIST: {}".format(i, supported_entities[i], deny_lists[i]))
+                        print(f"{i} | SUPPORTED_ENTITY: {supported_entities[i]} | DENY_LIST: {deny_lists[i]}")
                         custom_recognizers.append(PatternRecognizer(supported_entity = supported_entities[i], deny_list = deny_lists[i]))                 
                     print("\n")
                     
@@ -215,7 +215,7 @@ def run_server():
     pb2_grpc.add_AnalyzerEntityServicer_to_server(AnalyzerEntityServicer(), server)
     server.add_insecure_port('[::]:' + str(port))
     server.start()
-    print("Listening on port {}\n".format(port))
+    print(f"Listening on port {port}\n")
     server.wait_for_termination()
 
 if __name__ == '__main__':

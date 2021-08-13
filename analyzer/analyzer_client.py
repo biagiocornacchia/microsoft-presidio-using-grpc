@@ -39,7 +39,7 @@ class ClientEntity:
             response = self.stub.sendFileToAnalyze(chunk_iterator)
 
             if response.chunks == TOTAL_CHUNKS:
-                print("FROM SERVER: file received correctly. UUID assigned: {}".format(response.uuidClient))
+                print(f"FROM SERVER: file received correctly. UUID assigned: {response.uuidClient}")
 
                 my_uuid = response.uuidClient
 
@@ -66,7 +66,7 @@ class ClientEntity:
                         string = "{ " + f'"start": {response.start}, "end": {response.end}, "score": {response.score:.2f}, "entity_type": "{response.entity_type}", "analysis_explanation": "{response.analysis_explanation}"' + " }\n"
                         RecognizerResults.write(string)
 
-                print("\n{}-results.txt created".format(filename))
+                print(f"\n{filename}-results.txt created")
                 return 1
 
             else:
