@@ -367,16 +367,17 @@ if __name__ == "__main__":
 ```
 
 ## Deployment
+From the microsoft-presidio/anonymizer directory
 
-Build the docker image
+1) Build the docker image
 ```console
 docker build -t grpc-anonymizer .
 ```
-Run the docker image
+2) Run the docker image
 ```console
 docker run –dp 8061:8061 grpc-anonymizer
 ```
-The docker run internally executes anonymizer_server.py. Open one more terminal and run the client which now can access the docker server
+3) The docker run internally executes anonymizer_server.py. Open one more terminal and run the client which now can access the docker server
 ```console
 python data_loader.py
 ```
