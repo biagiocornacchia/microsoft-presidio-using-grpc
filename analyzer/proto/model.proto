@@ -5,7 +5,7 @@ service AnalyzerEntity {
     rpc sendFileToAnalyze(stream DataFile) returns (Ack); 
     rpc sendEngineOptions(AnalyzerEngineOptions) returns (Ack);
     rpc sendOptions(AnalyzeOptions) returns (Ack);
-    rpc GetAnalyzerResults(Request) returns (stream AnalyzerResults);
+    rpc getAnalyzerResults(Request) returns (stream AnalyzerResults);
 }
 
 // files are divided into chunks (1MB)

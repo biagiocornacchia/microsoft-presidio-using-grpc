@@ -17,7 +17,7 @@ service AnalyzerEntity {
     rpc sendFileToAnalyze(stream DataFile) returns (Ack); 
     rpc sendEngineOptions(AnalyzerEngineOptions) returns (Ack);
     rpc sendOptions(AnalyzeOptions) returns (Ack);
-    rpc GetAnalyzerResults(Request) returns (stream AnalyzerResults);
+    rpc getAnalyzerResults(Request) returns (stream AnalyzerResults);
 }
 ```
 
@@ -42,12 +42,41 @@ service AnalyzerEntity {
                         
     Using this method the client specifies eventually his options and sends them to the server. The server will store them into a json file and returns and Ack message containing UUID assigned from the server to the client during the first step.
 
-- `GetAnalyzerResults` </br> The client specifies his UUID and makes a request to get analyzer results. 
+- `getAnalyzerResults` </br> The client specifies his UUID and makes a request to get analyzer results. 
 The server uses the original text and eventually json files containing the options specified by the client and performs the analysis. Then it returns found entities in the text, so the client will save them into a file called `"filename-results.txt"` which resides in `analyzer-results` folder.
 
-### An example
+## Installation
 
-File demo2.txt contains
+To run examples:
+
+    $ git clone https://github.com/biagiocornacchia/microsoft-presidio.git
+    
+    $ pip3 install --upgrade pip
+    $ pip3 install presidio-analyzer
+    $ pip3 install spacy numpy
+
+    $ python3 -m spacy download en_core_web_lg
+    $ python3 -m pip install grpcio grpcio-tools
+
+From the `microsoft-presidio/analyzer` directory:
+
+1) Run the server
+    ```console
+    $ python analyzer_server.py
+    ```
+2) From another terminal, run the client (dataloader)
+    ```console
+    $ python data_loader.py
+    ```
+    or (to run the graphical user interface)
+    ```console
+    $ python clientGUI.py
+    ```
+Now you have just run a client-server application with gRPC!</br>
+
+## An example
+
+File demo2.txt (which resides in the `files` folder) contains
         
     Kate's social security number is 078-05-1126.  Her driver license? it is 1234567A.
 
@@ -268,7 +297,7 @@ class ClientEntity:
 
 `setupOptions` is used to setup all the others options specifying the right options file (ANALYZER_OPTIONS or ENGINE_OPTIONS) and returns an integer.
 
-In the end, to perform analysis there is a function: `sendRequestAnalyze(filename)` </br>This function takes an argument (a filename) and (after a check for the required files) sends the original text file (divided into chunks of 1 MB) and eventually the AnalyzerEngine and the analyze function configuration. Then makes a request to get the analyzer results (calling `self.stub.GetAnalyzerResults(pb2.Request(uuidClient = my_uuid))`). </br> It returns an integer:
+In the end, to perform analysis there is a function: `sendRequestAnalyze(filename)` </br>This function takes an argument (a filename) and (after a check for the required files) sends the original text file (divided into chunks of 1 MB) and eventually the AnalyzerEngine and the analyze function configuration. Then makes a request to get the analyzer results (calling `self.stub.getAnalyzerResults(pb2.Request(uuidClient = my_uuid))`). </br> It returns an integer:
 * if some required files not exist or the request for the analyzer results fails returns -1;
 * if there is a gRPC exception such as 'server unavailable' returns -2;
 * if some required file were not received correctly by the server return 0; 
@@ -321,4 +350,18 @@ This is an example of a deny-list based setup.
 	
 	clientAnalyzer.sendRequestAnalyze("double_recognizer")
 	clientAnalyzer.closeConnection()
+```
+## Deployment
+
+Build the docker image
+```console
+docker build -t grpc-analyzer .
+```
+Run the docker image
+```console
+docker run –dp 8061:8061 grpc-analyzer
+```
+The docker run internally executes analyzer_server.py. Open one more terminal and run the client which now can access the docker server
+```console
+python data_loader.py
 ```

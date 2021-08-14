@@ -58,7 +58,7 @@ class ClientEntity:
                     json_msg = json.dumps(self.analyze_curr_config) 
                     response = self.stub.sendOptions(Parse(json_msg, pb2.AnalyzeOptions())) 
                 
-                responses = self.stub.GetAnalyzerResults(pb2.Request(uuidClient = my_uuid))
+                responses = self.stub.getAnalyzerResults(pb2.Request(uuidClient = my_uuid))
                 print("FROM CLIENT: waiting for analyzer results...")
                 
                 with open(PATH_RESULTS + filename + "-results.txt", "w") as RecognizerResults:

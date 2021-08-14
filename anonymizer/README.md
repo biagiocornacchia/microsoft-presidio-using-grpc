@@ -67,9 +67,38 @@ service AnonymizerEntity {
 
 - `getItems` </br> The client specifies his UUID and makes a request to get items. Anonymize() and Deanonymize() function returns the anonymized text and a list of items that contains information about the anonymized/deanonymized entities. For anonymization the result will be saved into a file called `"filename-anonymized-items.txt"` which is contained in the `anonymized-results` folder. Instead, for deanonymization the result will be saved into a file called `"filename-deanonymized-items.txt"` which is contained in the same folder.
 
-### An example of anonymization
+## Installation
 
-File demo2.txt contains
+To run examples:
+
+    $ git clone https://github.com/biagiocornacchia/microsoft-presidio.git
+    
+    $ pip3 install --upgrade pip
+    $ pip3 install presidio-anonymizer
+    $ pip3 install spacy numpy
+
+    $ python3 -m spacy download en_core_web_lg
+    $ python3 -m pip install grpcio grpcio-tools
+
+From the `microsoft-presidio/anonymizer` directory:
+
+1) Run the server
+    ```console
+    $ python anonymizer_server.py
+    ```
+2) From another terminal, run the client (dataloader)
+    ```console
+    $ python data_loader.py
+    ```
+    or (to run the graphical user interface)
+    ```console
+    $ python clientGUI.py
+    ```
+Now you have just run a client-server application with gRPC!
+
+## An example of anonymization
+
+File demo2.txt (which resides in the `files` folder) contains
         
     Kate's social security number is 078-05-1126.  Her driver license? it is 1234567A.
 
@@ -335,4 +364,19 @@ if __name__ == "__main__":
 
     clientAnonymizer.closeConnection()
 
+```
+
+## Deployment
+
+Build the docker image
+```console
+docker build -t grpc-anonymizer .
+```
+Run the docker image
+```console
+docker run –dp 8061:8061 grpc-anonymizer
+```
+The docker run internally executes anonymizer_server.py. Open one more terminal and run the client which now can access the docker server
+```console
+python data_loader.py
 ```

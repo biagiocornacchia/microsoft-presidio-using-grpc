@@ -58,7 +58,7 @@ class AnalyzerEntityServicer(pb2_grpc.AnalyzerEntityServicer):
 
         return pb2.Ack(uuidClient = request.uuidClient)
 
-    def GetAnalyzerResults(self, request, context):
+    def getAnalyzerResults(self, request, context):
         
         print("\n[+] Preparing for Presidio Analyzer")
         print(f"[+] Searching for {request.uuidClient}")
