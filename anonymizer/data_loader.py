@@ -36,7 +36,7 @@ def presidio_anonymizer_start(clientAnonymizer):
                 print(f"\n=============== {filename} ANONYMIZATION ===============\n")
                 
                 if clientAnonymizer.sendRequestAnonymize(filename) != -1:
-                    print(f"\n{filename} anonmized successfully!\n")
+                    print(f"\n{filename} anonymized successfully!\n")
                 else:
                     print(f"\nFile missing for {filename}!\n")
 
