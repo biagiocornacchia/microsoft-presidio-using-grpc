@@ -48,18 +48,18 @@ service AnonymizerEntity {
     ```
 
 - `sendConfig`</br> is used to send the operator configuration. Possible operators for the anonymizer are:
-    1. encrypt: anonymize the text with an encrypted text using Advanced Encryption Standard
-    2. replace: replaces the PII text entity with a new string
-    3. redact: redact the string - empty value
-    4. mask: mask a given amount of text with a given character
-    5. hash: hash given text with sha256/sha512/md5 algorithm
+    1. encrypt - anonymize the text with an encrypted text using Advanced Encryption Standard
+    2. replace - replaces the PII text entity with a new string
+    3. redact - redact the string - empty value
+    4. mask - mask a given amount of text with a given character
+    5. hash - hash given text with sha256/sha512/md5 algorithm
 
-    Configuration file is called `operatorConfigAnonymizer` and resides in the `config` folder.</br>
+    The configuration file is called `operatorConfigAnonymizer` and resides in the `config` folder.</br>
     
     Insted for deanonymization is supported only one operator:
     1. decrypt: decrypt text to from its encrypted form using the key supplied by the user for the encryption
 
-    Configuration file is called `operatorConfigDeanonymizer` and resides in the `config` folder. 
+    The configuration file is called `operatorConfigDeanonymizer` and resides in the `config` folder. 
 
 - `sendFile` </br> is used by the data loader to send the original text file that needs to be anonymized. Files will be divided into chunks. The server will assign a UUID that will be used during all the communication to identify uniquely the client information.
 
@@ -251,24 +251,24 @@ class ClientEntity:
 ```
 To perform anonymization/deanonymization there are four function:
 1. `sendRequestAnonymize(filename)` </br>This function takes an argument (a filename) and (after a check of the required files) sends the original text file, the analyzer results and eventually a configuration file. Then makes a request for the anonymized text and anonymized items. </br> It returns an integer:
-    * if some required files not exist or the request for text/items fails returns -1;
-    * if there is a gRPC exception such as 'server unavailable' returns -2;
-    * if some required file were not received correctly by the server return 0; 
-    * if the operation was successful returns 1;
+    * if some required files do not exist or the request for text/items fails returns -1
+    * if there is a gRPC exception such as 'server unavailable' returns -2
+    * if some required files were not received correctly by the server return 0
+    * if the operation was successful returns 1
 
 2. `sendRequestDeanonymize(filename)` </br> This function takes an argument (a filename) and (after a check of the required files) sends the anonymized text file, the anonymizer results and a configuration file (in this case is required because you have to specify a key for decrypt). Then makes a request for the deanonymized text and denonymized items. </br> It returns an integer:
-    * if some required files not exist returns -1;
-    * if there is a gRPC exception such as 'server unavailable' returns -2;
-    * if some required file were not received correctly by the server return 0; 
-    * if the operation was successful returns 1;
+    * if some required files do not exist returns -1
+    * if there is a gRPC exception such as 'server unavailable' returns -2
+    * if some required files were not received correctly by the server return 0
+    * if the operation was successful returns 1
 
 3. `sendRequestForText(filename, uuidClient, requestType)` </br>This function takes three arguments (a filename, uuidClient assigned by the server and a requestType that can be 'anonymize' or 'deanonymize') and sends a request to get anonymized or deanonymized text. </br> It returns an integer:
-    * if the request for the anonymized/deanonymized text fails returns -1;
-    * if the operation was successful returns 1;
+    * if the request for the anonymized/deanonymized text fails returns -1
+    * if the operation was successful returns 1
 
 4. `sendRequestForItems(filename, uuidClient, requestType)` </br>This function takes three arguments (a filename, uuidClient assigned by the server and a requestType that can be 'anonymize' or 'deanonymize') and sends a request to get anonymized or deanonymized items. </br> It returns an integer:
-    * if the request for the anonymized/deanonymized items fails returns -1;
-    * if the operation was successful returns 1;
+    * if the request for the anonymized/deanonymized items fails returns -1
+    * if the operation was successful returns 1
 
 ### Setup a configuration
 

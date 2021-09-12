@@ -23,24 +23,22 @@ service AnalyzerEntity {
 
 - `sendFileToAnalyze` </br> is used by the data loader to send the original text file that needs to be analyzed. Files will be divided into chunks. The server will assign a UUID that will be used during all the communication to identify uniquely the client information
 
-- `sendEngineOptions`</br> AnalyzerEngine can be configured. Available options are:
-    1. registry: an optional list of recognizers, that will be available instead of the predefined recognizers
-    2. deny_list
-    3. regex
-    4. log_decision_process: defines whether the decision process within the analyzer should be logged or not.
-    5. default_score_threshold: minimum confidence value for detected entities to be returned
-    6. supported_languages: list of possible languages this engine could be run on. Used for loading the right NLP models and recognizers for these languages.
+- `sendEngineOptions`</br> The analyzer engine can be configured. Available options are:
+    1. registry - an optional list of recognizers, that will be available instead of the predefined recognizers
+    2. log_decision_process - defines whether the decision process within the analyzer should be logged or not.
+    3. default_score_threshold - minimum confidence value for detected entities to be returned
+    4. supported_languages - list of possible languages this engine could be run on. Used for loading the right NLP models and recognizers for these languages.
     
     Using this method the client eventually specifies analyzer engine options and sends them to the server. The server will store them into a json file and will return an acknowledgement message containing the UUID assigned from the server to the client during the first step.
 
-- `sendOptions` </br> AnalyzerEngine.analyze() can also be configured. Available options are:
-    1. language: the language of the text 
-    2. entities: list of PII entities that should be looked for in the text. If entities value is None then all entities are looked for.
-    3. correlation_id: cross call ID for this request
-    4. score_threshold: A minimum value for which to return an identified entity
-    5. return_decision_process: it decides if the analysis decision process steps returned in the response.
+- `sendOptions` </br> The analyze function can also be configured. Available options are:
+    1. language - the language of the text 
+    2. entities - list of PII entities that should be looked for in the text. If entities value is None then all entities are looked for.
+    3. correlation_id - cross call ID for this request
+    4. score_threshold - A minimum value for which to return an identified entity
+    5. return_decision_process - it decides if the analysis decision process steps returned in the response.
                         
-    Using this method the client specifies eventually his options and sends them to the server. The server will store them into a json file and returns and Ack message containing UUID assigned from the server to the client during the first step.
+    Using this method the client specifies eventually his options and sends them to the server. The server will store them into a json file and returns and Ack message containing the UUID assigned from the server to the client during the first step.
 
 - `getAnalyzerResults` </br> The client specifies his UUID and makes a request to get analyzer results. 
 The server uses the original text and eventually json files containing the options specified by the client and performs the analysis. Then it returns found entities in the text, so the client will save them into a file called `"filename-results.txt"` which resides in `analyzer-results` folder.
@@ -298,10 +296,10 @@ class ClientEntity:
 `setupOptions` is used to setup all the others options specifying the right options file (ANALYZER_OPTIONS or ENGINE_OPTIONS) and returns an integer.
 
 In the end, to perform analysis there is a function: `sendRequestAnalyze(filename)` </br>This function takes an argument (a filename) and (after a check for the required files) sends the original text file (divided into chunks of 1 MB) and eventually the AnalyzerEngine and the analyze function configuration. Then makes a request to get the analyzer results (calling `self.stub.getAnalyzerResults(pb2.Request(uuidClient = my_uuid))`). </br> It returns an integer:
-* if some required files not exist or the request for the analyzer results fails returns -1;
-* if there is a gRPC exception such as 'server unavailable' returns -2;
-* if some required file were not received correctly by the server return 0; 
-* if the operation was successful returns 1;
+* if some required files do not exist or the request for the analyzer results fails returns -1
+* if there is a gRPC exception such as 'server unavailable' returns -2
+* if some required files were not received correctly by the server return 0
+* if the operation was successful returns 1
 
 ### Example
 
@@ -328,10 +326,10 @@ if __name__ == "__main__":
     clientAnalyzer.closeConnection()
 ```
 `createPatternInfo(num, nameList, regexList, scoreList)` is an utility fuction that has 4 arguments and returns a list of pattern:
-1. num: number of patterns
-2. nameList: list of name pattern
-3. regexList: list of regex
-4. scoreList: list of scores
+1. num - number of patterns
+2. nameList - list of name pattern
+3. regexList - list of regex
+4. scoreList - list of scores
 
 This is an example of a deny-list based setup.
 
