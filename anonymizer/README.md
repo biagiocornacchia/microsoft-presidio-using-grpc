@@ -71,7 +71,7 @@ service AnonymizerEntity {
 
 To run examples:
 
-    $ git clone https://github.com/biagiocornacchia/microsoft-presidio.git
+    $ git clone https://github.com/biagiocornacchia/microsoft-presidio-using-grpc.git
     
     $ pip3 install --upgrade pip
     $ pip3 install presidio-anonymizer
