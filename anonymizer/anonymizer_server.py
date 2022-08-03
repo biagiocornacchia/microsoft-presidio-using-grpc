@@ -3,7 +3,8 @@ from proto import model_pb2_grpc as pb2_grpc
 from proto import model_pb2 as pb2
 
 from presidio_anonymizer import DeanonymizeEngine, AnonymizerEngine
-from presidio_anonymizer.entities.engine import RecognizerResult, AnonymizerResult, OperatorConfig
+from presidio_anonymizer.entities.engine import RecognizerResult, OperatorConfig
+from presidio_anonymizer.entities.engine.result import OperatorResult
 
 from concurrent import futures
 import uuid
@@ -240,7 +241,7 @@ def startDeanonymization(uuidClient):
                 data = json.loads(line)
                 
                 if data["operator"] == "encrypt":
-                    anonymizerResultsList.append(AnonymizerResult.from_json(json.loads('{' + f' "start":{data["start"]}, "end":{data["end"]}, "entity_type": "{data["entity_type"]}" ' + '}')))
+                    anonymizerResultsList.append(OperatorResult.from_json(json.loads('{' + f' "start":{data["start"]}, "end":{data["end"]}, "entity_type": "{data["entity_type"]}", "operator": "{data["operator"]}" ' + '}')))
 
     except IOError:
         print("[+] File recognizer results not exits")
