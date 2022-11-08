@@ -50,11 +50,8 @@ To run examples:
     $ git clone https://github.com/biagiocornacchia/microsoft-presidio-using-grpc.git
     
     $ pip3 install --upgrade pip
-    $ pip3 install presidio-analyzer
-    $ pip3 install spacy numpy
-
+    $ pip3 install -r requirements.txt
     $ python3 -m spacy download en_core_web_lg
-    $ python3 -m pip install grpcio grpcio-tools
 
 From the `microsoft-presidio/analyzer` directory:
 

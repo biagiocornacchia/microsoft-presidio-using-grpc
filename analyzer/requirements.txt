@@ -6,3 +6,8 @@ protobuf==3.20.*
 six>=1.10
 wheel>=0.29
 grpcio-tools
+
+# Microsoft Presidio requirements
+presidio-analyzer
+spacy
+numpy

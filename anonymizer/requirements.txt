@@ -6,4 +6,8 @@ protobuf==3.20.*
 six>=1.10
 wheel>=0.29
 grpcio-tools
+
+# Presidio requirements
 presidio-anonymizer
+numpy
+spacy
