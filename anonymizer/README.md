@@ -198,11 +198,13 @@ Deanonymizer results saved into `anonymizer-results/` folder (anonymizer-results
 ### Global vars
 
 ```python
-SUPPORTED_ENTITIES = ['IBAN_CODE', 'US_PASSPORT', 'DATE_TIME', 'MEDICAL_LICENSE', 'CRYPTO', 'LOCATION', 'UK_NHS', 'US_SSN', 'CREDIT_CARD', 'US_BANK_NUMBER', 'US_ITIN', 'EMAIL_ADDRESS', 'PERSON', 'IP_ADDRESS', 'DOMAIN_NAME', 'PHONE_NUMBER', 'SG_NRIC_FIN', 'NRP', 'US_DRIVER_LICENSE']
+SUPPORTED_ENTITIES = ['IBAN_CODE', 'US_PASSPORT', 'DATE_TIME', 'MEDICAL_LICENSE', 'CRYPTO', 'LOCATION', 'UK_NHS',
+                      'US_SSN', 'CREDIT_CARD', 'US_BANK_NUMBER', 'US_ITIN', 'EMAIL_ADDRESS', 'PERSON', 'IP_ADDRESS',
+                      'DOMAIN_NAME', 'PHONE_NUMBER', 'SG_NRIC_FIN', 'NRP', 'US_DRIVER_LICENSE']
 ANONYMIZERS = ['hash', 'mask', 'redact', 'replace', 'custom', 'encrypt', 'decrypt']
 
-CONFIG_FILE = 'config/operatorConfigAnonymizer.txt'
-CONFIG_FILE_DE = 'config/operatorConfigDeanonymizer.txt'
+CONFIG_FILE = 'config/operator_config_anonymizer.txt'
+CONFIG_FILE_DE = 'config/operator_config_deanonymizer.txt'
 
 PATH_ANONYMIZER_RESULTS = "../anonymizer-results/"
 PATH_ANALYZER_RESULTS = "../analyzer-results/"

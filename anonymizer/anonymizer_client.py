@@ -36,8 +36,8 @@ ANONYMIZERS = [
     'decrypt'
 ]
 
-CONFIG_FILE = 'config/operatorConfigAnonymizer.txt'
-CONFIG_FILE_DE = 'config/operatorConfigDeanonymizer.txt'
+CONFIG_FILE = os.path.join(os.path.abspath('.'), 'config', 'operator_config_anonymizer.txt')
+CONFIG_FILE_DE = os.path.join(os.path.abspath('.'), 'config', 'operator_config_deanonymizer.txt')
 
 PATH_ANONYMIZER_RESULTS = os.path.join(os.path.abspath('..'), 'anonymizer-results', '')
 PATH_ANALYZER_RESULTS = os.path.join(os.path.abspath('..'), 'analyzer-results', '')

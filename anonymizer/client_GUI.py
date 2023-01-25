@@ -278,8 +278,8 @@ class Frames(object):
             dir_path = os.path.dirname(os.path.realpath(__file__))
             path = Path(dir_path)
 
-            if os.path.exists(str(path) + "/config/operatorConfigAnonymizer.txt"):
-                with open(str(path) + "/config/operatorConfigAnonymizer.txt", "r") as fileConfig:
+            if os.path.exists(str(path) + "/config/operator_config_anonymizer.txt"):
+                with open(str(path) + "/config/operator_config_anonymizer.txt", "r") as fileConfig:
                     for line in fileConfig:
                         options = json.loads(line)
                         self.anonymizer_options.insert(END, f"ENTITY: {options['entity_type']} : {json.loads(options['params'])} \n")
@@ -312,8 +312,8 @@ class Frames(object):
             dir_path = os.path.dirname(os.path.realpath(__file__))
             path = Path(dir_path)
 
-            if os.path.exists(str(path) + "/config/operatorConfigDeanonymizer.txt"):
-                with open(str(path) + "/config/operatorConfigDeanonymizer.txt", "r") as fileConfig:
+            if os.path.exists(str(path) + "/config/operator_config_deanonymizer.txt"):
+                with open(str(path) + "/config/operator_config_deanonymizer.txt", "r") as fileConfig:
                     for line in fileConfig:
                         options = json.loads(line)
                         self.deanonymizer_options.insert(END, f"ENTITY: {options['entity_type']} : {json.loads(options['params'])} \n")
@@ -460,8 +460,8 @@ class Frames(object):
         answer = messagebox.askyesno(parent=self.settings, title=None,
                                      message='Do you want to reset configuration file?')
 
-        if answer and os.path.exists(str(path) + '/config/operatorConfigAnonymizer.txt'):
-            os.remove(str(path) + '/config/operatorConfigAnonymizer.txt')
+        if answer and os.path.exists(str(path) + '/config/operator_config_anonymizer.txt'):
+            os.remove(str(path) + '/config/operator_config_anonymizer.txt')
             self.anonymizer_options.configure(state='normal')
             self.anonymizer_options.delete("1.0", END)
             self.anonymizer_options.configure(state='disabled')
@@ -473,8 +473,8 @@ class Frames(object):
         answer = messagebox.askyesno(parent=self.settings, title=None,
                                      message='Do you want to reset configuration file?')
 
-        if answer and os.path.exists(str(path) + '/config/operatorConfigDeanonymizer.txt'):
-            os.remove(str(path) + '/config/operatorConfigDeanonymizer.txt')
+        if answer and os.path.exists(str(path) + '/config/operator_config_deanonymizer.txt'):
+            os.remove(str(path) + '/config/operator_config_deanonymizer.txt')
             self.deanonymizer_options.configure(state='normal')
             self.deanonymizer_options.delete("1.0", END)
             self.deanonymizer_options.configure(state='disabled')
