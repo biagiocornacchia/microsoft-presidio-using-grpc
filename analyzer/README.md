@@ -209,7 +209,7 @@ Analyzer results will be
 
 ```python
 ENGINE_OPTIONS = [ "deny_list", "regex", "nlp_engine", "app_tracer", "log_decision_process", "default_score_threshold", "supported_languages" ]
-ANALYZE_OPTIONS = ["language", "entities", "correlation_id", "score_threshold", "return_decision_process"]
+ANALYZER_OPTIONS = ["language", "entities", "correlation_id", "score_threshold", "return_decision_process"]
 
 PATH_RESULTS = "../analyzer-results/"
 PATH_FILES = "../files/"
@@ -226,25 +226,23 @@ You should first establish a connection between the gRPC analyzer client and the
 class ClientEntity:
 
     def __init__(self, ip_address, port):
-
         self.ip_address = ip_address
         self.port = port
-        self.channel = grpc.insecure_channel(ip_address + ':' + str(port))
+        self.channel = grpc.insecure_channel(f'{ip_address}:{port}')
         self.stub = pb2_grpc.AnalyzerEntityStub(self.channel)
 
-        self.engine_curr_config = {}
-        self.analyze_curr_config = {}
-        
+        self.engine_current_config = {}
+        self.analyzer_current_config = {}
         .
         .
 
     def close_connection(self):
-        print("Disconnected from the server")
+        print('Disconnected from the server')
         self.channel.close()
 ```
 
 The arguments are a string that denote the server ip address and a number to denote the server port. </br>
-`self.engine_curr_config` and `self.analyze_curr_config` will contain the current configuration specified by the client.
+`self.engine_current_config` and `self.analyze_current_config` will contain the current configuration specified by the client.
 
 ### Setup a configuration
 
@@ -253,35 +251,39 @@ class ClientEntity:
     .
     .
 
+    def setup_deny_list(self, supported_entities: list, values_list: list) -> None:
+        deny_list = {
+            'supported_entity': supported_entities,
+            'deny_list': values_list
+        }
+        self.engine_current_config['deny_list'] = json.dumps(deny_list)
 
-def setup_deny_list(self, supported_entities, valuesList):
-    jsonString = "{ " + f'"supported_entity": {supported_entities}, "deny_list": {valuesList}' + " }"
-    self.engine_current_config["deny_list"] = jsonString.replace("'", "\"")
+    def setup_regex(self, supported_entity: list, patterns: list, context: list) -> None:
+        regex = {
+            'supported_entity': supported_entity,
+            'pattern': patterns,
+            'context': context
+        }
+        self.engine_current_config['regex'] = json.dumps(regex)
 
-
-def setup_regex(self, supported_entity, patterns, context):
-    self.engine_current_config[
-        'regex'] = "{ " + f'"supported_entity": "{supported_entity}", "pattern": {patterns}, "context": "{context}" ' + " }"
-
-
-def setup_options(self, option, value, optionFile):
-    if optionFile == "ANALYZE_OPTIONS":
-        if option in ANALYZE_OPTIONS:
-            self.analyze_curr_config[option] = value
-            return 1
+    def setup_options(self, option: str, value: str, option_file: str) -> int:
+        if option_file == 'ANALYZE_OPTIONS':
+            if option in ANALYZER_OPTIONS:
+                self.analyzer_current_config[option] = value
+                return 1
+            else:
+                # invalid option name
+                return -1
+        elif option_file == 'ENGINE_OPTIONS':
+            if option in ENGINE_OPTIONS:
+                self.engine_current_config[option] = value
+                return 1
+            else:
+                # invalid option name
+                return -1
         else:
-            # invalid option name
-            return -1
-    elif optionFile == "ENGINE_OPTIONS":
-        if option in ENGINE_OPTIONS:
-            self.engine_current_config[option] = value
-            return 1
-        else:
-            # invalid option name
-            return -1
-    else:
-        # invalid option_file 
-        return -2
+            # invalid option_file
+            return -2
 ```
 
 `setup_deny_list` has two arguments:
@@ -293,9 +295,9 @@ def setup_options(self, option, value, optionFile):
 2. one or more patterns that define the recognizer
 3. list of context words to help detection
 
-`setup_options` is used to setup all the others options specifying the right options file (ANALYZER_OPTIONS or ENGINE_OPTIONS) and returns an integer.
+`setup_options` is used to set up all the others options specifying the right options file (ANALYZER_OPTIONS or ENGINE_OPTIONS) and returns an integer.
 
-In the end, to perform analysis there is a function: `send_analyzer_request(filename)` </br>This function takes an argument (a filename) and (after a check for the required files) sends the original text file (divided into chunks of 1 MB) and eventually the AnalyzerEngine and the analyze function configuration. Then makes a request to get the analyzer results (calling `self.stub.getAnalyzerResults(pb2.Request(uuidClient = my_uuid))`). </br> It returns an integer:
+In the end, to perform analysis there is a function: `send_analyzer_request(filename)` </br>This function takes an argument (a filename) and (after a check for the required files) sends the original text file (divided into chunks of 1 MB) and eventually the AnalyzerEngine and the analyze function configuration. Then makes a request to get the analyzer results (calling `self.stub.getAnalyzerResults(pb2.Request(uuidClient=my_uuid))`). </br> It returns an integer:
 * if some required files do not exist or the request for the analyzer results fails returns -1
 * if there is a gRPC exception such as 'server unavailable' returns -2
 * if some required files were not received correctly by the server return 0
@@ -307,46 +309,46 @@ In the end, to perform analysis there is a function: `send_analyzer_request(file
 import analyzer_client as analyzer
 
 if __name__ == "__main__":
-    clientAnalyzer = analyzer.ClientEntity("localhost", 8061)
+    client_analyzer = analyzer.ClientEntity('localhost', 8061)
 
     # Setup entities that this recognizer can detect 
-    option_name = "entities"
-    values = "US_ZIP_CODE"
-    clientAnalyzer.setup_options(option_name, values, "ANALYZE_OPTIONS")
+    option_name = 'entities'
+    values = 'US_ZIP_CODE'
+    client_analyzer.setup_options(option_name, values, 'ANALYZE_OPTIONS')
 
     # Setup a regex configuration
-    supported_entity = "US_ZIP_CODE"
-    context = "zip,zipcode"
+    supported_entity = 'US_ZIP_CODE'
+    context = 'zip,zipcode'
 
-    patterns = analyzer.create_pattern_info(1, ["zip code us"], [r"(\b\d{5}(?:\-\d{4})?\b)"], [0.01])
-    clientAnalyzer.setup_regex(supported_entity, patterns, context)
+    patterns = analyzer.create_pattern_info(1, ['zip code us'], [r'(\b\d{5}(?:\-\d{4})?\b)'], [0.01])
+    client_analyzer.setup_regex(supported_entity, patterns, context)
 
-    clientAnalyzer.send_analyzer_request("zip_test")
-    clientAnalyzer.close_connection()
+    client_analyzer.send_analyzer_request('zip_test')
+    client_analyzer.close_connection()
 ```
-`create_pattern_info(num, nameList, regexList, scoreList)` is an utility fuction that has 4 arguments and returns a list of pattern:
-1. num - number of patterns
-2. nameList - list of name pattern
-3. regexList - list of regex
-4. scoreList - list of scores
+`create_pattern_info(number_of_regex: int, name_list: list, regex_list: list, score_list: list)` is an utility function that has 4 arguments and returns a list of pattern:
+1. number_of_regex - number of patterns
+2. name_list - list of name pattern
+3. regex_list - list of regex
+4. score_list - list of scores
 
 This is an example of a deny-list based setup.
 
 ```python
-    # Setup a deny list config
+# Setup a deny list config
 supported_entities = []
-valuesList = []
+values_list = []
 
-supported_entities.append("TITLE")
-valuesList.append("Mr.,Mrs.,Miss")
+supported_entities.append('TITLE')
+values_list.append('Mr.,Mrs.,Miss')
 
-supported_entities.append("PRONOUN")
-valuesList.append("he,He,his,His,she,She,hers,Hers")
+supported_entities.append('PRONOUN')
+values_list.append('he,He,his,His,she,She,hers,Hers')
 
-clientAnalyzer.setup_deny_list(supported_entities, valuesList)
+client_analyzer.setup_deny_list(supported_entities, values_list)
 
-clientAnalyzer.send_analyzer_request("double_recognizer")
-clientAnalyzer.close_connection()
+client_analyzer.send_analyzer_request('double_recognizer')
+client_analyzer.close_connection()
 ```
 ## Deployment
 From the microsoft-presidio/analyzer directory

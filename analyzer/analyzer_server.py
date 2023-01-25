@@ -29,7 +29,7 @@ ANALYZER_DEFAULT_OPTIONS = {
     'ad_hoc_recognizers': None
 }
 
-PATH_TEMP = 'analyzer-temp/'
+PATH_TEMP = os.path.join(os.path.abspath('.'), 'analyzer-temp', '')
 
 
 class AnalyzerEntityServicer(pb2_grpc.AnalyzerEntityServicer):
@@ -56,7 +56,7 @@ class AnalyzerEntityServicer(pb2_grpc.AnalyzerEntityServicer):
     def sendEngineOptions(self, request, context):
         print('[+] Receiving an Engine configuration file...')
 
-        with open(f'{PATH_TEMP}{request.uuidClient}-engineConfig.json', 'w') as engine_configuration:
+        with open(f'{PATH_TEMP}{request.uuidClient}-engine-configuration.json', 'w') as engine_configuration:
             engine_configuration.write(MessageToJson(request, preserving_proto_field_name=True))
         print('[+] File received')
 
@@ -65,7 +65,7 @@ class AnalyzerEntityServicer(pb2_grpc.AnalyzerEntityServicer):
     def sendOptions(self, request, context):
         print('[+] Receiving an Analyzer configuration file...')
 
-        with open(f'{PATH_TEMP}{request.uuidClient}-analyzeConfig.json', 'w') as analyzer_configuration:
+        with open(f'{PATH_TEMP}{request.uuidClient}-analyze-configuration.json', 'w') as analyzer_configuration:
             analyzer_configuration.write(MessageToJson(request, preserving_proto_field_name=True))
         print('[+] File received')
 
@@ -124,7 +124,7 @@ def get_engine_options(uuid_client: str) -> dict:
     engine = ENGINE_DEFAULT_OPTIONS.copy()
 
     try:
-        with open(f'{PATH_TEMP}{uuid_client}-engineConfig.json', 'r') as engine_configuration:
+        with open(f'{PATH_TEMP}{uuid_client}-engine-configuration.json', 'r') as engine_configuration:
             options = json.loads(engine_configuration.read())
             custom_recognizers = []
 
@@ -180,9 +180,9 @@ def get_engine_options(uuid_client: str) -> dict:
 
         engine.update({'registry': registry})
 
-        os.remove(f'{PATH_TEMP}{uuid_client}-engineConfig.json')
+        os.remove(f'{PATH_TEMP}{uuid_client}-engine-configuration.json')
     except IOError:
-        print('[+] Engine configuration not exists')
+        print('[-] Engine configuration not exists')
 
     return engine
 
@@ -192,7 +192,7 @@ def get_analyzer_options(uuid_client: str) -> dict:
     analyzer = ANALYZER_DEFAULT_OPTIONS.copy()
 
     try:
-        with open(f'{PATH_TEMP}{uuid_client}-analyzeConfig.json', 'r') as analyzer_configuration:
+        with open(f'{PATH_TEMP}{uuid_client}-analyze-configuration.json', 'r') as analyzer_configuration:
             options = json.loads(analyzer_configuration.read())
 
             for elem in options:
@@ -202,9 +202,9 @@ def get_analyzer_options(uuid_client: str) -> dict:
                         analyzer.update({elem: entities.split(',')})
                 else:
                     analyzer.update({elem: options[elem]})
-        os.remove(f'{PATH_TEMP}{uuid_client}-analyzeConfig.json')
+        os.remove(f'{PATH_TEMP}{uuid_client}-analyze-configuration.json')
     except IOError:
-        print('[+] Analyzer configuration not exists')
+        print('[-] Analyzer configuration not exists')
 
     return analyzer
 

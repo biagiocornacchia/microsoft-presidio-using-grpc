@@ -11,7 +11,8 @@ import uuid
 import json
 import os
 
-PATH_TEMP = "anonymizer-temp/"
+
+PATH_TEMP = os.path.join(os.path.abspath('.'), 'anonymizer-temp', '')
 
 
 class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
@@ -121,7 +122,7 @@ class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
                         break
 
                     self.processed_chunks += self.chunk_size
-                    yield make_message(data)
+                    yield pb2.DataFile(chunk=data)
         else:
             # sends a NAK
             print('[-] Error during operation')
@@ -155,11 +156,7 @@ class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
         os.remove(f'{PATH_TEMP}{uuid_client}-items.json')
 
 
-def make_message(msg):
-    return pb2.DataFile(chunk=msg)
-
-
-def start_anonymization(uuid_client):
+def start_anonymization(uuid_client: str):
     # Building recognizers list made by analyzer engine
     # checking the necessary files
     try:
@@ -213,7 +210,7 @@ def start_anonymization(uuid_client):
     return result
 
 
-def start_deanonymization(uuid_client):
+def start_deanonymization(uuid_client: str):
     try:
         text_to_deanonymize = open(f'{PATH_TEMP}{uuid_client}.txt', 'r')
     except IOError:
@@ -263,11 +260,10 @@ def start_deanonymization(uuid_client):
     return result
 
 
-def run_server():
+def run_server(server_port: int) -> None:
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     pb2_grpc.add_AnonymizerEntityServicer_to_server(AnonymizerEntityServicer(), server)
 
-    server_port = 8061
     server.add_insecure_port(f'[::]:{server_port}')
     server.start()
 
@@ -277,4 +273,4 @@ def run_server():
 
 if __name__ == "__main__":
     print(':::::::::::::::::: PRESIDIO ANONYMIZER (Server) ::::::::::::::::::')
-    run_server()
+    run_server(server_port=8061)

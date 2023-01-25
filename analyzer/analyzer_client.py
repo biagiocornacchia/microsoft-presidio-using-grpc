@@ -57,7 +57,7 @@ class ClientEntity:
                 # Sending configuration options (if not empty)
                 if self.engine_current_config:
                     print('FROM CLIENT: sending AnalyzerEngine configuration...')
-                    self.engine_current_config['uuid_client'] = my_uuid
+                    self.engine_current_config['uuidClient'] = my_uuid
                     json_msg = json.dumps(self.engine_current_config)
                     response = self.stub.sendEngineOptions(Parse(json_msg, pb2.AnalyzerEngineOptions()))
 
@@ -84,7 +84,6 @@ class ClientEntity:
                         analyzer_result['results'].append(entity)
 
                     recognizer_results.write(json.dumps(analyzer_result))
-
                 print(f'\n{filename}-results.json created')
                 return 1
             else:
@@ -97,7 +96,7 @@ class ClientEntity:
                 print(f'Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n')
             return -2
 
-    def generate_file_chunks(self, filename: str):
+    def generate_file_chunks(self, filename: str) -> iter:
         self.processed_chunks = 0
 
         with open(f'{PATH_FILES}{filename}.txt', 'r') as textToAnalyze:
@@ -131,14 +130,14 @@ class ClientEntity:
 
         return True
 
-    def setup_deny_list(self, supported_entities, values_list) -> None:
+    def setup_deny_list(self, supported_entities: list, values_list: list) -> None:
         deny_list = {
             'supported_entity': supported_entities,
             'deny_list': values_list
         }
         self.engine_current_config['deny_list'] = json.dumps(deny_list)
 
-    def setup_regex(self, supported_entity, patterns, context) -> None:
+    def setup_regex(self, supported_entity: list, patterns: list, context: list) -> None:
         regex = {
             'supported_entity': supported_entity,
             'pattern': patterns,
@@ -147,14 +146,14 @@ class ClientEntity:
         self.engine_current_config['regex'] = json.dumps(regex)
 
     def setup_options(self, option: str, value: str, option_file: str) -> int:
-        if option_file == "ANALYZE_OPTIONS":
+        if option_file == 'ANALYZE_OPTIONS':
             if option in ANALYZER_OPTIONS:
                 self.analyzer_current_config[option] = value
                 return 1
             else:
                 # invalid option name
                 return -1
-        elif option_file == "ENGINE_OPTIONS":
+        elif option_file == 'ENGINE_OPTIONS':
             if option in ENGINE_OPTIONS:
                 self.engine_current_config[option] = value
                 return 1
@@ -171,7 +170,6 @@ class ClientEntity:
 
 
 # ----------------- Utility Functions -----------------
-
 def create_pattern_info(number_of_regex: int, name_list: list, regex_list: list, score_list: list) -> list:
     patterns = list()
 
