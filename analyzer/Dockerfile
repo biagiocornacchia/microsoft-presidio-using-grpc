@@ -15,4 +15,4 @@ RUN python3 -m spacy download en_core_web_lg
 RUN useradd app
 USER app
 
-ENTRYPOINT [ "python3","-u","analyzer_server.py" ]
+ENTRYPOINT ['python3', '-u', 'analyzer_server.py']

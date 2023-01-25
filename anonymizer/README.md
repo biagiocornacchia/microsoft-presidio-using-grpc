@@ -136,7 +136,7 @@ Select `anonymize` (command 1) and setup a configuration file for the anonymizer
 
     Command: 1
 
-    =============== Anonymizer Operator config (Ctrl-C for exit) ===============
+    =============== Anonymizer Operator config (Ctrl-C for close) ===============
 
     Entity: PERSON
     Anonymizer: encrypt
@@ -177,7 +177,7 @@ Firstly, we have to setup a config file specifying the cryptographic key used fo
 
     Command: 1
 
-    =============== Deanonymizer Operator config (Ctrl-C for exit) ===============
+    =============== Deanonymizer Operator config (Ctrl-C for close) ===============
 
     Entity: PERSON
     Anonymizer: decrypt
@@ -229,7 +229,7 @@ class ClientEntity:
         .
         .
 
-    def closeConnection(self):
+    def close_connection(self):
         print("Disconnected from the server")
         self.channel.close()
 ```
@@ -242,31 +242,31 @@ The arguments are a string that denote the server ip address and a number to den
 class ClientEntity:
         .
         .
-    def sendRequestAnonymize(self, filename):
-    def sendRequestDeanonymize(self, filename):
-    def sendRequestForText(self, filename, uuidClient, requestType):
-    def sendRequestForItems(self, filename, uuidClient, requestType):
+    def send_request_anonymize(self, filename):
+    def send_request_deanonymize(self, filename):
+    def send_request_for_text(self, filename, uuidClient, requestType):
+    def send_request_for_items(self, filename, uuidClient, requestType):
         .
         .
 ```
 To perform anonymization/deanonymization there are four function:
-1. `sendRequestAnonymize(filename)` </br>This function takes an argument (a filename) and (after a check of the required files) sends the original text file, the analyzer results and eventually a configuration file. Then makes a request for the anonymized text and anonymized items. </br> It returns an integer:
+1. `send_request_anonymize(filename)` </br>This function takes an argument (a filename) and (after a check of the required files) sends the original text file, the analyzer results and eventually a configuration file. Then makes a request for the anonymized text and anonymized items. </br> It returns an integer:
     * if some required files do not exist or the request for text/items fails returns -1
     * if there is a gRPC exception such as 'server unavailable' returns -2
     * if some required files were not received correctly by the server return 0
     * if the operation was successful returns 1
 
-2. `sendRequestDeanonymize(filename)` </br> This function takes an argument (a filename) and (after a check of the required files) sends the anonymized text file, the anonymizer results and a configuration file (in this case is required because you have to specify a key for decrypt). Then makes a request for the deanonymized text and denonymized items. </br> It returns an integer:
+2. `send_request_deanonymize(filename)` </br> This function takes an argument (a filename) and (after a check of the required files) sends the anonymized text file, the anonymizer results and a configuration file (in this case is required because you have to specify a key for decrypt). Then makes a request for the deanonymized text and denonymized items. </br> It returns an integer:
     * if some required files do not exist returns -1
     * if there is a gRPC exception such as 'server unavailable' returns -2
     * if some required files were not received correctly by the server return 0
     * if the operation was successful returns 1
 
-3. `sendRequestForText(filename, uuidClient, requestType)` </br>This function takes three arguments (a filename, uuidClient assigned by the server and a requestType that can be 'anonymize' or 'deanonymize') and sends a request to get anonymized or deanonymized text. </br> It returns an integer:
+3. `send_request_for_text(filename, uuidClient, requestType)` </br>This function takes three arguments (a filename, uuidClient assigned by the server and a requestType that can be 'anonymize' or 'deanonymize') and sends a request to get anonymized or deanonymized text. </br> It returns an integer:
     * if the request for the anonymized/deanonymized text fails returns -1
     * if the operation was successful returns 1
 
-4. `sendRequestForItems(filename, uuidClient, requestType)` </br>This function takes three arguments (a filename, uuidClient assigned by the server and a requestType that can be 'anonymize' or 'deanonymize') and sends a request to get anonymized or deanonymized items. </br> It returns an integer:
+4. `send_request_for_items(filename, uuidClient, requestType)` </br>This function takes three arguments (a filename, uuidClient assigned by the server and a requestType that can be 'anonymize' or 'deanonymize') and sends a request to get anonymized or deanonymized items. </br> It returns an integer:
     * if the request for the anonymized/deanonymized items fails returns -1
     * if the operation was successful returns 1
 
@@ -276,9 +276,9 @@ To perform anonymization/deanonymization there are four function:
 
 ```python
 # replaces the PII text entity with new string.
-def addReplace(entity_type, new_value):
+def add_replace(entity_type, new_value):
     # check for duplicate
-    found = checkDuplicate(entity_type, CONFIG_FILE)
+    found = check_duplicates(entity_type, CONFIG_FILE)
 
     params = '{ ' + f'\\"type\\": \\"replace\\", \\"new_value\\": \\"{new_value}\\"' + ' }'
 
@@ -288,9 +288,9 @@ def addReplace(entity_type, new_value):
     return found
 
 # anonymizes text to an encrypted form
-def addEncrypt(entity_type, key):
+def add_encrypt(entity_type, key):
     # check for duplicate
-    found = checkDuplicate(entity_type, CONFIG_FILE)
+    found = check_duplicates(entity_type, CONFIG_FILE)
 
     params = '{ ' + f'\\"type\\": \\"encrypt\\", \\"key\\": \\"{key}\\"' + ' }'
 
@@ -304,10 +304,10 @@ def addEncrypt(entity_type, key):
 ```
 
 Other utility functions are:
-1. checkDuplicate(entity_type, configFile)
+1. check_duplicates(entity_type, configFile)
 2. anonymizerOptions(anonymizer, configType)
 
-`checkDuplicate` is used to check if a config option is already setted in the specified configuration file (CONFIG_FILE or CONFIG_FILE_DE) and returns an integer which indicates if an opition was rewritten or not. <br> While `anonymizerOptions` has two arguments. Anonymizer (for example encrypt,hash,replace ecc) and configType (Anonymizer or Deanonymizer). This function will ask for some other input values and returns a string based on the type of anonymizer.
+`check_duplicates` is used to check if a config option is already setted in the specified configuration file (CONFIG_FILE or CONFIG_FILE_DE) and returns an integer which indicates if an opition was rewritten or not. <br> While `anonymizerOptions` has two arguments. Anonymizer (for example encrypt,hash,replace ecc) and configType (Anonymizer or Deanonymizer). This function will ask for some other input values and returns a string based on the type of anonymizer.
 
 ### Example of anonymization
 
@@ -317,24 +317,24 @@ import anonymizer_client as anonymizer
 if __name__ == "__main__":
 
     clientAnonymizer = anonymizer.ClientEntity("localhost", 8061)
-    clientAnonymizer.readConfiguration(anonymizer.CONFIG_FILE)
-    
+    clientAnonymizer.read_configuration(anonymizer.CONFIG_FILE)
+
     # Setup operator config
     print("Hash configuration\n")
     entity_type = input("Entity: ").upper()
     hash_type = input("Hash type (md5, sha256, sha512): ").lower()
 
-    anonymizer.addHash(entity_type, hash_type)
+    anonymizer.add_hash(entity_type, hash_type)
 
     # Send request for anonymization
-    result = clientAnonymizer.sendRequestAnonymize("demo")
-    
+    result = clientAnonymizer.send_request_anonymize("demo")
+
     if result == -2:
         print("gRPC Server Error: cannot connect to the server! Check your server settings")
     elif result == -1:
         print("gRPC Server Error: original file text or analyzer results not found!")
 
-    clientAnonymizer.closeConnection()
+    clientAnonymizer.close_connection()
 ```
 
 ### Example of deanonymization
@@ -345,24 +345,24 @@ import anonymizer_client as anonymizer
 if __name__ == "__main__":
 
     clientAnonymizer = anonymizer.ClientEntity("localhost", 8061)
-    clientAnonymizer.readConfiguration(anonymizer.CONFIG_FILE_DE)
+    clientAnonymizer.read_configuration(anonymizer.CONFIG_FILE_DE)
 
     # Setup deanonymizer configuration file    
     print("Decrypt configuration\n")
     entity_type = input("Entity: ").upper()
     key = input("Key (must be of length 128, 192 or 256 bits): ")
 
-    anonymizer.addDecrypt(entity_type, key)
+    anonymizer.add_decrypt(entity_type, key)
 
     # Send request for deanonymization
-    result = clientAnonymizer.sendRequestDeanonymize("demo-anonymized")
-    
+    result = clientAnonymizer.send_request_deanonymize("demo-anonymized")
+
     if result == -2:
         print("gRPC Server Error: cannot connect to the server! Check your server settings")
     elif result == -1:
         print("gRPC Server Error: anonymized file text or anonymizer results not found!")
 
-    clientAnonymizer.closeConnection()
+    clientAnonymizer.close_connection()
 
 ```
 

@@ -1,168 +1,186 @@
-import grpc 
+import grpc
 from proto import model_pb2_grpc as pb2_grpc
 from proto import model_pb2 as pb2
-from google.protobuf.json_format import MessageToJson, Parse
+from google.protobuf.json_format import Parse
 
 import json
 import os
 
-ENGINE_OPTIONS = [ "deny_list", "regex", "nlp_engine", "app_tracer", "log_decision_process", "default_score_threshold", "supported_languages" ]
-ANALYZE_OPTIONS = ["language", "entities", "correlation_id", "score_threshold", "return_decision_process"]
+ENGINE_OPTIONS = [
+    'deny_list',
+    'regex',
+    'nlp_engine',
+    'app_tracer',
+    'log_decision_process',
+    'default_score_threshold',
+    'supported_languages'
+]
+ANALYZER_OPTIONS = [
+    'language',
+    'entities',
+    'correlation_id',
+    'score_threshold',
+    'return_decision_process'
+]
 
-PATH_RESULTS = "../analyzer-results/"
-PATH_FILES = "../files/"
+PATH_RESULTS = os.path.join(os.path.abspath('..'), 'analyzer-results', '')
+PATH_FILES = os.path.join(os.path.abspath('..'), 'files', '')
 
-CHUNK_SIZE = 1024*1024 # 1MB
-TOTAL_CHUNKS = 0
 
 class ClientEntity:
-
-    def __init__(self, ip_address, port):
+    def __init__(self, ip_address: str, port: int) -> None:
+        self.processed_chunks = 0
+        self.chunk_size = 1024 * 1024  # 1MB
 
         self.ip_address = ip_address
         self.port = port
-        self.channel = grpc.insecure_channel(ip_address + ':' + str(port))
+        self.channel = grpc.insecure_channel(f'{ip_address}:{port}')
         self.stub = pb2_grpc.AnalyzerEntityStub(self.channel)
 
-        self.engine_curr_config = {}
-        self.analyze_curr_config = {}
+        self.engine_current_config = {}
+        self.analyzer_current_config = {}
 
-    def sendRequestAnalyze(self, filename):
-
-        if not self.checkRequiredFiles(filename):
+    def send_analyzer_request(self, filename: str) -> int:
+        if not self.check_required_files(filename):
             return -1
 
         try:
-            # sending original text to analyze
-            chunk_iterator = generateChunks(filename)
-            print("\nFROM CLIENT: sending original text...")
+            # Sending original text file to analyze
+            chunk_iterator = self.generate_file_chunks(filename)
+            print('\nFROM CLIENT: sending original text...')
             response = self.stub.sendFileToAnalyze(chunk_iterator)
 
-            if response.chunks == TOTAL_CHUNKS:
-                print(f"FROM SERVER: file received correctly. UUID assigned: {response.uuidClient}")
-
+            if response.chunks == self.processed_chunks:
+                print(f'FROM SERVER: file received correctly. UUID assigned: {response.uuidClient}')
                 my_uuid = response.uuidClient
 
-                # sending config options (if not empty)
-                if self.engine_curr_config:
-                    print("FROM CLIENT: sending AnalyzerEngine configuration...")  
-                    
-                    self.engine_curr_config['uuidClient'] = my_uuid
-                    json_msg = json.dumps(self.engine_curr_config) 
-                    response = self.stub.sendEngineOptions(Parse(json_msg, pb2.AnalyzerEngineOptions())) 
+                # Sending configuration options (if not empty)
+                if self.engine_current_config:
+                    print('FROM CLIENT: sending AnalyzerEngine configuration...')
+                    self.engine_current_config['uuid_client'] = my_uuid
+                    json_msg = json.dumps(self.engine_current_config)
+                    response = self.stub.sendEngineOptions(Parse(json_msg, pb2.AnalyzerEngineOptions()))
 
-                if self.analyze_curr_config:
-                    print("FROM CLIENT: sending analyze configuration...")
-                    
-                    self.analyze_curr_config['uuidClient'] = my_uuid
-                    json_msg = json.dumps(self.analyze_curr_config) 
-                    response = self.stub.sendOptions(Parse(json_msg, pb2.AnalyzeOptions())) 
-                
-                responses = self.stub.getAnalyzerResults(pb2.Request(uuidClient = my_uuid))
-                print("FROM CLIENT: waiting for analyzer results...")
-                
-                with open(PATH_RESULTS + filename + "-results.txt", "w") as RecognizerResults:
+                if self.analyzer_current_config:
+                    print('FROM CLIENT: sending analyze configuration...')
+                    self.analyzer_current_config['uuidClient'] = my_uuid
+                    json_msg = json.dumps(self.analyzer_current_config)
+                    response = self.stub.sendOptions(Parse(json_msg, pb2.AnalyzeOptions()))
+
+                responses = self.stub.getAnalyzerResults(pb2.Request(uuidClient=my_uuid))
+                print('FROM CLIENT: waiting for analyzer results...')
+
+                with open(f'{PATH_RESULTS}{filename}-results.json', 'w') as recognizer_results:
+                    analyzer_result = {'results': list()}
+
                     for response in responses:
-                        string = "{ " + f'"start": {response.start}, "end": {response.end}, "score": {response.score:.2f}, "entity_type": "{response.entity_type}", "analysis_explanation": "{response.analysis_explanation}"' + " }\n"
-                        RecognizerResults.write(string)
+                        entity = {
+                            'start': response.start,
+                            'end': response.end,
+                            'score': f'{response.score:.2f}',
+                            'entity_type': response.entity_type,
+                            'analysis_explanation': response.analysis_explanation
+                        }
+                        analyzer_result['results'].append(entity)
 
-                print(f"\n{filename}-results.txt created")
+                    recognizer_results.write(json.dumps(analyzer_result))
+
+                print(f'\n{filename}-results.json created')
                 return 1
-
             else:
-                print("FROM SERVER: original text file not received correctly")
+                print('FROM SERVER: original text file not received correctly')
                 return 0
-
         except grpc.RpcError as rpc_error:
-
             if rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
-                print("Cannot connect to the server")
+                print('Cannot connect to the server')
             else:
-                print(f"Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n")
-            
+                print(f'Received unknown RPC error: code={rpc_error.code()} message={rpc_error.details()}\n')
             return -2
 
-    def checkRequiredFiles(self, filename):
+    def generate_file_chunks(self, filename: str):
+        self.processed_chunks = 0
 
-        # check text file
-        if not os.path.exists(PATH_FILES + filename + ".txt"):
-            print("ERROR: file text not found!")
+        with open(f'{PATH_FILES}{filename}.txt', 'r') as textToAnalyze:
+            while True:
+                data = textToAnalyze.read(self.chunk_size)
+
+                if not data:
+                    break
+
+                self.processed_chunks += self.chunk_size
+                yield pb2.DataFile(chunk=data)
+
+    def check_required_files(self, filename: str) -> bool:
+        # Check text file
+        if not os.path.exists(f'{PATH_FILES}{filename}.txt'):
+            print('[-] ERROR: file text not found!')
             return False
 
-        # check conf setup (AnalyzerEngine and Analyze params)
-        if self.engine_curr_config:
-            print("AnalyzerEngine configuration found!")
+        # Check configuration setup (AnalyzerEngine and Analyze params)
+        if self.engine_current_config:
+            print('AnalyzerEngine configuration found')
             # print(self.engine_curr_config)
         else:
-            print("AnalyzerEngine configuration not found!")
+            print('AnalyzerEngine configuration not found')
 
-        if self.analyze_curr_config:
-            print("Analyze configuration found!")
-            # print(self.analyze_curr_config)
+        if self.analyzer_current_config:
+            print('Analyze configuration found')
+            # print(self.analyzer_current_config)
         else:
-            print("Analyze configuration not found!")
+            print('Analyze configuration not found')
 
         return True
 
-    def setupDenyList(self, supported_entities, valuesList):
+    def setup_deny_list(self, supported_entities, values_list) -> None:
+        deny_list = {
+            'supported_entity': supported_entities,
+            'deny_list': values_list
+        }
+        self.engine_current_config['deny_list'] = json.dumps(deny_list)
 
-        jsonString = "{ " + f'"supported_entity": {supported_entities}, "deny_list": {valuesList}' + " }"
-        self.engine_curr_config["deny_list"] = jsonString.replace("'", "\"")
-    
-    def setupRegex(self, supported_entity, patterns, context):
+    def setup_regex(self, supported_entity, patterns, context) -> None:
+        regex = {
+            'supported_entity': supported_entity,
+            'pattern': patterns,
+            'context': context
+        }
+        self.engine_current_config['regex'] = json.dumps(regex)
 
-        self.engine_curr_config['regex'] = "{ " + f'"supported_entity": "{supported_entity}", "pattern": {patterns}, "context": "{context}" ' + " }"
-
-    def setupOptions(self, option, value, optionFile):
-        
-        if optionFile == "ANALYZE_OPTIONS":
-            if option in ANALYZE_OPTIONS:
-                self.analyze_curr_config[option] = value
+    def setup_options(self, option: str, value: str, option_file: str) -> int:
+        if option_file == "ANALYZE_OPTIONS":
+            if option in ANALYZER_OPTIONS:
+                self.analyzer_current_config[option] = value
                 return 1
             else:
                 # invalid option name
                 return -1
-        elif optionFile == "ENGINE_OPTIONS":
+        elif option_file == "ENGINE_OPTIONS":
             if option in ENGINE_OPTIONS:
-                self.engine_curr_config[option] = value
+                self.engine_current_config[option] = value
                 return 1
             else:
                 # invalid option name
                 return -1
         else:
-            # invalid optionFile 
+            # invalid option_file
             return -2
 
-    def closeConnection(self):
-        print("Disconnected from the server")
+    def close_connection(self):
+        print('Disconnected from the server')
         self.channel.close()
 
-# UTILITY FUNCTIONS
 
-def makeMessage(msg):
-    return pb2.DataFile(chunk = msg)
+# ----------------- Utility Functions -----------------
 
-def generateChunks(filename):
+def create_pattern_info(number_of_regex: int, name_list: list, regex_list: list, score_list: list) -> list:
+    patterns = list()
 
-    global TOTAL_CHUNKS
-    cont = 0
-
-    with open(PATH_FILES + filename + ".txt", "r") as textToAnalyze:
-        while True:
-            data = textToAnalyze.read(CHUNK_SIZE)
-
-            if not data:
-                break
-            
-            cont += CHUNK_SIZE
-            TOTAL_CHUNKS = cont
-
-            yield makeMessage(data)
-
-def createPatternInfo(num, nameList, regexList, scoreList):
-    patterns = []
-    
-    for i in range(num):
-        patterns.append("{ " + f"\'name_pattern\' : \'{nameList[i]}\', \'regex\' : \'{regexList[i]}\', \'score\' : {scoreList[i]}" + " }")
+    for i in range(0, number_of_regex):
+        pattern = {
+            'name_pattern': name_list[i],
+            'regex': regex_list[i],
+            'score': score_list[i]
+        }
+        patterns.append(pattern)
 
     return patterns

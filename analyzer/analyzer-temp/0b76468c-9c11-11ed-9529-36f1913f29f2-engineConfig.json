@@ -1,0 +1,4 @@
+{
+  "uuidClient": "0b76468c-9c11-11ed-9529-36f1913f29f2",
+  "regex": "{ \"supported_entity\": \"US_ZIP_CODE\", \"pattern\": [{'name_pattern': 'us zip code', 'regex': '(\\\\b\\\\d{5}(?:\\\\-\\\\d{4})?\\\\b)', 'score': '0.1'}], \"context\": \"zip,zipcode\"  }"
+}
