@@ -1,2 +1,1 @@
 { "entity_type" : "PERSON", "params" : "{ \"type\": \"encrypt\", \"key\": \"AAECAwQFBgcICQoLDA0ODw==\" }" }
-{ "entity_type" : "LOCATION", "params" : "{ \"type\": \"hash\", \"hash_type\": \"sha256\" }" }

@@ -99,9 +99,9 @@ class ClientEntity:
     def generate_file_chunks(self, filename: str) -> iter:
         self.processed_chunks = 0
 
-        with open(f'{PATH_FILES}{filename}.txt', 'r') as textToAnalyze:
+        with open(f'{PATH_FILES}{filename}.txt', 'r') as text_to_analyze:
             while True:
-                data = textToAnalyze.read(self.chunk_size)
+                data = text_to_analyze.read(self.chunk_size)
 
                 if not data:
                     break
