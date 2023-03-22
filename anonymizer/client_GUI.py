@@ -48,7 +48,7 @@ class Frames(object):
                                                           filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
 
         if self.root.filenames:
-            client_anoymizer = anonymizer.ClientEntity(IP_ADDRESS, PORT)
+            client_anonymizer = anonymizer.ClientEntity(IP_ADDRESS, PORT)
 
             # Send options if set
             filename_list = []
@@ -56,7 +56,7 @@ class Frames(object):
                 filename, ext = os.path.basename(path).split(".")
                 filename_list.append(filename)
 
-                res = client_anoymizer.send_request_anonymize(os.path.basename(filename))
+                res = client_anonymizer.send_request_anonymize(os.path.basename(filename))
 
                 if res == -2:
                     messagebox.showerror("gRPC Server Error",
@@ -68,7 +68,7 @@ class Frames(object):
                     break
 
             if res == 1:
-                client_anoymizer.close_connection()
+                client_anonymizer.close_connection()
                 self.read_anonymizer_results(filename_list)
 
     def start_deanonymizer(self):
